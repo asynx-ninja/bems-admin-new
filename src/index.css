@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  scroll-behavior: smooth;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+}
+
+/* .hs-overlay-basic {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 17rem;
+  z-index: 60;
+} */
+
+
+/* Default styles for larger screens */
+
+/* .flex-col-reverse {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: calc(100% - 17rem);
+  z-index: 50;
+} */
+
+/* Media query for smaller screens (e.g., smartphones) */
+
+/* @media (max-width: 1024px) {
+  
+  .flex-col-reverse {
+    top: 0px; 
+    right: 0;
+    width: 100%;
+  }
+} */
+
+
+
+
+/* .mx-4::-webkit-scrollbar {
+  display: none; 
+} */
+
+/* .mx-4 {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -ms-overflow-style: none; 
+  position: relative;
+  height: 100vh; 
+  padding-top: 60px;
+  max-height: calc(100vh - 35px);
+} */
+
+
+/* Media query for smaller screens (e.g., smartphones) */
+/* 
+@media (max-width: 768px) {
+  
+  .mx-4 {
+    padding-top: 0;
+    padding: 8px;
+    -ms-overflow-style: none; 
+  }
+} */
+/* width */
+.scrollbarWidth::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.scrollbarTrack::-webkit-scrollbar-track {
+  background: #ebeaea;
+}
+
+/* Handle */
+.scrollbarThumb::-webkit-scrollbar-thumb {
+  background: #efc586;
+}
+
+/* Handle on hover */
+.scrollbarHover::-webkit-scrollbar-thumb:hover {
+  background: #fdb242;
+}
+/* 
+/* width */
+::-webkit-scrollbar {
+  height: 5px; 
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ebeaea;
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #EFC586;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb{
+  background: #EFC586;
+  border-radius: 5px;
+} */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.rotate-180 {
+  animation: rotate 0.3s linear;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+/* loader */
+
+.loaders {
+  display: flex;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.loader {
+  width: 15px; /* Adjust as needed */
+  height: 15px; /* Adjust as needed */
+  margin-right: 10px;
+  border-radius: 50%;
+  border: 8px solid red;
+  background-color: transparent;
+  animation: bounce 2s ease-in-out infinite alternate;
+}
+
+.loader:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.loader:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px); /* Adjust bounce distance */
+  }
+}
+
+
+@keyframes slideIn {
+  from {
+      transform: translateX(100%);
+  }
+  to {
+      transform: translateX(0);
+  }
+}
+
+
+/* Handle on hover
+::-webkit-scrollbar-thumb:hover {
+  background: #fff;
+} */
+
+
+@layer base {
+  @font-face {
+    font-family: Gilmer Regular;
+    src: url('./../src/assets/fonts/Gilmer Regular.otf') format("opentype");
+  }
+  @font-face {
+    font-family: Gilmer-Bold;
+    src: url('./../src/assets/fonts/Gilmer Bold.otf') format("opentype");
+  }
+  @font-face {
+    font-family: Gilmer-Medium;
+    src: url('./../src/assets/fonts/Gilmer Medium.otf') format("opentype");
+  }
+  @font-face {
+    font-family: Gilmer-Heavy;
+    src: url('./../src/assets/fonts/Gilmer Heavy.otf') format("opentype");
+  }
+  @font-face {
+    font-family: Gilmer-Light;
+    src: url('./../src/assets/fonts/Gilmer Light.otf') format("opentype");
+  }
+}
