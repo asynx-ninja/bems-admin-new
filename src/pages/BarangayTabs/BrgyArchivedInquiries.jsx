@@ -11,7 +11,6 @@ import ViewArchivedModal from "../../components/barangaytabs/brgyInquiries/ViewA
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
-import Tabss from "../../pages/BarangayInfoExt";
 import moment from "moment";
 import noData from "../../assets/image/no-data.png";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
