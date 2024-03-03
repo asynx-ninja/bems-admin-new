@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+
 import axios from "axios";
 import API_LINK from "../../config/API";
 import Chart from "react-apexcharts";
@@ -15,7 +15,7 @@ const RRM = () => {
           try {
             const response = await axios.get(`${API_LINK}/users/allregistered`);
             setUserCounts(Array.isArray(response.data) ? response.data : []);
-            console.log("weewe", response.data);
+        
            
           } catch (error) {
             console.error("Error fetching user counts:", error);

@@ -20,8 +20,7 @@ function RestoreAdminModal({ selectedItems }) {
           setUpdatingStatus(null);
           HSOverlay.close(document.getElementById("hs-modal-restoreAdmin"));
         }, 3000);
-
-        console.log("error", selectedItems);
+ 
         return;
       }
       setSubmitClicked(true);

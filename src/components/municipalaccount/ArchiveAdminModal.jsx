@@ -21,7 +21,7 @@ function ArchiveAdminModal({ selectedItems }) {
           HSOverlay.close(document.getElementById("hs-modal-archiveAdmin"));
         }, 3000);
 
-        console.log("error", selectedItems);
+ 
         return;
       }
 

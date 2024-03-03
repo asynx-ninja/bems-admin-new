@@ -247,8 +247,6 @@ const Reports = () => {
 
         const data = response.data;
 
-        console.log("data for total status requests: ", data);
-
         // Assuming the API response has the structure similar to statusPercentages
         setStatusPercentages(data);
       } catch (error) {
@@ -338,8 +336,6 @@ const Reports = () => {
         );
 
         const data = response.data;
-
-        console.log("data for total status inquiries: ", data);
 
         // Assuming the API response has the structure similar to serviceSummary
         setStatusPercentagesInquiries(data);
@@ -1115,8 +1111,6 @@ const Reports = () => {
 
         const data = response.data;
 
-        console.log("data for total availed: ", data);
-
         // Assuming your data structure is an array with multiple objects
         if (data.length > 0) {
           // Calculate totalServices by summing up totalRequests for all statuses
@@ -1237,8 +1231,6 @@ const Reports = () => {
         );
 
         const data = response.data;
-
-        console.log("data for completed requests: ", data);
 
         // Assuming your data structure is an array with multiple objects
         if (data.length > 0) {

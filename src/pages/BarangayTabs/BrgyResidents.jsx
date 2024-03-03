@@ -1,17 +1,13 @@
 import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { FaArchive, FaPlus, FaTrash, FaUserCircle } from "react-icons/fa";
-import { BsPrinter } from "react-icons/bs";
-import { AiOutlineEye, AiOutlineStop } from "react-icons/ai";
+import { FaArchive, FaPlus, FaUserCircle } from "react-icons/fa";
+import { AiOutlineEye} from "react-icons/ai";
 import { FiEdit, FiMail } from "react-icons/fi";
 import ReactPaginate from "react-paginate";
-import GenerateReportsModal from "../../components/barangaytabs/brgyarchivedResidents/GenerateReportsModal";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
-import PrintPDF from "../../components/barangaytabs/brgyResidents/form/PrintPDF";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import noData from "../../assets/image/no-data.png";
 import AddResidentsModal from "../../components/barangaytabs/brgyResidents/AddResidentModal";
 import StatusResident from "../../components/barangaytabs/brgyResidents/StatusResident";
@@ -96,7 +92,6 @@ const Residents = () => {
         setFilteredResidents(response.data.result);
       } else setUsers([]);
 
-      console.log(response);
     };
 
     fetch();
@@ -326,8 +321,6 @@ const Residents = () => {
                       );
                       setFilteredResidents(User);
                     }
-
-                    console.log("Officials Fetched", officials);
                   }}
                 />
               </div>
@@ -428,10 +421,10 @@ const Residents = () => {
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Verification Approval" && (
-                        <div className="flex w-full items-center justify-center bg-[#5586cf] xl:m-2 rounded-lg">
+                     {item.isApproved === "For Review" && (
+                        <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            VERIFICATION APPROVAL
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
@@ -552,7 +545,7 @@ const Residents = () => {
         />
       </div>
       <AddResidentsModal brgy={brgy} />
-      <GenerateReportsModal />
+     
 
       <StatusResident
         user={user}

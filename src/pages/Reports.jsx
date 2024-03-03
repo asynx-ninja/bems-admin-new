@@ -4,28 +4,16 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import API_LINK from "../config/API";
 import Chart from "react-apexcharts";
-import DatePicker from "react-datepicker"; // Import the date picker component
+
 import "react-datepicker/dist/react-datepicker.css";
 import SRT from "../components/reports/SRT";
 import RRM from "../components/reports/RRM";
-import RRB from "../components/reports/RRB";
+
 import RIB from "../components/reports/RIB";
-import TRB from "../components/reports/TRB";
+
 import moment from "moment";
 
 const Reports = () => {
-  const [requests, setRequests] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const brgy = searchParams.get("brgy");
-  const [isSpecificSelected, setIsSpecificSelected] = useState(false);
-  const [isTodaySelected, setIsTodaySelected] = useState(false);
-  const [isWeeklySelected, setIsWeeklySelected] = useState(false);
-  const [isMonthlySelected, setIsMonthlySelected] = useState(false);
-  const [isAnnualSelected, setIsAnnualSelected] = useState(false);
-  const [dateType, setDateType] = useState("specific");
-  const [startDate, setStartDate] = useState("");
-  const [specifiedDate, setSpecifiedDate] = useState(new Date());
-  const [selected, setSelected] = useState("date");
   const [totalUsersSum, setTotalUsersSum] = useState(0);
   const [timeRange, setTimeRange] = useState("today");
   const [specificDate, setSpecificDate] = useState(
@@ -110,7 +98,6 @@ const Reports = () => {
           params: params,
         });
         const data = response.data;
-        console.log("bago", data);
 
         // Calculate the sum of totalUsers
         const sum = data.reduce((acc, item) => acc + item.totalUsers, 0);
@@ -360,7 +347,6 @@ const Reports = () => {
 
         const data = response.data;
         settotalServices(data.length);
-        console.log("wew", data);
       } catch (error) {
         console.error("Error fetching fee summary data:", error);
       }
@@ -376,209 +362,202 @@ const Reports = () => {
   return (
     <div className="mx-4 mt-4 ">
       <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb lg:overflow-y-scroll lg:overflow-x-hidden lg:h-[calc(100vh_-_95px)]">
-          <div className="flex lg:justify-end mb-3 w-full lg:w-auto ">
-            <div className="flex flex-col w-full lg:w-auto">
-              <div
-                id="toggle-count"
-                className="flex gap-2 p-2 rounded-lg bg-gray-500 w-full lg:w-auto justify-start items-start overflow-x-auto lg:overflow-x-hidden"
+        <div className="flex lg:justify-end mb-3 w-full lg:w-auto ">
+          <div className="flex flex-col w-full lg:w-auto">
+            <div
+              id="toggle-count"
+              className="flex gap-2 p-2 rounded-lg bg-gray-500 w-full lg:w-auto justify-start items-start overflow-x-auto lg:overflow-x-hidden"
+            >
+              <button
+                className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
+                  timeRange === "specific"
+                    ? "bg-green-700 text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+                onClick={() => handleTimeRangeChange("specific")}
               >
-                <button
-                  className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
-                    timeRange === "specific"
-                      ? "bg-green-700 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
-                  onClick={() => handleTimeRangeChange("specific")}
-                >
-                  Specific
-                </button>
-                <button
-                  className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
-                    timeRange === "today"
-                      ? "bg-green-700 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
-                  onClick={() => handleTimeRangeChange("today")}
-                >
-                  Today
-                </button>
-                <button
-                  className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
-                    timeRange === "weekly"
-                      ? "bg-green-700 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
-                  onClick={() => handleTimeRangeChange("weekly")}
-                >
-                  Weekly
-                </button>
-                <button
-                  className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
-                    timeRange === "monthly"
-                      ? "bg-green-700 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
-                  onClick={() => handleTimeRangeChange("monthly")}
-                >
-                  Monthly
-                </button>
-                <button
-                  className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
-                    timeRange === "annual"
-                      ? "bg-green-700 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
-                  onClick={() => handleTimeRangeChange("annual")}
-                >
-                  Annual
-                </button>
-              </div>
-
-              <div className="w-full mt-2">
-                {timeRange === "specific" && (
-                  <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
-                    <label className="mr-4 text-sm font-medium text-gray-700">
-                      Select Specific Date:
-                    </label>
-                    <input
-                      type="date"
-                      value={specificDate}
-                      onChange={(e) => setSpecificDate(e.target.value)}
-                      className="px-2 py-1 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
-                    />
-                  </div>
-                )}
-
-                {timeRange === "weekly" && (
-                  <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
-                    <label className="mr-4 text-sm font-medium text-gray-700">
-                      Select Specific Week:
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="week"
-                        value={specificWeek}
-                        onChange={(e) => setSpecificWeek(e.target.value)}
-                        className="px-2 py-1 border-2 border-gray-300 w-full rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {timeRange === "monthly" && (
-                  <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
-                    <label className="mr-4 text-sm font-medium text-gray-700">
-                      Select Month:
-                    </label>
-                    <input
-                      className="text-gray-400 px-2 py-1 rounded-md font-medium shadow-sm text-sm border border-black"
-                      type="month"
-                      id="month"
-                      name="month"
-                      value={specificMonth} // Directly use specificMonth as value
-                      onChange={(e) => setSpecificMonth(e.target.value)} // Update specificMonth with the input's value directly
-                    />
-                  </div>
-                )}
-
-                {timeRange === "annual" && (
-                  <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2">
-                    <label className="mr-4 text-sm font-medium text-gray-700">
-                      Select Year:
-                    </label>
-                    <input
-                      type="number"
-                      value={specificYear}
-                      min="1950"
-                      max={new Date().getFullYear() + 10}
-                      onChange={(e) =>
-                        setSpecificYear(parseInt(e.target.value))
-                      }
-                      className="px-2 py-1 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* END OF DATE INPUTS */}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-            <div className="bg-gray-200 rounded-lg shadow-lg p-6">
-              <h4 className="text-lg  font-bold mb-3">
-                TOTAL APPROVED BARANGAYS SERVICES
-              </h4>
-              <p className="text-xl text-[#408D51] font-bold">
-                {totalServices}
-              </p>
+                Specific
+              </button>
+              <button
+                className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
+                  timeRange === "today"
+                    ? "bg-green-700 text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+                onClick={() => handleTimeRangeChange("today")}
+              >
+                Today
+              </button>
+              <button
+                className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
+                  timeRange === "weekly"
+                    ? "bg-green-700 text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+                onClick={() => handleTimeRangeChange("weekly")}
+              >
+                Weekly
+              </button>
+              <button
+                className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
+                  timeRange === "monthly"
+                    ? "bg-green-700 text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+                onClick={() => handleTimeRangeChange("monthly")}
+              >
+                Monthly
+              </button>
+              <button
+                className={`px-3 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium text-sm lg:text-base focus:outline-none focus:ring focus:border-blue-300 ${
+                  timeRange === "annual"
+                    ? "bg-green-700 text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+                onClick={() => handleTimeRangeChange("annual")}
+              >
+                Annual
+              </button>
             </div>
 
-            <div className="bg-gray-200 rounded-lg shadow-lg p-6">
-              <h4 className="text-lg font-bold mb-3">
-                TOTAL NUMBER OF REGISTERED RESIDENTS
-              </h4>
-              <p className="text-xl text-[#408D51] font-bold">
-                {totalUsersSum}
-              </p>
-            </div>
-          </div>
-
-          {/* CHARTS */}
-          <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
-            <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5 justify-center items-center">
-              <h1 className="mt-5 ml-5 font-medium text-black">
-                Total Service Revenue per Barangay
-              </h1>
-              <div className="flex rounded-xl">
-                {series.length > 0 && (
-                  <Chart
-                    options={options}
-                    series={series}
-                    type="bar"
-                    className="flex w-11/12 rounded-xl"
+            <div className="w-full mt-2">
+              {timeRange === "specific" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Specific Date:
+                  </label>
+                  <input
+                    type="date"
+                    value={specificDate}
+                    onChange={(e) => setSpecificDate(e.target.value)}
+                    className="px-2 py-1 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
                   />
-                )}
-              </div>
+                </div>
+              )}
+
+              {timeRange === "weekly" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Specific Week:
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="week"
+                      value={specificWeek}
+                      onChange={(e) => setSpecificWeek(e.target.value)}
+                      className="px-2 py-1 border-2 border-gray-300 w-full rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {timeRange === "monthly" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Month:
+                  </label>
+                  <input
+                    className="text-gray-400 px-2 py-1 rounded-md font-medium shadow-sm text-sm border border-black"
+                    type="month"
+                    id="month"
+                    name="month"
+                    value={specificMonth} // Directly use specificMonth as value
+                    onChange={(e) => setSpecificMonth(e.target.value)} // Update specificMonth with the input's value directly
+                  />
+                </div>
+              )}
+
+              {timeRange === "annual" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Year:
+                  </label>
+                  <input
+                    type="number"
+                    value={specificYear}
+                    min="1950"
+                    max={new Date().getFullYear() + 10}
+                    onChange={(e) => setSpecificYear(parseInt(e.target.value))}
+                    className="px-2 py-1 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
+                  />
+                </div>
+              )}
             </div>
-            <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5 justify-center items-center">
-              <h1 className="mt-5 ml-5 font-medium text-black">
-                Est. Service Revenue per Barangay
-              </h1>
-              <div className="flex rounded-xl">
+
+            {/* END OF DATE INPUTS */}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+          <div className="bg-gray-200 rounded-lg shadow-lg p-6">
+            <h4 className="text-lg  font-bold mb-3">
+              TOTAL APPROVED BARANGAYS SERVICES
+            </h4>
+            <p className="text-xl text-[#408D51] font-bold">{totalServices}</p>
+          </div>
+
+          <div className="bg-gray-200 rounded-lg shadow-lg p-6">
+            <h4 className="text-lg font-bold mb-3">
+              TOTAL NUMBER OF REGISTERED RESIDENTS
+            </h4>
+            <p className="text-xl text-[#408D51] font-bold">{totalUsersSum}</p>
+          </div>
+        </div>
+
+        {/* CHARTS */}
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5 justify-center items-center">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              Total Service Revenue per Barangay
+            </h1>
+            <div className="flex rounded-xl">
+              {series.length > 0 && (
                 <Chart
-                  options={chartData.options}
-                  series={chartData.series}
+                  options={options}
+                  series={series}
                   type="bar"
                   className="flex w-11/12 rounded-xl"
                 />
-              </div>
+              )}
             </div>
           </div>
-          <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
-            <RRM />
-            <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5 justify-center items-center">
-              <h1 className="mt-5 ml-5 font-medium text-black">
-                Registered Residents per Barangay
-              </h1>
-              <div className="flex rounded-xl">
-                <Chart
-                  className="flex w-11/12 rounded-xl "
-                  options={chartDatas.options}
-                  series={chartDatas.series}
-                  type="bar"
-                />
-              </div>
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5 justify-center items-center">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              Est. Service Revenue per Barangay
+            </h1>
+            <div className="flex rounded-xl">
+              <Chart
+                options={chartData.options}
+                series={chartData.series}
+                type="bar"
+                className="flex w-11/12 rounded-xl"
+              />
             </div>
           </div>
+        </div>
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
+          <RRM />
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5 justify-center items-center">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              Registered Residents per Barangay
+            </h1>
+            <div className="flex rounded-xl">
+              <Chart
+                className="flex w-11/12 rounded-xl "
+                options={chartDatas.options}
+                series={chartDatas.series}
+                type="bar"
+              />
+            </div>
+          </div>
+        </div>
 
-          <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
-            <SRT />
-          </div>
-          <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
-            <RIB />
-          </div>
-   
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
+          <SRT />
+        </div>
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
+          <RIB />
+        </div>
       </div>
     </div>
   );

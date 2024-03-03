@@ -118,8 +118,7 @@ function ManageServiceModal({ service, setService, brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
+    
 
       if (res_folder.status === 200) {
         const response = await axios.patch(
@@ -161,9 +160,7 @@ function ManageServiceModal({ service, setService, brgy }) {
               "Content-Type": "application/json",
             },
           });
-
-          console.log("Notify: ", notify);
-          console.log("Result: ", response);
+ 
 
           if (result.status === 200) {
             setTimeout(() => {

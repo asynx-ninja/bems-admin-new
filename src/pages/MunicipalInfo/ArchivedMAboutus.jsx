@@ -3,7 +3,6 @@ import { FaUserCircle } from "react-icons/fa";
 import { MdRestartAlt } from "react-icons/md";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
-import { BsPrinter } from "react-icons/bs";
 import { AiOutlineEye } from "react-icons/ai";
 import axios from "axios";
 import moment from "moment";
@@ -152,11 +151,11 @@ const ArchivedAboutusInfo = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
+ 
 
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
+   
   };
 
   const onChangeDate = (e) => {
@@ -184,8 +183,7 @@ const ArchivedAboutusInfo = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
+     
       setFilteredAboutUs(filters(selected, date));
     }
   }
@@ -243,7 +241,7 @@ const ArchivedAboutusInfo = () => {
                   RESET FILTERS
                 </a>
                 <hr className="border-[#4e4e4e] mt-1" />
-                <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                   <label className="text-black font-medium mb-1">
                     DATE RANGE
                   </label>

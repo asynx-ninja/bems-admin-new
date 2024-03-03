@@ -43,7 +43,6 @@ const EventsManagement = () => {
         const announcementsResponse = await axios.get(
           `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
         );
-        console.log("wew",announcementsResponse)
         if (announcementsResponse.status === 200) {
           const announcementsData = announcementsResponse.data.result.map(
             async (announcement) => {
@@ -148,7 +147,6 @@ const EventsManagement = () => {
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
-  console.log(selectedItems);
 
   const handleResetFilter = () => {
     setSearchQuery("");
@@ -202,11 +200,7 @@ const EventsManagement = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
-
     setSelected(e.target.value);
-
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -234,8 +228,6 @@ const EventsManagement = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredAnnouncements(filters(selected, date));
     }
   };
@@ -344,7 +336,7 @@ const EventsManagement = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] mt-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                  <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                     <label className="text-black font-medium mb-1">
                       DATE RANGE
                     </label>
@@ -604,20 +596,7 @@ const EventsManagement = () => {
                         </span>
                       </div>
 
-                      
-                      {/* <button
-                        type="button"
-                        onClick={() =>
-                          handleStatus({
-                            id: item._id,
-                            status: item.isApproved,
-                          })
-                        }
-                        data-hs-overlay="#hs-modal-statusServices"
-                        className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                      >
-                        <FiEdit size={24} style={{ color: "#ffffff" }} />
-                      </button> */}
+                     
                     </div>
                   </td>
                 </tr>

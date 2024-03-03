@@ -2,7 +2,6 @@ import React from "react";
 import moment from "moment";
 import { AiOutlineEye } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
-import { BsPrinter } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import Breadcrumbs from "../../components/announcement/Breadcrumbs";
@@ -151,7 +150,6 @@ const ArchivedEvents = () => {
     switch (choice) {
       case "date":
         return announcements.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -164,7 +162,6 @@ const ArchivedEvents = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
 
         return announcements.filter(
           (item) =>
@@ -191,11 +188,10 @@ const ArchivedEvents = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
+
 
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -222,8 +218,6 @@ const ArchivedEvents = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredAnnouncements(filters(selected, date));
     }
   };
@@ -283,7 +277,7 @@ const ArchivedEvents = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                  <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                     <label className="text-black font-medium mb-1">
                       DATE RANGE
                     </label>

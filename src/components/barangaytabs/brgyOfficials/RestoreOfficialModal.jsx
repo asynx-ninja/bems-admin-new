@@ -20,7 +20,7 @@ function RestoreOfficialModal({selectedItems}) {
           HSOverlay.close(document.getElementById("hs-restore-official-modal"));
         }, 3000);
 
-        console.log("error", selectedItems);
+ 
         return;
       }
       setSubmitClicked(true);

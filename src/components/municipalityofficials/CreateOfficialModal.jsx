@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState  } from "react";
 import { CiImageOn } from "react-icons/ci";
 import API_LINK from "../../config/API";
 import axios from "axios";
@@ -80,7 +80,7 @@ function CreateOfficialModal({ brgy }) {
       );
 
       if (result.status === 200) {
-        console.log("Official added successfully!");
+   
         setOfficial({
           name: "",
           details: "",

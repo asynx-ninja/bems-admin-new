@@ -46,7 +46,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
             };
 
             const response = await axios.post(`${API_LINK}/notification/`, notificationData);
-            console.log(response.data); 
+ 
             setUpdatingStatus("success");
             setTimeout(() => {
                 window.location.reload();

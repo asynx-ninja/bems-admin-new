@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
-import { useSearchParams } from "react-router-dom";
+ 
 import EditDropbox from "./EditDropbox";
 import { IoIosAttach } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
@@ -105,7 +105,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
 
   const handleOnSend = async (e) => {
     e.preventDefault();
-    console.log(newMessage);
+ 
     setSubmitClicked(true);
     try {
       const obj = {

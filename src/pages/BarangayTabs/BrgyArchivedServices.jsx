@@ -1,21 +1,12 @@
 import React from "react";
-import { RiServiceFill } from "react-icons/ri";
-import { Link } from "react-router-dom";
-import { RiMoneyDollarCircleFill } from "react-icons/ri";
-import { AiOutlineCheckCircle } from "react-icons/ai";
 import { useState, useEffect } from "react";
-import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FaArchive, FaPlus } from "react-icons/fa";
-import { MdRestartAlt } from "react-icons/md";
+import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
 import Breadcrumb from "../../components/barangaytabs/brgyarchivedServices/Breadcrumb";
-import { FaTrashRestore } from "react-icons/fa";
 import ViewArchivedServiceModal from "../../components/barangaytabs/brgyServices/ViewArchivedServiceModal";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
-import GenerateReportsModal from "../../components/barangaytabs/brgyarchivedServices/GenerateReportsModal";
 import noData from "../../assets/image/no-data.png";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
 function ArchiveServices() {
@@ -161,21 +152,21 @@ function ArchiveServices() {
                     <hr className="border-[#4e4e4e] my-1" />
                     <a
                       onClick={() => handleStatusFilter("Pending")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       PENDING
                     </a>
                     <a
                       onClick={() => handleStatusFilter("Approved")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       APPROVED
                     </a>
                     <a
                       onClick={() => handleStatusFilter("Disapproved")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       DISAPPROVED
@@ -222,56 +213,56 @@ function ArchiveServices() {
                     <hr className="border-[#4e4e4e] my-1" />
                     <a
                       onClick={() => handleServiceFilter("Healthcare")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       HEALTHCARE
                     </a>
                     <a
                       onClick={() => handleServiceFilter("Education")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       EDUCATION
                     </a>
                     <a
                       onClick={() => handleServiceFilter("Social Welfare")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       SOCIAL WELFARE
                     </a>
                     <a
                       onClick={() => handleServiceFilter("Security and Safety")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       SECURITY AND SAFETY
                     </a>
                     <a
                       onClick={() => handleServiceFilter("Infrastructure")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       INFRASTRUCTURE
                     </a>
                     <a
                       onClick={() => handleServiceFilter("Community")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       COMMUNITY
                     </a>
                     <a
                       onClick={() => handleServiceFilter("Administrative")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       ADMINISTRATIVE
                     </a>
                     <a
                       onClick={() => handleServiceFilter("Environmental")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       ENVIRONMENTAL
@@ -472,7 +463,7 @@ function ArchiveServices() {
           </div>
         </div>
       </div>
-      <GenerateReportsModal />
+
       <ViewArchivedServiceModal
         selectedService={selectedService}
         setSelectedService={setSelectedService}

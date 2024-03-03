@@ -20,7 +20,7 @@ function RestoreServicesModal({selectedItems}) {
           HSOverlay.close(document.getElementById("hs-restore-servicesinfo-modal"));
         }, 3000);
 
-        console.log("error", selectedItems);
+   
         return;
       }
 

@@ -1,12 +1,8 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
-import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import {  AiOutlineEye } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
-import officialimage from "../../assets/sample/official.jpg";
-import moment from "moment";
-import GenerateReportsModal from "../../components/municipalityofficials/GenerateReportsModal";
 import Breadcrumbs from "../../components/municipalityofficials/Breadcrumbs";
 import RestoreOfficialModal from "../../components/municipalityofficials/RestoreOfficialModal";
 import ViewOfficialModal from "../../components/municipalityofficials/ViewOfficialModal";
@@ -202,35 +198,35 @@ const ArchivedOfficials = () => {
                 <hr className="border-[#4e4e4e] my-1" />
                 <a
                   onClick={() => handlePositionFilter("City Mayor")}
-                  class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   CITY MAYOR
                 </a>
                 <a
                   onClick={() => handlePositionFilter("Vice Mayor")}
-                  class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   VICE MAYOR
                 </a>
                 <a
                   onClick={() => handlePositionFilter("Congressman")}
-                  class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   CONGRESSMAN
                 </a>
                 <a
                   onClick={() => handlePositionFilter("Councilors")}
-                  class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   COUNCILORS
                 </a>
                 <a
                   onClick={() => handlePositionFilter("Sangguniang Kabataan")}
-                  class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   SANGGUNIANG KABATAAN
@@ -282,7 +278,7 @@ const ArchivedOfficials = () => {
                       setFilteredOfficials(Officials);
                     }
 
-                    console.log("Officials Fetched", officials);
+                  
                   }}
                 />
               </div>

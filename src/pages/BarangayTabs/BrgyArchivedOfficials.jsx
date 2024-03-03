@@ -1,10 +1,8 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
-import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineEye } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
-import officialimage from "../../assets/sample/official.jpg";
 import Breadcrumbs from "../../components/barangaytabs/brgyarchivedOfficials/Breadcrumbs";
 import RestoreOfficialModal from "../../components/barangaytabs/brgyarchivedOfficials/RestoreOfficialModal";
 import ViewOfficialModal from "../../components/barangaytabs/brgyarchivedOfficials/ViewOfficialModal";
@@ -101,7 +99,6 @@ const ArchivedOfficials = () => {
             setFilteredOfficials(response.data.result);
           } else {
             setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
           }
         } else {
           setOfficials([]);
@@ -228,28 +225,28 @@ const ArchivedOfficials = () => {
                     <hr className="border-[#4e4e4e] my-1" />
                     <a
                       onClick={() => handlePositionFilter("Barangay Chairman")}
-                      class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       BARANGAY CHAIRMAN
                     </a>
                     <a
                       onClick={() => handlePositionFilter("Barangay Kagawad")}
-                      class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       BARANGAY KAGAWAD
                     </a>
                     <a
                       onClick={() => handlePositionFilter("SK Chairman")}
-                      class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       SK CHAIRMAN
                     </a>
                     <a
                       onClick={() => handlePositionFilter("SK Kagawad")}
-                      class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
                       SK KAGAWAD
@@ -309,7 +306,6 @@ const ArchivedOfficials = () => {
                         setFilteredOfficials(Official);
                       }
 
-                      console.log("Officials Fetched", officials);
                     }}
                   />
                 </div>

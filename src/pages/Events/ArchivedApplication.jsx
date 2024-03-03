@@ -10,7 +10,6 @@ import { AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
 import ArchiveRegistrationModal from "../../components/eventRegistrations/ArchiveRegistrationModal";
-import RequestsReportsModal from "../../components/eventRegistrations/RequestsReportsModal";
 import ViewRegistrationModal from "../../components/eventRegistrations/ViewRegistrationModal";
 import Breadcrumbs from "../../components/eventRegistrations/Breadcrumbs";
 import RestoreRegistrationModal from "../../components/eventRegistrations/RestoreRegistrationModal";
@@ -45,7 +44,7 @@ const ArchivedRegistrations = () => {
         const response = await axios.get(
           `${API_LINK}/announcement/?brgy=${brgy}&page=${currentPage}`
         );
-        console.log(response.data.result)
+
         if (response.status === 200) {
           let arr = [];
           response.data.result.map((item) => {
@@ -67,12 +66,11 @@ const ArchivedRegistrations = () => {
         const response = await axios.get(
           `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
         );
-          console.log(selecteEventFilter)
         if (response.status === 200) {
           setApplications(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredApplications(response.data.result);
-        } else setApplications([]); console.log(response.data.result)
+        } else setApplications([]); 
       } catch (err) {
         console.log(err);
       }
@@ -86,7 +84,6 @@ const ArchivedRegistrations = () => {
         const response = await axios.get(
           `${API_LINK}/mofficials/?brgy=${brgy}&archived=false`
         );
-        console.log("erer", response);
 
         if (response.status === 200) {
           const officialsData = response.data.result || [];
@@ -220,7 +217,6 @@ const ArchivedRegistrations = () => {
     switch (choice) {
       case "date":
         return applications.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -233,7 +229,6 @@ const ArchivedRegistrations = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
 
         return applications.filter(
           (item) =>
@@ -260,11 +255,9 @@ const ArchivedRegistrations = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
 
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -291,8 +284,6 @@ const ArchivedRegistrations = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredApplications(filters(selected, date));
     }
   };
@@ -357,42 +348,42 @@ const ArchivedRegistrations = () => {
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Paid")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PAID
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Processing")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PROCESSING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     CANCELLED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Transaction Completed")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     TRANSACTION COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
@@ -435,7 +426,7 @@ const ArchivedRegistrations = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                  <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                     <label className="text-black font-medium mb-1">
                       DATE RANGE
                     </label>
@@ -784,7 +775,7 @@ const ArchivedRegistrations = () => {
         brgy={brgy} />
       ) : null}
       <ArchiveRegistrationModal />
-      <RequestsReportsModal />
+   
       <RestoreRegistrationModal selectedItems={selectedItems} />
     </div>
   );

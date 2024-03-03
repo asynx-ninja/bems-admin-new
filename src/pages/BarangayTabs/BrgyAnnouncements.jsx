@@ -3,17 +3,12 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FaArchive, FaPlus } from "react-icons/fa";
-import { BsPrinter } from "react-icons/bs";
+import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
+import { FaArchive} from "react-icons/fa";
 import axios from "axios";
 import API_LINK from "../../config/API";
-import GenerateReportsModal from "../../components/barangaytabs/brgyAnnouncements/GenerateReportsModal";
 import ViewArchivedAnnouncementModal from "../../components/barangaytabs/brgyAnnouncements/ViewArchivedAnnouncement";
-import PrintPDF from "../../components/barangaytabs/brgyAnnouncements/form/PrintPDF";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import noData from "../../assets/image/no-data.png";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
 const BrgyAnnouncement = () => {
@@ -117,8 +112,6 @@ const BrgyAnnouncement = () => {
     switch (choice) {
       case "date":
         return announcements.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
-          console.log("Announcements: ", announcements);
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -158,11 +151,7 @@ const BrgyAnnouncement = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
-
     setSelected(e.target.value);
-
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -189,8 +178,6 @@ const BrgyAnnouncement = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredAnnouncements(filters(selected, date));
     }
   };
@@ -253,9 +240,7 @@ const BrgyAnnouncement = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-              {/* <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
-                SORT BY:{" "}
-              </span> */}
+
 
               {/* Date Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left] shadow-sm">
@@ -294,7 +279,7 @@ const BrgyAnnouncement = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] mt-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                  <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                     <label className="text-black font-medium mb-1">
                       DATE RANGE
                     </label>
@@ -542,7 +527,6 @@ const BrgyAnnouncement = () => {
           setAnnouncement={setAnnouncement}
           brgy={brgy}
         />
-        <GenerateReportsModal />
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 function ViewRegistrationModal({ application, officials, brgy }) {
   const [detail, ] = useState(application);
   const [empty, ] = useState(false);
-console.log("zz", application)
+ 
   const returnFile = (string) => {
     for (const item of detail.file) {
       if (item.name.includes(string)) {

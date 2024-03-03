@@ -17,7 +17,7 @@ function ServiceStatus({ status, setStatus, selectedService, brgy }) {
         return "Barangay";
     }
   };
-console.log("panget",selectedService)
+ 
   const handleSave = async (e) => {
     try {
       e.preventDefault();
@@ -47,15 +47,14 @@ console.log("panget",selectedService)
         logo: selectedService.collections.logo,
       };
 
-      console.log("Notify: ", notify);
-      console.log("Result: ", response);
+  
 
       const result = await axios.post(`${API_LINK}/notification/`, notify, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-        console.log("pangetnaman",result)
+        
       if (response.status === 200) {
         setTimeout(() => {
           setSubmitClicked(false);

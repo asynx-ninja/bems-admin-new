@@ -1,10 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { FaTrashRestore, FaUserCircle } from "react-icons/fa";
-import { BsPrinter } from "react-icons/bs";
+import { FaUserCircle } from "react-icons/fa";
 import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
-import GenerateReportsModal from "../../components/barangaytabs/brgyarchivedResidents/GenerateReportsModal";
 import ViewResidentModal from "../../components/barangaytabs/brgyarchivedResidents/ViewArchivedResident";
 import Breadcrumbs from "../../components/barangaytabs/brgyarchivedResidents/Breadcrumb";
 import axios from "axios";
@@ -16,7 +14,6 @@ const Residents = () => {
   const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
-  const type = "Resident";
   const brgy = searchParams.get("brgy");
   const [user, setUser] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
@@ -296,28 +293,42 @@ const Residents = () => {
                         </div>
                       </td>
                       <td className="px-6 py-3">
-                        {item.isApproved === "Registered" && (
-                          <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2">
-                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                              REGISTERED
-                            </span>
-                          </div>
-                        )}
-                        {item.isApproved === "Denied" && (
-                          <div className="flex w-full items-center justify-center bg-custom-red-button m-2">
-                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                              DENIED
-                            </span>
-                          </div>
-                        )}
-                        {item.isApproved === "Pending" && (
-                          <div className="flex w-full items-center justify-center bg-custom-amber m-2">
-                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                              PENDING
-                            </span>
-                          </div>
-                        )}
-                      </td>
+                      {item.isApproved === "Verified" && (
+                        <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            VERIFIED
+                          </span>
+                        </div>
+                      )}
+                     {item.isApproved === "For Review" && (
+                        <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            FOR REVIEW
+                          </span>
+                        </div>
+                      )}
+                      {item.isApproved === "Registered" && (
+                        <div className="flex w-full items-center justify-center bg-custom-green-button3 xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            REGISTERED
+                          </span>
+                        </div>
+                      )}
+                      {item.isApproved === "Denied" && (
+                        <div className="flex w-full items-center justify-center bg-custom-red-button xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            DENIED
+                          </span>
+                        </div>
+                      )}
+                      {item.isApproved === "Pending" && (
+                        <div className="flex w-full items-center justify-center bg-custom-amber xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            PENDING
+                          </span>
+                        </div>
+                      )}
+                    </td>
                       <td className="px-6 py-3">
                         <div className="flex justify-center space-x-1 sm:space-x-none">
                           <button

@@ -82,7 +82,7 @@ const Sidebar = () => {
         setApplication(eventsResponse.data.result);
         setTotalEvents(eventsResponse.data.total);
 
-        console.log("zzz", eventsResponse.data.total);
+ 
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -94,7 +94,7 @@ const Sidebar = () => {
   useEffect(() => {
     const total = (totalEvents || 0) + (totalServices || 0);
     setTotal(total);
-    console.log("d", totalEvents);
+     
   }, [totalEvents, totalServices]);
 
   const [residentResponseCount, setResidentInquiriesLength] = useState(0);
@@ -126,7 +126,7 @@ const Sidebar = () => {
 
           // Get the length of the filtered array
           const residentInquiriesLength = residentInquiries.length;
-          console.log("par", residentInquiriesLength);
+ 
           setResidentInquiriesLength(residentInquiriesLength); // Update the state variable with the length
         } else {
           // Handle error here

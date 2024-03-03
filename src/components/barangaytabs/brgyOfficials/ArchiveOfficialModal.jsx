@@ -20,7 +20,7 @@ function ArchiveOfficialModal({ selectedItems }) {
           HSOverlay.close(document.getElementById("hs-archive-official-modal"));
         }, 3000);
 
-        console.log("error", selectedItems);
+  
         return;
       }
       setSubmitClicked(true);

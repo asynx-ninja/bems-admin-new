@@ -1,22 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiMessageSquare } from "react-icons/fi";
+
 import { FiEdit } from "react-icons/fi";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive, FaPlus, FaUserCircle } from "react-icons/fa";
-import { BsPrinter } from "react-icons/bs";
+
 import { useSearchParams } from "react-router-dom";
 import ArchiveAccAdmin from "../../components/barangayaccount/ArchiveAdminModal";
 import StatusAccAdmin from "../../components/barangayaccount/StatusAdmin";
-import GenerateReportsModal from "../../components/barangayaccount/GenerateReportsModal";
 import AddAdminModal from "../../components/barangayaccount/AddAdminModal";
 import ManageAdminModal from "../../components/barangayaccount/ManageAdminModal";
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import API_LINK from "../../config/API";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import PrintPDF from "../../components/municipalaccount/form/PrintPDF";
 import noData from "../../assets/image/no-data.png";
 
 const BarangayAccount = () => {
@@ -82,7 +79,6 @@ const BarangayAccount = () => {
         );
 
         if (response.status === 200) {
-          console.log("r", response.data);
           setPageCount(response.data.pageCount);
           setUsers(response.data.result); // Update the state variable with the fetched users
           setFilteredUser(response.data.result);
@@ -448,7 +444,7 @@ const BarangayAccount = () => {
       </div>
       <ArchiveAccAdmin selectedItems={selectedItems} />
       {/* <StatusAccAdmin /> */}
-      <GenerateReportsModal user={user} setUser={setUser} />
+    
       <AddAdminModal occupation={occupation} type={type} />
       <ManageAdminModal user={user} setUser={setUser} />
       <StatusAccAdmin status={status} setStatus={setStatus} />

@@ -17,7 +17,7 @@ const ForgotPassword = () => {
 
   const handleOnChange = (e) => {
     setEmail(e.target.value);
-    console.log(email);
+ 
   };
 
   const handleOnSubmit = async () => {
@@ -35,7 +35,7 @@ const ForgotPassword = () => {
       const res1 = await axios.get(
         `${API_LINK}/auth/findemail/?email=${email}`
       );
-      console.log(res1.data);
+     
       if (res1.status === 200) {
         if (res1.data.type === "Admin" || res1.data.type === "Head Admin") {
           const res = await axios.patch(`${API_LINK}/auth/send_pin/${email}`, {
@@ -44,14 +44,14 @@ const ForgotPassword = () => {
           const encodedEmail = btoa(email);
 
           if (res.status === 200) {
-            console.log(res);
+          
             setResponse({
               success: true,
               error: false,
               message: "Code has been successfully sent to your Email!",
             });
 
-            console.log(encodedEmail);
+          
 
             setTimeout(() => {
               navigate(`/pin/${encodedEmail}`);
@@ -59,7 +59,7 @@ const ForgotPassword = () => {
           }
         } else {
           // Handle the case where the type is not "Admin" or "Head Admin"
-          console.log("User is not Admin or Head Admin");
+       
         }
       }
     } catch (error) {
@@ -189,11 +189,11 @@ const ForgotPassword = () => {
           <Link
             to="/tooltip"
               type="button"
-              class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#408D51] to-[#295141] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
+              className="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#408D51] to-[#295141] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
             >
               ?
               <span
-                class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                 role="tooltip"
               >
                 Bagong Montalban Barangay Application

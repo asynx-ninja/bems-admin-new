@@ -69,7 +69,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
   };
 
   const handleChange = (e) => {
-    console.log(e.target.name);
+   
     setAnnouncement((prev) => ({
       ...prev,
       [e.target.name]:
@@ -124,16 +124,14 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
           formData.append("files", newFiles[f]);
         }
 
-      console.log("announcement", announcement);
-
-
+      
       formData.append("announcement", JSON.stringify(announcement));
 
       const response = await axios.patch(
         `${API_LINK}/announcement/${announcement._id}`,
         formData
       );
-console.log("ito na", response)
+ 
       if (response.status === 200) {
         const formattedDate = moment(announcement.date).format('MMMM Do YYYY, h:mm:ss a');
         var logoSrc = document.getElementById("logo");
@@ -170,8 +168,7 @@ console.log("ito na", response)
             };
           
   
-          console.log("Notify: ", notify);
-          console.log("Result: ", response);
+      
   
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {

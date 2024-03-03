@@ -1,6 +1,6 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+
 import axios from "axios";
 import API_LINK from "../../config/API";
 import Chart from "react-apexcharts";
@@ -20,7 +20,7 @@ const TRB = () => {
         try {
           const response = await axios.get(`${API_LINK}/requests/get_revenue`);
           const data = response.data;
-          console.log(data);
+  
           const barangays = [
             'Balite',
             'Burgos',

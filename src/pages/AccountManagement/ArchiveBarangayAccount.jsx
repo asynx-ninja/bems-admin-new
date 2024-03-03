@@ -11,7 +11,6 @@ import { useSearchParams } from "react-router-dom";
 import Breadcrumbs from "../../components/barangayaccount/Breadcrumbs";
 import ViewArchivedAdmin from "../../components/barangayaccount/ViewArchivedAdmin";
 import RestoreAdminModal from "../../components/barangayaccount/RestoreAdminModal";
-import GenerateReportsModal from "../../components/barangayaccount/GenerateReportsModal";
 import noData from "../../assets/image/no-data.png";
 const ArchiveBarangayAccount = () => {
   useEffect(() => {
@@ -22,7 +21,6 @@ const ArchiveBarangayAccount = () => {
   const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
-  const brgy = "MUNISIPYO";
   const [user, setUser] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -99,7 +97,6 @@ const ArchiveBarangayAccount = () => {
     "PROFILE",
     "NAME",
     "TYPE",
-    // "GENDER",
     "BARANGAY",
     "ACCOUNT STATUS",
     "ACTIONS",
@@ -373,7 +370,7 @@ const ArchiveBarangayAccount = () => {
         </div>
         <ViewArchivedAdmin user={user} setUser={setUser} />
         <RestoreAdminModal selectedItems={selectedItems} />
-        <GenerateReportsModal />
+        
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ function ArchiveInquiryModal({ selectedItems }) {
           HSOverlay.close(document.getElementById("hs-modal-archiveInquiry"));
         }, 3000);
 
-        console.log("error", selectedItems);
+  
         return;
       }
       setSubmitClicked(true);

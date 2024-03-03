@@ -8,7 +8,7 @@ import { FaTasks } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
-import EditDropbox from "./EditDropbox";
+ 
 import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
@@ -209,7 +209,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         date: new Date(), // Add the current date and time
       };
   
-      console.log("obj", obj);
+   
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
@@ -217,8 +217,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
+     
 
       if (res_folder.status === 200) {
         for (let i = 0; i < createFiles.length; i++) {
@@ -275,7 +274,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             logo: service.collections.logo,
           };
   
-          console.log("Notify: ", notify);
+    
   
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {

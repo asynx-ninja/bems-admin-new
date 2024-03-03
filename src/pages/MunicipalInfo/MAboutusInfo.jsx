@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import moment from "moment";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive, FaPlus } from "react-icons/fa";
-import { BsPrinter } from "react-icons/bs";
+ 
 
 import ReactPaginate from "react-paginate";
 import axios from "axios";
@@ -162,11 +162,11 @@ const MHomepageInfo = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
+   
 
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
+    
   };
 
   const onChangeDate = (e) => {
@@ -194,8 +194,7 @@ const MHomepageInfo = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
+     
       setFilteredAboutUs(filters(selected, date));
     }
   };
@@ -297,7 +296,7 @@ const MHomepageInfo = () => {
                   RESET FILTERS
                 </a>
                 <hr className="border-[#4e4e4e] mt-1" />
-                <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                   <label className="text-black font-medium mb-1">
                     DATE RANGE
                   </label>

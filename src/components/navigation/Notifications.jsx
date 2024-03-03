@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
-import header from "../../assets/image/bg-sidebar.jpg";
+ 
 import { FaBell } from "react-icons/fa";
 import ViewNotification from "./ViewNotification";
 import API_LINK from "../../config/API";
-import { MdEvent } from "react-icons/md";
+ 
 import { Link } from "react-router-dom";
 import moment from "moment";
 const Notifications = () => {
@@ -21,7 +21,7 @@ const Notifications = () => {
     const fetch = async () => {
       try {
         const res = await axios.get(`${API_LINK}/users/specific/${id}`);
-        console.log(res.data);
+     
         const res1 = await axios.get(
           `${API_LINK}/brgyinfo/?brgy=${brgy}&logo=true`
         );
@@ -43,7 +43,7 @@ const Notifications = () => {
         const response = await axios.get(
           `${API_LINK}/notification/?user_id=${userData.user_id}&area=MUNISIPYO&type=Municipality`
         );
-        console.log(response.data);
+ 
         if (response.status === 200) {
           const notificationsWithTimestamp = response.data.map(
             (notification) => {

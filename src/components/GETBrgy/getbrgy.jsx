@@ -11,7 +11,7 @@ const getBrgy = (brgy) => {
         const response = await axios.get(
           `${API_LINK}/brgyinfo/?brgy=${brgy}&archived=true`
         );
-        console.log("hays", response);
+     
         if (response.status === 200) {
           setInformation(response.data[0]);
         } else {

@@ -52,8 +52,8 @@ function ViewRequestModal({ request, brgy, officials }) {
     setDetail(request);
   }, [request]);
 
-  console.log("service_id: ", service_id);
-  // console.log("docDetails: ", docDetails);
+  
+ 
 
   const fileName =
     detail.form[0] && detail.form[0].lastName
@@ -62,7 +62,7 @@ function ViewRequestModal({ request, brgy, officials }) {
         }.pdf`
       : "SAMPLE.pdf";
 
-  // console.log("detail", detail);
+ 
 
   const returnFile = (string) => {
     for (const item of detail.file) {
@@ -143,7 +143,7 @@ function ViewRequestModal({ request, brgy, officials }) {
     }
   }
 
-  console.log("request sa modal: ", request);
+ 
 
   return (
     <div>

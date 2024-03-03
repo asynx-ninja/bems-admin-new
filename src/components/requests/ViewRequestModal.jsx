@@ -44,8 +44,7 @@ function ViewRequestModal({ request, brgy, officials }) {
     fetch();
   }, [brgy, service_id]);
 
-  console.log("service_id: ", service_id);
-  // console.log("docDetails: ", docDetails);
+ 
 
   const fileName =
     detail.form[0] && detail.form[0].lastName
@@ -54,7 +53,7 @@ function ViewRequestModal({ request, brgy, officials }) {
         }.pdf`
       : "SAMPLE.pdf";
 
-  // console.log("detail", detail);
+ 
 
   const returnFile = (string) => {
     for (const item of detail.file) {

@@ -91,7 +91,7 @@ function ManageAdminModal({ user, setUser }) {
       );
 
       if (response.status === 200) {
-        console.log("Update successful:", response.data);
+       
         setTimeout(() => {
           // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
           setSubmitClicked(false);

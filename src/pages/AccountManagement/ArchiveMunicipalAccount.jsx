@@ -11,7 +11,7 @@ import { useSearchParams } from "react-router-dom";
 import Breadcrumbs from "../../components/municipalaccount/Breadcrumbs";
 import ViewArchivedAdmin from "../../components/municipalaccount/ViewArchivedAdmin";
 import RestoreAdminModal from "../../components/municipalaccount/RestoreAdminModal";
-import GenerateReportsModal from "../../components/municipalaccount/GenerateReportsModal";
+
 import noData from "../../assets/image/no-data.png";
 const ArchivedAccountManagement = () => {
   useEffect(() => {
@@ -38,7 +38,7 @@ const ArchivedAccountManagement = () => {
         );
 
         if (response.status === 200) {
-           setPageCount(response.data.pageCount);
+          setPageCount(response.data.pageCount);
           setUsers(response.data.result); // Update the state variable with the fetched users
           setFilteredUser(response.data.result) // Update the state variable with the fetched users
         } else {
@@ -99,7 +99,6 @@ const ArchivedAccountManagement = () => {
     "PROFILE",
     "NAME",
     "TYPE",
-    // "GENDER",
     "CONTACT",
     "ACCOUNT STATUS",
     "ACTIONS",
@@ -418,7 +417,7 @@ const ArchivedAccountManagement = () => {
         </div>
         <ViewArchivedAdmin user={user} setUser={setUser} />
         <RestoreAdminModal selectedItems={selectedItems} />
-        <GenerateReportsModal />
+ 
       </div>
     </div>
   );

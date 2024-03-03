@@ -35,8 +35,6 @@ function ManageResidentModal({ user, setUser, brgy }) {
     setVerification({ ...user.verification });
   }, [user]);
 
-  console.log("Verification: ", verification);
-
  
 
   const religions = [
@@ -143,7 +141,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
             }
           );
 
-          console.log("selfieFile: ", selfieFile);
+    
 
           setVerification((prev) => ({
             ...prev,
@@ -228,14 +226,6 @@ function ManageResidentModal({ user, setUser, brgy }) {
   };
 
   const handleFileVerification = (name, files) => {
-    // Map the selected files to create a flattened array of file properties
-    // const fileObjects = Array.from(files).map((file) => ({
-    //   name: file.name,
-    //   uri: URL.createObjectURL(file), // Use createObjectURL to get a blob URL
-    //   type: file.type,
-    //   size: file.size,
-    // }));
-
     setVerification((prev) => ({
       ...prev,
       [name]: [...prev[name], ...files],
@@ -248,7 +238,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
 
     const newArray = verification[name].filter((item, index) => index !== idx);
 
-    console.log("newArray: ", newArray);
+ 
 
     setVerification((prev) => ({
       ...prev,
@@ -326,8 +316,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
           formData.append("oldVerification", JSON.stringify(user.verification));
           formData.append("newVerification", JSON.stringify(verification));
 
-          console.log("Primary Upload: ", primaryUpload);
-          console.log("Primary Saved: ", primarySaved);
+ 
 
           if (!verification.selfie.hasOwnProperty("link")) {
             // Use the existing Blob for selfie
@@ -347,28 +336,40 @@ function ManageResidentModal({ user, setUser, brgy }) {
           if (primaryUpload.length > 0) {
             for (let i = 0; i < primaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${user.firstName} - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                name: `${user.lastName}, ${
+                  user.firstName
+                } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
                 size: primaryUpload[i].size,
                 type: primaryUpload[i].type,
                 uri: primaryUpload[i].uri,
               };
-          
-              console.log("check file: ", file);
-          
-              formData.append("files", new File([primaryUpload[i]], file.name, { type: file.type }));
+
+  
+
+              formData.append(
+                "files",
+                new File([primaryUpload[i]], file.name, { type: file.type })
+              );
             }
           }
 
           if (secondaryUpload.length > 0)
             for (let i = 0; i < secondaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${user.firstName} - SECONDARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                name: `${user.lastName}, ${
+                  user.firstName
+                } - SECONDARY ID ${moment(new Date()).format(
+                  "MMDDYYYYHHmmss"
+                )}`,
                 uri: secondaryUpload[i].uri,
                 type: secondaryUpload[i].type,
                 size: secondaryUpload[i].size,
               };
 
-              formData.append("files", new File([secondaryUpload[i]], file.name, { type: file.type }));
+              formData.append(
+                "files",
+                new File([secondaryUpload[i]], file.name, { type: file.type })
+              );
             }
 
           const response = await axios.patch(
@@ -381,10 +382,10 @@ function ManageResidentModal({ user, setUser, brgy }) {
             }
           );
 
-          console.log(response);
+    
 
           if (response.status === 200) {
-            setVerification(response.data.verification);
+            setVerification(response.data?.verification || {});
           }
         }
       } else {
@@ -401,7 +402,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
       );
 
       if (userResponse.status === 200) {
-        console.log("User update successful:", userResponse.data);
+ 
         setTimeout(() => {
           setSubmitClicked(false);
           setUpdatingStatus("success");
@@ -1196,16 +1197,21 @@ function ManageResidentModal({ user, setUser, brgy }) {
                                       key={idx}
                                       className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
                                     >
-                                      <img
-                                        src={
-                                          item.hasOwnProperty("link")
-                                            ? item.link
-                                            : item.uri
-                                        }
-                                        alt={`Primary File ${idx + 1}`}
-                                        className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
-                                        onClick={() => handleImageTab(item)}
-                                      />
+                                      {item.hasOwnProperty("link") ? (
+                                        <img
+                                          src={item.link}
+                                          alt={`Primary File ${idx + 1}`}
+                                          className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          onClick={() => handleImageTab(item)}
+                                        />
+                                      ) : (
+                                        <img
+                                          src={URL.createObjectURL(item)}
+                                          alt={`Primary File ${idx + 1}`}
+                                          className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          onClick={() => handleImageTab(item)}
+                                        />
+                                      )}
                                       {/* You can customize the following section based on your needs */}
                                       <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
                                         <label className="text-xs pl-2">
@@ -1332,16 +1338,21 @@ function ManageResidentModal({ user, setUser, brgy }) {
                                         key={idx}
                                         className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
                                       >
-                                        <img
-                                          src={
-                                            item.hasOwnProperty("link")
-                                              ? item.link
-                                              : item.uri
-                                          }
-                                          alt={`Secondary File ${idx + 1}`}
-                                          className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
-                                          onClick={() => handleImageTab(item)}
-                                        />
+                                        {item.hasOwnProperty("link") ? (
+                                          <img
+                                            src={item.link}
+                                            alt={`Secondary File ${idx + 1}`}
+                                            className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                            onClick={() => handleImageTab(item)}
+                                          />
+                                        ) : (
+                                          <img
+                                            src={URL.createObjectURL(item)}
+                                            alt={`Secondary File ${idx + 1}`}
+                                            className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                            onClick={() => handleImageTab(item)}
+                                          />
+                                        )}
                                         {/* You can customize the following section based on your needs */}
                                         <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
                                           <label className="text-xs pl-2">

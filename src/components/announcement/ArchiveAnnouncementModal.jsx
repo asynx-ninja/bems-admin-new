@@ -9,8 +9,7 @@ function ArchiveAnnouncementModal({ selectedItems }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
-  console.log("error", selectedItems);
-
+ 
   const handleSave = async (e) => {
     try {
       e.preventDefault();
@@ -22,7 +21,7 @@ function ArchiveAnnouncementModal({ selectedItems }) {
           HSOverlay.close(document.getElementById("hs-modal-archive"));
         }, 3000);
 
-        console.log("error", selectedItems);
+       
         return;
       }
       setSubmitClicked(true);

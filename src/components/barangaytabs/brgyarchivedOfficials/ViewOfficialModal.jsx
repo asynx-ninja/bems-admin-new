@@ -7,8 +7,7 @@ function ViewOfficialModal({
   officials,
 }) {
   const information = GetBrgy(brgy)
-  console.log("selected", selectedOfficial);
-  console.log("selected", officials);
+ 
   const dateFormat = (date) => {
     if (!date) {
       // If date is null, undefined, or an empty string, return an empty string

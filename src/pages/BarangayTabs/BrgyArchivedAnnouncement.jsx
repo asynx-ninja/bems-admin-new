@@ -1,7 +1,5 @@
 import React from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { FaTrashRestore } from "react-icons/fa";
-import { BsPrinter } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import Breadcrumbs from "../../components/barangaytabs/brgyarchivedAnnouncement/Breadcrumbs";
@@ -9,7 +7,6 @@ import ViewArchivedAnnouncementModal from "../../components/barangaytabs/brgyAnn
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
-import GenerateReportsModal from "../../components/barangaytabs/brgyarchivedAnnouncement/GenerateReportsModal";
 import noData from "../../assets/image/no-data.png";
 import moment from "moment";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
@@ -101,10 +98,6 @@ const BrgyArchivedAnnouncement = () => {
     setAnnouncement(item);
   };
 
-  const DateFormat = (date) => {
-    const dateFormat = date === undefined ? "" : date.substr(0, 10);
-    return dateFormat;
-  };
   const TimeFormat = (date) => {
     if (!date) return "";
 
@@ -120,8 +113,6 @@ const BrgyArchivedAnnouncement = () => {
     switch (choice) {
       case "date":
         return announcements.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
-          console.log("Announcements: ", announcements)
           return (
             new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
@@ -132,8 +123,6 @@ const BrgyArchivedAnnouncement = () => {
         const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
-
-        console.log("start and end", startDate, endDate);
 
         return announcements.filter(
           (item) =>
@@ -156,11 +145,11 @@ const BrgyArchivedAnnouncement = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
+
 
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
+
   };
 
   const onChangeDate = (e) => {
@@ -187,8 +176,6 @@ const BrgyArchivedAnnouncement = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredAnnouncements(filters(selected, date))
     }
   };
@@ -265,7 +252,7 @@ const BrgyArchivedAnnouncement = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] mt-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                  <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                     <label className="text-black font-medium mb-1">DATE RANGE</label>
                     <div className="flex flex-col gap-2">
                       <select
@@ -505,7 +492,7 @@ const BrgyArchivedAnnouncement = () => {
           setAnnouncement={setAnnouncement}
           brgy={brgy}
         />
-        <GenerateReportsModal/>
+     
       </div>
     </div>
   );

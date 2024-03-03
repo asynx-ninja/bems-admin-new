@@ -21,7 +21,7 @@ function ArchiveAboutusModal({ selectedItems }) {
           HSOverlay.close(document.getElementById("hs-archive-aboutus-modal"));
         }, 3000);
 
-        console.log("error", selectedItems);
+    
         return;
       }
       setSubmitClicked(true);
