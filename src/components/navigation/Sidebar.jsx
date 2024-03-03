@@ -3,30 +3,24 @@ import logo from "../../assets/header/montalban-logo.png";
 import { Link } from "react-router-dom";
 import { FaCalendarDays } from "react-icons/fa6";
 import { BiSolidDashboard } from "react-icons/bi";
-import { TfiAnnouncement } from "react-icons/tfi";
 import { SiGoogleforms } from "react-icons/si";
-import { BsCalendar2Event } from "react-icons/bs";
 import { ImBullhorn } from "react-icons/im";
 import { FaRegNoteSticky } from "react-icons/fa6";
-import { BsPeopleFill } from "react-icons/bs";
 import { MdOutlineMiscellaneousServices } from "react-icons/md";
 import { HiMiniInformationCircle } from "react-icons/hi2";
 import { ImStatsBars } from "react-icons/im";
-import { FaServicestack, FaChalkboardTeacher } from "react-icons/fa";
-import { FaPeopleGroup } from "react-icons/fa6";
+import { FaChalkboardTeacher } from "react-icons/fa";
 import { GoGitPullRequest } from "react-icons/go";
-import { HiBuildingOffice2 } from "react-icons/hi2";
 import { RiAdminFill } from "react-icons/ri";
-import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import defaultPFP from "../../assets/sample-image/default-pfp.png";
-import { RxActivityLog } from "react-icons/rx";
 import { BsInfoCircleFill } from "react-icons/bs";
-import { MdAdminPanelSettings } from "react-icons/md";
 import { FaCity } from "react-icons/fa";
+
 const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [userData, setUserData] = useState({});
@@ -81,8 +75,6 @@ const Sidebar = () => {
 
         setApplication(eventsResponse.data.result);
         setTotalEvents(eventsResponse.data.total);
-
- 
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -94,7 +86,6 @@ const Sidebar = () => {
   useEffect(() => {
     const total = (totalEvents || 0) + (totalServices || 0);
     setTotal(total);
-     
   }, [totalEvents, totalServices]);
 
   const [residentResponseCount, setResidentInquiriesLength] = useState(0);
@@ -126,7 +117,7 @@ const Sidebar = () => {
 
           // Get the length of the filtered array
           const residentInquiriesLength = residentInquiries.length;
- 
+
           setResidentInquiriesLength(residentInquiriesLength); // Update the state variable with the length
         } else {
           // Handle error here
@@ -185,15 +176,15 @@ const Sidebar = () => {
                 <li>
                   <Link
                     to={`/dashboard/?id=${id}`}
-                    onClick={() => {
-                      window.innerWidth >= 320 && window.innerWidth <= 1023
-                        ? document
-                            .querySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
-                        : null;
-                    }}
+                    // onClick={() => {
+                    //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                    //     ? document
+                    //         .querySelector(
+                    //           "[data-hs-overlay-backdrop-template]"
+                    //         )
+                    //         .remove()
+                    //     : null;
+                    // }}
                     className={`${
                       currentPath === "/dashboard/"
                         ? "bg-gradient-to-r from-[#295141] to-[#408D51] text-[#EFC586]"
@@ -248,15 +239,15 @@ const Sidebar = () => {
                   >
                     <Link
                       to={`/announcements/?id=${id}`}
-                      onClick={() => {
-                        window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
-                          : null;
-                      }}
+                      // onClick={() => {
+                      //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                      //     ? document
+                      //         .getQuerySelector(
+                      //           "[data-hs-overlay-backdrop-template]"
+                      //         )
+                      //         .remove()
+                      //     : null;
+                      // }}
                       className={`${
                         currentPath === "/announcements/" ||
                         currentPath === "/archivedannoucements/"
@@ -269,15 +260,15 @@ const Sidebar = () => {
                     </Link>
                     <Link
                       to={`/events_registration/?id=${id}`}
-                      onClick={() => {
-                        window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
-                          : null;
-                      }}
+                      // onClick={() => {
+                      //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                      //     ? document
+                      //         .getQuerySelector(
+                      //           "[data-hs-overlay-backdrop-template]"
+                      //         )
+                      //         .remove()
+                      //     : null;
+                      // }}
                       className={`${
                         currentPath === "/events_registration/" ||
                         currentPath === "/archived_registrations/"
@@ -293,15 +284,15 @@ const Sidebar = () => {
                 <li>
                   <Link
                     to={`/inquiries/?id=${id}`}
-                    onClick={() => {
-                      window.innerWidth >= 320 && window.innerWidth <= 1023
-                        ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
-                        : null;
-                    }}
+                    // onClick={() => {
+                    //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                    //     ? document
+                    //         .getQuerySelector(
+                    //           "[data-hs-overlay-backdrop-template]"
+                    //         )
+                    //         .remove()
+                    //     : null;
+                    // }}
                     className={`${
                       currentPath === "/inquiries/" ||
                       currentPath === "/archivedinquiries/"
@@ -324,15 +315,15 @@ const Sidebar = () => {
                 <li>
                   <Link
                     to={`/barangaymenu/?id=${id}`}
-                    onClick={() => {
-                      window.innerWidth >= 320 && window.innerWidth <= 1023
-                        ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
-                        : null;
-                    }}
+                    // onClick={() => {
+                    //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                    //     ? document
+                    //         .getQuerySelector(
+                    //           "[data-hs-overlay-backdrop-template]"
+                    //         )
+                    //         .remove()
+                    //     : null;
+                    // }}
                     className={`${
                       currentPath === "/barangaymenu/" ||
                       currentPath === "/barangayinformation/" ||
@@ -389,15 +380,15 @@ const Sidebar = () => {
                   >
                     <Link
                       to={`/aboutus_info/?id=${id}`}
-                      onClick={() => {
-                        window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
-                          : null;
-                      }}
+                      // onClick={() => {
+                      //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                      //     ? document
+                      //         .getQuerySelector(
+                      //           "[data-hs-overlay-backdrop-template]"
+                      //         )
+                      //         .remove()
+                      //     : null;
+                      // }}
                       className={`${
                         currentPath === "/aboutus_info/" ||
                         currentPath === "/archived_aboutus_info/"
@@ -410,15 +401,15 @@ const Sidebar = () => {
                     </Link>
                     <Link
                       to={`/services_info/?id=${id}`}
-                      onClick={() => {
-                        window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
-                          : null;
-                      }}
+                      // onClick={() => {
+                      //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                      //     ? document
+                      //         .getQuerySelector(
+                      //           "[data-hs-overlay-backdrop-template]"
+                      //         )
+                      //         .remove()
+                      //     : null;
+                      // }}
                       className={`${
                         currentPath === "/services_info/" ||
                         currentPath === "/archived_services_info/"
@@ -431,15 +422,15 @@ const Sidebar = () => {
                     </Link>
                     <Link
                       to={`/tourist_spot/?id=${id}`}
-                      onClick={() => {
-                        window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
-                          : null;
-                      }}
+                      // onClick={() => {
+                      //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                      //     ? document
+                      //         .getQuerySelector(
+                      //           "[data-hs-overlay-backdrop-template]"
+                      //         )
+                      //         .remove()
+                      //     : null;
+                      // }}
                       className={`${
                         currentPath === "/tourist_spot/" ||
                         currentPath === "/archived_tourist_spot/"
@@ -452,15 +443,15 @@ const Sidebar = () => {
                     </Link>
                     <Link
                       to={`/municipalityofficials/?id=${id}`}
-                      onClick={() => {
-                        window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
-                          : null;
-                      }}
+                      // onClick={() => {
+                      //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                      //     ? document
+                      //         .getQuerySelector(
+                      //           "[data-hs-overlay-backdrop-template]"
+                      //         )
+                      //         .remove()
+                      //     : null;
+                      // }}
                       className={`${
                         currentPath === "/municipalityofficials/" ||
                         currentPath === "/archivedmunicipalityofficials/"
@@ -476,15 +467,15 @@ const Sidebar = () => {
                 <li>
                   <Link
                     to={`/reports/?id=${id}`}
-                    onClick={() => {
-                      window.innerWidth >= 320 && window.innerWidth <= 1023
-                        ? document
-                            .querySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
-                        : null;
-                    }}
+                    // onClick={() => {
+                    //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                    //     ? document
+                    //         .querySelector(
+                    //           "[data-hs-overlay-backdrop-template]"
+                    //         )
+                    //         .remove()
+                    //     : null;
+                    // }}
                     className={`${
                       currentPath === "/reports/"
                         ? "bg-gradient-to-r from-[#295141] to-[#408D51] text-[#EFC586]"
@@ -495,7 +486,7 @@ const Sidebar = () => {
                     Reports
                   </Link>
                 </li>
-        
+
                 {/* <li>
                   <button
                     id="hs-unstyled-collapse1"
@@ -589,7 +580,7 @@ const Sidebar = () => {
                     </Link>
                   </div>
                 </li> */}
-              
+
                 {userData.type === "Head Admin" && (
                   <>
                     <li>
@@ -628,18 +619,18 @@ const Sidebar = () => {
                       >
                         <Link
                           to={`/brgy_account/?id=${id}`}
-                          onClick={() => {
-                            if (
-                              window.innerWidth >= 320 &&
-                              window.innerWidth <= 1023
-                            ) {
-                              document
-                                .querySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove();
-                            }
-                          }}
+                          // onClick={() => {
+                          //   if (
+                          //     window.innerWidth >= 320 &&
+                          //     window.innerWidth <= 1023
+                          //   ) {
+                          //     document
+                          //       .querySelector(
+                          //         "[data-hs-overlay-backdrop-template]"
+                          //       )
+                          //       .remove();
+                          //   }
+                          // }}
                           className={`${
                             currentPath === "/brgy_account/" ||
                             currentPath === "/archive_brgy_account/"
@@ -652,18 +643,18 @@ const Sidebar = () => {
                         </Link>
                         <Link
                           to={`/municipal_account/?id=${id}`}
-                          onClick={() => {
-                            if (
-                              window.innerWidth >= 320 &&
-                              window.innerWidth <= 1023
-                            ) {
-                              document
-                                .querySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove();
-                            }
-                          }}
+                          // onClick={() => {
+                          //   if (
+                          //     window.innerWidth >= 320 &&
+                          //     window.innerWidth <= 1023
+                          //   ) {
+                          //     document
+                          //       .querySelector(
+                          //         "[data-hs-overlay-backdrop-template]"
+                          //       )
+                          //       .remove();
+                          //   }
+                          // }}
                           className={`${
                             currentPath === "/municipal_account/" ||
                             currentPath === "/archive_municipal_account/"
@@ -679,20 +670,18 @@ const Sidebar = () => {
                   </>
                 )}
 
-              
-
                 <li>
                   <Link
                     to={`/settings/?id=${id}`}
-                    onClick={() => {
-                      window.innerWidth >= 320 && window.innerWidth <= 1023
-                        ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
-                        : null;
-                    }}
+                    // onClick={() => {
+                    //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                    //     ? document
+                    //         .getQuerySelector(
+                    //           "[data-hs-overlay-backdrop-template]"
+                    //         )
+                    //         .remove()
+                    //     : null;
+                    // }}
                     className={`${
                       currentPath === "/settings/"
                         ? "bg-gradient-to-r from-[#295141] to-[#408D51] text-[#EFC586]"
