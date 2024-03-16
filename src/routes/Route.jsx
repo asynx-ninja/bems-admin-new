@@ -44,8 +44,7 @@ import MArchivedRequests from "../pages/ArchivedRequests";
 import MServices from "../pages/Services";
 import MArchivedServices from "../pages/ArchivedServices";
 import Tooltip from "../pages/login/Tooltip";
-import ArchivedBlotters from "../pages/BarangayTabs/BrgyArchivedBlotters";
-import Blotters from "../pages/BarangayTabs/BrgyBlotters";
+import EditResident from "../components/barangaytabs/brgyResidents/ManageResidentsModal"
 
 const pages = [
   {
@@ -187,10 +186,6 @@ const pages = [
     element: <Navbar comp={<ArchivedServices />} />,
   },
   {
-    path: "/brgyarchivedblotters",
-    element: <Navbar comp={<ArchivedBlotters />} />,
-  },
-  {
     path: "/brgyarchivedservicesreq",
     element: <Navbar comp={<ArchivedServiceReq />} />,
   },
@@ -221,6 +216,10 @@ const pages = [
   {
     path: "/brgyarchivedapplication",
     element: <Navbar comp={<ArchiveApplication />} />,
+  },
+  {
+    path: "/brgyeditresident",
+    element: <Navbar comp={<EditResident />} />,
   },
   {
     path: "/brgyarchivedresidents",

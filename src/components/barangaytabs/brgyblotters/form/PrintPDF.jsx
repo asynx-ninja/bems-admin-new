@@ -21,7 +21,6 @@ import SAN_ISIDRO from "../../../../assets/logo/SAN_ISIDRO.png";
 import SAN_JOSE from "../../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../../assets/logo/SAN_RAFAEL.png";
 
-
 const PrintPDF = ({ detail }) => {
   const [date, setDate] = useState(new Date());
   

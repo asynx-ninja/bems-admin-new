@@ -4,29 +4,23 @@ import PersonalDetails from "./PersonalDetails";
 import OtherDetails from "./OtherDetails";
 import PrintForm from "./form/PrintForm";
 import PrintPDF from "./form/PrintPDF";
-import PrintDocumentTypeA from "./form/PrintDocumentTypeA";
-import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
-import PrintDocumentTypeC from "./form/PrintDocumentTypeC";
-import PrintDocumentTypeD from "./form/PrintDocumentTypeD";
-import PrintDocumentTypeE from "./form/PrintDocumentTypeE";
-import PrintDocumentTypeF from "./form/PrintDocumentTypeF";
-import PrintDocumentTypeG from "./form/PrintDocumentTypeG";
-import PrintDocumentTypeH from "./form/PrintDocumentTypeH";
-import PrintDocumentTypeI from "./form/PrintDocumentTypeI";
-import PrintDocumentTypeJ from "./form/PrintDocumentTypeJ";
-import PrintDocumentTypeK from "./form/PrintDocumentTypeK";
+import PrintPatawag from "./form/PrintPatawag";
+
 import axios from "axios";
 import API_LINK from "../../../config/API";
 
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import { IoMdDownload } from "react-icons/io";
 import GetBrgy from "../../GETBrgy/getbrgy";
 
-function ViewRequestModal({ request, brgy, officials }) {
+function ViewBlotterModal({ request, brgy, officials }) {
   const information = GetBrgy(brgy);
   const [detail, setDetail] = useState(request);
   const [empty] = useState(false);
   const [docDetails, setDocDetails] = useState([]);
   const [service_id, setServiceId] = useState(request.service_id);
+  const [request_id, setRequestId] = useState(request.req_id);
+  const [blotterDetails, setBlotterDetails] = useState([]);
 
   useEffect(() => {
     // function to filter
@@ -47,11 +41,29 @@ function ViewRequestModal({ request, brgy, officials }) {
   }, [brgy, service_id, request]); // Add 'request' as a dependency
 
   useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/blotter_documents/?brgy=${brgy}&req_id=${request_id}`
+        );
+
+        // filter
+        setBlotterDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    fetch();
+  }, [brgy, request]);
+
+  useEffect(() => {
     // Update 'service_id' and 'detail' whenever 'request' changes
+    setRequestId(request.req_id);
     setServiceId(request.service_id);
     setDetail(request);
   }, [request]);
- 
 
   const fileName =
     detail.form[0] && detail.form[0].lastName
@@ -59,8 +71,6 @@ function ViewRequestModal({ request, brgy, officials }) {
           detail.req_id
         }.pdf`
       : "SAMPLE.pdf";
-
- 
 
   const returnFile = (string) => {
     for (const item of detail.file) {
@@ -108,43 +118,6 @@ function ViewRequestModal({ request, brgy, officials }) {
     return null;
   };
 
-  const DocumentTypeComponent =
-    docDetails.length > 0 && getDocumentTypeComponent(docDetails[0].type);
-
-  function getDocumentTypeComponent(type) {
-    switch (type) {
-      case "Type A":
-        return PrintDocumentTypeA;
-      case "Type B":
-        return PrintDocumentTypeB;
-      case "Type C":
-        return PrintDocumentTypeC;
-      case "Type D":
-        return PrintDocumentTypeD;
-      case "Type E":
-        return PrintDocumentTypeE;
-      case "Type F":
-        return PrintDocumentTypeF;
-      case "Type G":
-        return PrintDocumentTypeG;
-      case "Type H":
-        return PrintDocumentTypeH;
-      case "Type I":
-        return PrintDocumentTypeI;
-      case "Type J":
-        return PrintDocumentTypeJ;
-      case "Type K":
-        return PrintDocumentTypeK;
-      // Add cases for other types if needed
-      default:
-        return null;
-    }
-  }
-
-
- 
-
-  
   return (
     <div>
       <div
@@ -156,7 +129,7 @@ function ViewRequestModal({ request, brgy, officials }) {
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
             <div
-              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
               style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
               }}
@@ -165,7 +138,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
               >
-                REQUEST SERVICE
+                VIEW BLOTTER DETAILS
               </h3>
             </div>
 
@@ -183,36 +156,75 @@ function ViewRequestModal({ request, brgy, officials }) {
                 <PersonalDetails detail={detail} />
                 <OtherDetails detail={detail} returnFile={returnFile} />
               </form>
+
+              <div className="mt-5">
+                <table className="relative table-auto w-full">
+                  <thead
+                    className=" sticky top-0 "
+                    style={{ backgroundColor: information?.theme?.primary }}
+                  >
+                    <tr className="">
+                    <th
+                        scope="col"
+                        className="px-6 py-3 w-[25%] text-xs font-bold text-white uppercase"
+                      >
+                        Version ID
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 w-[55%] text-xs font-bold text-white uppercase"
+                      >
+                        Patawag / Blotter Documents
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 w-[20%] text-center text-xs font-bold text-white uppercase"
+                      >
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="odd:bg-slate-100">
+                    {blotterDetails.map((blotterItem, index) => (
+                      <tr key={index} className="border">
+                        <td className="px-6 py-3">
+                          <span className="text-xs justify-center text-center text-black line-clamp-4">
+                            {blotterItem.version_id}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3">
+                          <span className="text-xs sm:text-sm justify-center text-center text-black line-clamp-4">
+                            {blotterItem.doc_title}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3 text-center justify-center items-center flex">
+                          <PDFDownloadLink
+                            document={
+                              <PrintPatawag
+                                detail={detail}
+                                officials={officials}
+                                docDetails={docDetails}
+                                blotter={blotterItem}
+                                brgy={brgy}
+                              />
+                            }
+                            fileName={fileName}
+                            className="h-8 w-16 flex text-center justify-center items-center gap-2 rounded-md border bg-[#22687a] text-white shadow-sm"
+                          >
+                            <IoMdDownload size={16} />
+                          </PDFDownloadLink>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
+
             {/* END OF BODY */}
             {/* BUTTON BELOW */}
             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <div className="sm:space-x-0 lg:space-x-2 sm:space-y-2 lg:space-y-0 w-full flex sm:flex-col lg:flex-row">
-                {DocumentTypeComponent &&
-                  request.status === "Transaction Completed" && (
-                    <PDFDownloadLink
-                      document={
-                        <DocumentTypeComponent
-                          detail={detail}
-                          officials={officials}
-                          docDetails={docDetails}
-                          brgy={brgy}
-                        />
-                      }
-                      fileName={fileName}
-                      className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
-                    >
-                      GENERATE DOCUMENT REQUEST ({docDetails[0].type})
-                    </PDFDownloadLink>
-                  )}
-
-                <PDFDownloadLink
-                  document={<PrintPDF detail={detail} brgy={brgy} />}
-                  fileName={fileName}
-                  className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-teal-900 text-white shadow-sm"
-                >
-                  GENERATE REQUEST FORM
-                </PDFDownloadLink>
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
@@ -229,4 +241,4 @@ function ViewRequestModal({ request, brgy, officials }) {
   );
 }
 
-export default ViewRequestModal;
+export default ViewBlotterModal;

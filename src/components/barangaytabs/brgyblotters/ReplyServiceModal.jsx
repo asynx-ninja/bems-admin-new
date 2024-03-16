@@ -6,6 +6,8 @@ import { MdOutlineCancel } from "react-icons/md";
 import { IoIosAttach } from "react-icons/io";
 import { FaTasks } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
+import { BsPersonFillAdd } from "react-icons/bs";
+import { MdCancel } from "react-icons/md";
 import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
@@ -13,7 +15,6 @@ import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import GetBrgy from "../../GETBrgy/getbrgy";
-
 
 function ReplyServiceModal({ request, setRequest, brgy }) {
   const information = GetBrgy(brgy);
@@ -35,11 +36,84 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   const [replyingStatus, setReplyingStatus] = useState(null);
   const [error, setError] = useState(null);
   const [service, setService] = useState([]);
-  const [eventWithCounts, setEventWithCounts] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
-  const [specificEvent, setSpecificEvent] = useState(null);
+
+  const [blotterDetails, setBlotterDetails] = useState([]);
+  const [detail, setDetail] = useState(request);
+
+  const [users, setUsers] = useState([]);
+  const [selectedComplainant, setSelectedComplainant] = useState(null);
+  const [selectedDefendant, setSelectedDefendant] = useState(null);
+  const [customComplainant, setCustomComplainant] = useState(false);
+  const [customDefendant, setCustomDefendant] = useState(false);
+  const [ComplainantData, setComplainantData] = useState({
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    user_id: "",
+    type: "Complainant",
+  });
+  const [DefendantData, setDefendantData] = useState({
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    user_id: "",
+    type: "Defendant",
+  });
+  const [ResponseData, setResponseData] = useState({
+    sender: "Nyle Chua",
+    type: "Staff",
+    message: "",
+    date: new Date().toISOString(),
+    status: "",
+  });
+  const [patawagData, setPatawagData] = useState({
+    name: "",
+    to: [ComplainantData, DefendantData],
+    response: [ResponseData],
+    brgy: "",
+    req_id: "",
+  });
+
+  // console.log("patawag data: ", patawagData);
+  console.log("response data: ", ResponseData);
+  console.log("userData: ", userData);
+
+  const handleComplainantChange = (e) => {
+    const selectedUserId = e.target.value;
+    setSelectedComplainant(selectedUserId);
+
+    // Fetch and set complainant user data
+    const selectedUser = users.find((user) => user._id === selectedUserId);
+    setComplainantData({
+      firstName: selectedUser.firstName,
+      middleName: selectedUser.middleName || "",
+      lastName: selectedUser.lastName,
+      user_id: selectedUser.user_id,
+      type: "Complainant",
+    });
+  };
+
+  const handleDefendantChange = (e) => {
+    const selectedUserId = e.target.value;
+    setSelectedDefendant(selectedUserId);
+
+    // Fetch and set defendant user data
+    const selectedUser = users.find((user) => user._id === selectedUserId);
+    setDefendantData({
+      firstName: selectedUser.firstName,
+      middleName: selectedUser.middleName || "",
+      lastName: selectedUser.lastName,
+      user_id: selectedUser.user_id,
+      type: "Defendant",
+    });
+  };
+
+  // console.log("complainant data: ", ComplainantData);
+  // console.log("defendant data: ", DefendantData);
+
+  useEffect(() => {
+    setDetail(request);
+  }, [request]);
 
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
@@ -60,29 +134,104 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     fetch();
   }, [id]);
 
- 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      let page = 1;
+      let hasMoreResults = true;
+
+      while (hasMoreResults) {
+        try {
+          const response = await axios.get(
+            `${API_LINK}/users/?brgy=${brgy}&type=Resident&page=${page}`
+          );
+
+          if (response.status === 200 && response.data.result.length > 0) {
+            setUsers((prevUsers) => [...prevUsers, ...response.data.result]);
+            page++;
+          } else {
+            hasMoreResults = false;
+          }
+        } catch (error) {
+          console.error("Error fetching users:", error);
+          hasMoreResults = false;
+        }
+      }
+    };
+
+    fetchUsers();
+  }, [brgy]);
+
+  // console.log("users: ", users);
+
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/blotter/?brgy=${brgy}&req_id=${detail.req_id}`
+        );
+
+        // filter
+        setBlotterDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+        setBlotterDetails([]);
+      }
+    };
+
+    fetch();
+  }, [brgy, request, detail]);
+
+  console.log("blotterDetails: ", blotterDetails);
+  // console.log("request: ", request);
+  // console.log("detail: ", detail);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${API_LINK}/blotter/?brgy=${brgy}&patawag_id=${patawag_id}`);
-        const data = await response.json();
-  
-        // Handle the data
-    
+        if (!request.service_id) {
+          // If there is no event_id in the application, do not fetch events
+          return;
+        }
+        const serviceResponse = await axios.get(
+          `${API_LINK}/services/?brgy=${brgy}&service_id=${request.service_id}&archived=false`
+        );
+
+        if (serviceResponse.status === 200) {
+          setService(serviceResponse.data.result[0]);
+        } else {
+          // setEventWithCounts([]);
+        }
       } catch (error) {
-        // Handle the error
-        console.error(error);
+        console.error("Error fetching data:", error);
+        console.error("Error response data:", error.response?.data);
+        console.error("Error response status:", error.response?.status);
       }
     };
-  
+
     fetchData();
-  }, []);
+  }, [brgy, request.service_id]);
 
   useEffect(() => {
-    if (request && request.response.length !== 0) {
-      const lastResponse = request.response[request.response.length - 1];
+    if (blotterDetails && blotterDetails.status) {
+      // If blotterDetails has status, set it as the default status for ResponseData
+      setResponseData((prev) => ({
+        ...prev,
+        status: blotterDetails.status,
+      }));
+    }
+  }, [blotterDetails]);
 
-      if (lastResponse.file && lastResponse.file.length > 0) {
+  useEffect(() => {
+    if (
+      blotterDetails &&
+      blotterDetails.responses &&
+      blotterDetails.responses.length !== 0
+    ) {
+      const lastResponse =
+        blotterDetails.responses[blotterDetails.responses.length - 1];
+
+      if (lastResponse && lastResponse.file && lastResponse.file.length > 0) {
         setViewFiles(lastResponse.file);
       } else {
         setViewFiles([]);
@@ -90,13 +239,15 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     } else {
       setViewFiles([]);
     }
-  }, [request]);
+  }, [blotterDetails]);
 
   // Initialize with the last index expanded
   useEffect(() => {
-    const lastIndex = request.response ? request.response.length - 1 : 0;
+    const lastIndex = blotterDetails.responses
+      ? blotterDetails.responses.length - 1
+      : 0;
     setExpandedIndexes([lastIndex]);
-  }, [request.response]);
+  }, [blotterDetails.responses]);
 
   const fileInputRef = useRef();
 
@@ -111,40 +262,44 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   };
 
   useEffect(() => {
-    if (request && request.response && request.response.length > 0) {
+    if (
+      blotterDetails &&
+      blotterDetails.responses &&
+      blotterDetails.responses.length > 0
+    ) {
       // Sort the responses based on date in ascending order
-      request.response.sort(
+      blotterDetails.responses.sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
 
       // Initialize with the last index expanded
-      const lastIndex = request.response.length - 1;
+      const lastIndex = blotterDetails.responses.length - 1;
       setExpandedIndexes([lastIndex]);
     }
-  }, [request]);
+  }, [blotterDetails]);
 
   const handleChange = (e) => {
     const inputValue = e.target.value;
 
     if (e.target.name === "isRepliable") {
       // If isRepliable checkbox is changed, update isRepliable accordingly
-      setNewMessage((prev) => ({
+      setResponseData((prev) => ({
         ...prev,
         [e.target.name]: e.target.checked,
       }));
     } else if (
       statusChanger &&
-      (!newMessage.message || newMessage.message.trim() === "")
+      (!ResponseData.message || ResponseData.message.trim() === "")
     ) {
       // If statusChanger is true and message is not set, update message with status
-      setNewMessage((prev) => ({
+      setResponseData((prev) => ({
         ...prev,
         message: `The status of your event application is ${inputValue}`,
         [e.target.name]: inputValue,
       }));
     } else {
       // Otherwise, update the input value normally
-      setNewMessage((prev) => ({
+      setResponseData((prev) => ({
         ...prev,
         [e.target.name]: inputValue,
       }));
@@ -189,6 +344,50 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     setStatusChanger(!statusChanger);
   };
 
+  const handlePatawagTitleChange = (e) => {
+    const title = e.target.value;
+    setPatawagData((prev) => ({
+      ...prev,
+      name: title,
+    }));
+  };
+
+  const handleOnCustomComplainant = () => {
+    setCustomComplainant(!customComplainant);
+  };
+
+  const handleOnCustomDefendant = () => {
+    setCustomDefendant(!customDefendant);
+  };
+
+  const resetComplainantData = () => {
+    setComplainantData({
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      user_id: "",
+      type: "Complainant",
+    });
+  };
+
+  const resetDefendantData = () => {
+    setDefendantData({
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      user_id: "",
+      type: "Defendant",
+    });
+  };
+
+  useEffect(() => {
+    // Update patawagData whenever ComplainantData or DefendantData changes
+    setPatawagData((prev) => ({
+      ...prev,
+      to: [ComplainantData, DefendantData],
+    }));
+  }, [ComplainantData, DefendantData]);
+
   const getType = (type) => {
     switch (type) {
       case "MUNISIPYO":
@@ -198,37 +397,62 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     }
   };
 
+  const [searchTermComplainant, setSearchTermComplainant] = useState("");
+  const [searchTermDefendant, setSearchTermDefendant] = useState("");
+
+  const filteredUsersComplainant = users.filter((user) =>
+    `${user.firstName} ${user.middleName} ${user.lastName}`
+      .toLowerCase()
+      .includes(searchTermComplainant.toLowerCase())
+  );
+
+  const filteredUsersDefendant = users.filter((user) =>
+    `${user.firstName} ${user.middleName} ${user.lastName}`
+      .toLowerCase()
+      .includes(searchTermDefendant.toLowerCase())
+  );
+
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
       setSubmitClicked(true);
 
+      const targetUserIds = [ComplainantData.user_id, DefendantData.user_id];
+
       const obj = {
-        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
-        message: newMessage.message,
-        status: request.status,
-        isRepliable: newMessage.isRepliable,
-        folder_id: request.folder_id,
-        date: new Date(), // Add the current date and time
+        name: patawagData.name,
+        to: [ComplainantData, DefendantData],
+        brgy: detail.brgy,
+        responses: [
+          {
+            sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
+            type: "Staff",
+            message: `${ResponseData.message}`,
+            date: `${ResponseData.date}`,
+          },
+        ],
+        req_id: detail.req_id,
       };
 
- 
       var formData = new FormData();
-      formData.append("response", JSON.stringify(obj));
+      formData.append("patawag", JSON.stringify(obj));
 
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-   
+      console.log("obj", obj);
+      console.log("targetUserIds: ", targetUserIds);
+      // console.log("res_folder: ", res_folder);
+      // console.log("createFiles: ", createFiles);
 
       if (res_folder.status === 200) {
         for (let i = 0; i < createFiles.length; i++) {
           formData.append("files", createFiles[i]);
         }
 
-        const response = await axios.patch(
-          `${API_LINK}/requests/?req_id=${request._id}&?request_folder_id=${res_folder.data[0].request}`,
+        const response = await axios.post(
+          `${API_LINK}/blotter/?patawag_folder_id=${res_folder.data[0].blotters}`,
           formData
         );
 
@@ -236,40 +460,15 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
           const notify = {
             category: "One",
             compose: {
-              subject: `REQUEST - ${request.service_name}`,
-              message: `A barangay staff has updated/replied your request for the barangay service of ${
-                request.service_name
-              }.\n\n
+              subject: `PATAWAG - ${request.service_name}`,
+              message: `A barangay staff has started your blotter request.\n\n
         
-              Request Details:\n
-              - Name: ${
-                request.form && request.form[0]
-                  ? request.form[0].lastName.value
-                  : ""
-              }, ${
-                request.form && request.form[0]
-                  ? request.form[0].firstName.value
-                  : ""
-              } ${
-                request.form && request.form[0]
-                  ? request.form[0].middleName.value
-                  : ""
-              }
-              - Service Applied: ${request.service_name}\n
-              - Request ID: ${request.req_id}\n
-              - Date Created: ${moment(request.createdAt).format(
-                "MMM. DD, YYYY h:mm a"
-              )}\n
-              - Status: ${response.data.status}\n
-              - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
-                userData.middleName
-              }\n\n
               Please update this service request as you've seen this notification!\n\n
               Thank you!!,`,
-              go_to: "Requests",
+              go_to: "Patawag",
             },
             target: {
-              user_id: request.form[0].user_id.value,
+              user_id: targetUserIds,
               area: request.brgy,
             },
             type: "Resident",
@@ -277,7 +476,91 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             logo: service.collections.logo,
           };
 
- 
+          console.log("Notify: ", notify);
+
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (result.status === 200) {
+            setTimeout(() => {
+              setSubmitClicked(false);
+              setReplyingStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }, 1000);
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+      setSubmitClicked(false);
+      setReplyingStatus("error");
+      setError("An error occurred while replying to the service request.");
+    }
+  };
+
+  const handleSendReply = async (e) => {
+    try {
+      e.preventDefault();
+      setSubmitClicked(true);
+
+      const targetUserIds = [
+        blotterDetails?.to[0]?.user_id,
+        blotterDetails?.to[1]?.user_id,
+      ];
+
+      const obj = {
+        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
+        type: "Staff",
+        message: `${ResponseData.message}`,
+        date: `${ResponseData.date}`,
+        folder_id: blotterDetails.folder_id,
+        status: `${ResponseData.status}`,
+      };
+
+      console.log("obj", obj);
+      var formData = new FormData();
+      formData.append("response", JSON.stringify(obj));
+
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
+      );
+
+      if (res_folder.status === 200) {
+        for (let i = 0; i < createFiles.length; i++) {
+          formData.append("files", createFiles[i]);
+        }
+
+        const response = await axios.patch(
+          `${API_LINK}/blotter/?patawag_id=${blotterDetails._id}&patawag_folder_id=${res_folder.data[0].blotters}`,
+          formData
+        );
+
+        if (response.status === 200) {
+          const notify = {
+            category: "One",
+            compose: {
+              subject: `PATAWAG REPLIED - ${request.service_name}`,
+              message: `A barangay staff has replied to your patawag conversation.\n\n
+        
+              Please view and respond as you've seen this notification!\n\n
+              Thank you!!,`,
+              go_to: "Patawag",
+            },
+            target: {
+              user_id: targetUserIds,
+              area: request.brgy,
+            },
+            type: "Resident",
+            banner: service.collections.banner,
+            logo: service.collections.logo,
+          };
+
+          console.log("Notify: ", notify);
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
@@ -308,14 +591,14 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     <div>
       <div
         id="hs-reply-modal"
-        className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
+        className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center "
       >
         {/* Modal */}
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
             <div
-              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
               style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
               }}
@@ -330,22 +613,363 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
               <div className="flex flex-col w-full">
-                <b className="border-solid border-0 w-full border-black/50 border-b-2 my-4 uppercase font-medium text-lg md:text-lg mb-4">
+                <b className="border-solid border-0 w-full border-black/50 border-b-2 mb-4 uppercase font-medium text-lg md:text-lg mb-4">
                   Conversation History
                 </b>
                 <form>
-                  {!request.response || request.response.length === 0 ? (
+                  {!blotterDetails ||
+                  !blotterDetails.responses ||
+                  blotterDetails.responses.length === 0 ? (
                     <div className="flex flex-col items-center">
                       <div className="relative w-full mx-2">
                         <div className="relative w-full">
+                          <div className="flex flex-col">
+                            <div className="mb-4 w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold"
+                                htmlFor="title"
+                              >
+                                Patawag Title
+                              </label>
+                              {/* Complainant Search Bar */}
+                              <input
+                                type="text"
+                                placeholder="Enter the name for the patawag..."
+                                value={patawagData.name}
+                                onChange={handlePatawagTitleChange}
+                                className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                              />
+                            </div>
+
+                            {/* Complainant Section */}
+                            <div className="mb-4 w-full">
+                              <div className="flex flex-row space-x-2">
+                                <label
+                                  className="block text-gray-700 text-sm font-bold flex justify-center items-center"
+                                  htmlFor="title"
+                                >
+                                  Complainant
+                                </label>
+
+                                {!customComplainant ? (
+                                  <div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleOnCustomComplainant();
+                                        resetComplainantData();
+                                      }}
+                                      className="hs-tooltip rounded-md px-2 py-1 text-xs bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
+                                    >
+                                      <BsPersonFillAdd size={16} />
+                                      <span
+                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                        role="tooltip"
+                                      >
+                                        Add Custom Complainant
+                                      </span>
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleOnCustomComplainant();
+                                        resetComplainantData();
+                                      }}
+                                      className="hs-tooltip rounded-md px-2 py-1 text-xs bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                    >
+                                      <MdCancel size={16} />
+                                      <span
+                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                        role="tooltip"
+                                      >
+                                        Cancel Custom Complainant
+                                      </span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+
+                              {!customComplainant ? (
+                                <div>
+                                  {/* Complainant Search Bar */}
+                                  <input
+                                    type="text"
+                                    placeholder="Search complainant..."
+                                    value={searchTermComplainant}
+                                    onChange={(e) =>
+                                      setSearchTermComplainant(e.target.value)
+                                    }
+                                    className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                  />
+
+                                  {/* Complainant Select Dropdown */}
+                                  <select
+                                    id="complainant"
+                                    name="complainant"
+                                    value={selectedComplainant}
+                                    onChange={handleComplainantChange}
+                                    className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                  >
+                                    <option>
+                                      -- Select An Existing Resident --
+                                    </option>
+                                    {filteredUsersComplainant
+                                      .filter(
+                                        (user, index, self) =>
+                                          index ===
+                                          self.findIndex(
+                                            (u) => u._id === user._id
+                                          )
+                                      )
+                                      .map((user) => (
+                                        <option key={user.id} value={user._id}>
+                                          {`${user.firstName} ${
+                                            user.middleName
+                                              ? user.middleName + " "
+                                              : ""
+                                          } ${user.lastName}`}
+                                        </option>
+                                      ))}
+                                  </select>
+                                </div>
+                              ) : (
+                                <div className="flex flex-row mb-4 w-full space-x-2 mt-2">
+                                  <div className="flex flex-col w-full">
+                                    <label
+                                      className="block text-gray-700 text-sm font-bold flex items-center"
+                                      htmlFor="firstName"
+                                    >
+                                      First Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      name="firstName"
+                                      placeholder="Enter First Name..."
+                                      onChange={(e) =>
+                                        setComplainantData((prev) => ({
+                                          ...prev,
+                                          firstName: e.target.value,
+                                        }))
+                                      }
+                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                    />
+                                  </div>
+                                  <div className="flex flex-col w-full">
+                                    <label
+                                      className="block text-gray-700 text-sm font-bold flex items-center"
+                                      htmlFor="middleName"
+                                    >
+                                      Middle Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      name="middleName"
+                                      placeholder="Enter Middle Name..."
+                                      onChange={(e) =>
+                                        setComplainantData((prev) => ({
+                                          ...prev,
+                                          middleName: e.target.value || "",
+                                        }))
+                                      }
+                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                    />
+                                  </div>
+                                  <div className="flex flex-col w-full">
+                                    <label
+                                      className="block text-gray-700 text-sm font-bold flex items-center"
+                                      htmlFor="lastName"
+                                    >
+                                      Last Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      name="lastName"
+                                      placeholder="Enter Last Name..."
+                                      onChange={(e) =>
+                                        setComplainantData((prev) => ({
+                                          ...prev,
+                                          lastName: e.target.value,
+                                        }))
+                                      }
+                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Defendant Section */}
+                            <div className="w-full mb-4">
+                              <div className="flex flex-row space-x-6">
+                                <label
+                                  className="block text-gray-700 text-sm font-bold flex justify-center items-center"
+                                  htmlFor="title"
+                                >
+                                  Defendant
+                                </label>
+
+                                {!customDefendant ? (
+                                  <div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleOnCustomDefendant();
+                                        resetDefendantData();
+                                      }}
+                                      className="hs-tooltip rounded-md px-2 py-1 text-xs bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
+                                    >
+                                      <BsPersonFillAdd size={16} />
+                                      <span
+                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                        role="tooltip"
+                                      >
+                                        Add Custom Defendant
+                                      </span>
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleOnCustomDefendant();
+                                        resetDefendantData();
+                                      }}
+                                      className="hs-tooltip rounded-md px-2 py-1 text-xs bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                    >
+                                      <MdCancel size={16} />
+                                      <span
+                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                        role="tooltip"
+                                      >
+                                        Cancel Custom Defendant
+                                      </span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+
+                              {!customDefendant ? (
+                                <div>
+                                  {/* Defendant Search Bar */}
+                                  <input
+                                    type="text"
+                                    placeholder="Search defendant..."
+                                    value={searchTermDefendant}
+                                    onChange={(e) =>
+                                      setSearchTermDefendant(e.target.value)
+                                    }
+                                    className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                  />
+
+                                  {/* Defendant Select Dropdown */}
+                                  <select
+                                    id="defendant"
+                                    name="defendant"
+                                    value={selectedDefendant}
+                                    onChange={handleDefendantChange}
+                                    className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                  >
+                                    <option>
+                                      -- Select An Existing Resident --
+                                    </option>
+                                    {filteredUsersDefendant
+                                      .filter(
+                                        (user, index, self) =>
+                                          index ===
+                                          self.findIndex(
+                                            (u) => u._id === user._id
+                                          )
+                                      )
+                                      .map((user) => (
+                                        <option key={user.id} value={user._id}>
+                                          {`${user.firstName} ${
+                                            user.middleName
+                                              ? user.middleName + " "
+                                              : ""
+                                          } ${user.lastName}`}
+                                        </option>
+                                      ))}
+                                  </select>
+                                </div>
+                              ) : (
+                                <div className="flex flex-row mb-4 w-full space-x-2 mt-2">
+                                  <div className="flex flex-col w-full">
+                                    <label
+                                      className="block text-gray-700 text-sm font-bold flex items-center"
+                                      htmlFor="firstName"
+                                    >
+                                      First Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      name="firstName"
+                                      placeholder="Enter First Name..."
+                                      onChange={(e) =>
+                                        setDefendantData((prev) => ({
+                                          ...prev,
+                                          firstName: e.target.value,
+                                        }))
+                                      }
+                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                    />
+                                  </div>
+                                  <div className="flex flex-col w-full">
+                                    <label
+                                      className="block text-gray-700 text-sm font-bold flex items-center"
+                                      htmlFor="middleName"
+                                    >
+                                      Middle Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      name="middleName"
+                                      placeholder="Enter Middle Name..."
+                                      onChange={(e) =>
+                                        setDefendantData((prev) => ({
+                                          ...prev,
+                                          middleName: e.target.value || "",
+                                        }))
+                                      }
+                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                    />
+                                  </div>
+                                  <div className="flex flex-col w-full">
+                                    <label
+                                      className="block text-gray-700 text-sm font-bold flex items-center"
+                                      htmlFor="lastName"
+                                    >
+                                      Last Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      name="lastName"
+                                      placeholder="Enter Last Name..."
+                                      onChange={(e) =>
+                                        setDefendantData((prev) => ({
+                                          ...prev,
+                                          lastName: e.target.value,
+                                        }))
+                                      }
+                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
                           <textarea
                             id="message"
                             name="message"
                             onChange={handleChange}
                             rows={7}
                             value={
-                              newMessage.message
-                                ? newMessage.message
+                              ResponseData.message
+                                ? ResponseData.message
                                 : statusChanger
                                 ? `The status of your service request is ${request.status}`
                                 : ""
@@ -430,33 +1054,30 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                         onChange={(e) => {
                                           if (
                                             statusChanger &&
-                                            (!newMessage.message ||
-                                              newMessage.message.trim() === "")
+                                            (!ResponseData.message ||
+                                              ResponseData.message.trim() ===
+                                                "")
                                           ) {
-                                            setNewMessage((prev) => ({
+                                            setResponseData((prev) => ({
                                               ...prev,
                                               message: `The status of your service request is ${e.target.value}`,
                                             }));
                                           }
-                                          setRequest((prev) => ({
+                                          setResponseData((prev) => ({
                                             ...prev,
                                             status: e.target.value,
                                           }));
                                         }}
                                         className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                        value={request.status}
+                                        value={ResponseData.status}
                                         hidden={!statusChanger}
                                       >
-                                        <option value="Pending">PENDING</option>
-                                        <option value="Paid">PAID</option>
-                                        <option value="Processing">
-                                          PROCESSING
+                                        <option>-- Select Status --</option>
+                                        <option value="In Progress">
+                                          IN PROGRESS
                                         </option>
-                                        <option value="Cancelled">
-                                          CANCELLED
-                                        </option>
-                                        <option value="Transaction Completed">
-                                          TRANSACTION COMPLETED
+                                        <option value="Completed">
+                                          COMPLETED
                                         </option>
                                         <option value="Rejected">
                                           REJECTED
@@ -468,24 +1089,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                               </div>
 
                               <div className="flex justify-center items-center gap-x-2">
-                                <div className="hs-tooltip inline-block">
-                                  <label className="relative flex  justify-center items-center cursor-pointer">
-                                    <input
-                                      type="checkbox"
-                                      name="isRepliable"
-                                      checked={newMessage.isRepliable}
-                                      onChange={handleChange}
-                                      className="hs-tooltip-toggle sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
-                                  </label>
-                                  <span
-                                    className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                    role="tooltip"
-                                  >
-                                    Client can Reply
-                                  </span>
-                                </div>
                                 <button
                                   type="submit"
                                   onClick={handleOnSend}
@@ -513,9 +1116,10 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                       </div>
                     </div>
                   ) : null}
-                  {request &&
-                    request.response &&
-                    request.response.map((responseItem, index) => (
+
+                  {blotterDetails &&
+                    blotterDetails.responses &&
+                    blotterDetails.responses.map((responseItem, index) => (
                       <div
                         key={index}
                         className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${
@@ -570,7 +1174,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                 setViewFiles={setViewFiles}
                               />
                             )}
-                            {index === request.response.length - 1 && (
+                            {index === blotterDetails.responses.length - 1 && (
                               <div className="flex flex-row items-center">
                                 <button
                                   type="button"
@@ -592,8 +1196,8 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                         onChange={handleChange}
                                         rows={7}
                                         value={
-                                          newMessage.message
-                                            ? newMessage.message
+                                          ResponseData.message
+                                            ? ResponseData.message
                                             : statusChanger
                                             ? `The status of your service request is ${request.status}`
                                             : ""
@@ -686,40 +1290,37 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                     onChange={(e) => {
                                                       if (
                                                         statusChanger &&
-                                                        (!newMessage.message ||
-                                                          newMessage.message.trim() ===
+                                                        (!ResponseData.message ||
+                                                          ResponseData.message.trim() ===
                                                             "")
                                                       ) {
-                                                        setNewMessage(
+                                                        setResponseData(
                                                           (prev) => ({
                                                             ...prev,
                                                             message: `The status of your service request is ${e.target.value}`,
                                                           })
                                                         );
                                                       }
-                                                      setRequest((prev) => ({
-                                                        ...prev,
-                                                        status: e.target.value,
-                                                      }));
+                                                      setResponseData(
+                                                        (prev) => ({
+                                                          ...prev,
+                                                          status:
+                                                            e.target.value,
+                                                        })
+                                                      );
                                                     }}
                                                     className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                                    value={request.status}
+                                                    value={ResponseData.status}
                                                     hidden={!statusChanger}
                                                   >
-                                                    <option value="Pending">
-                                                      PENDING
+                                                    <option>
+                                                      -- Select Status --
                                                     </option>
-                                                    <option value="Paid">
-                                                      PAID
+                                                    <option value="In Progress">
+                                                      IN PROGRESS
                                                     </option>
-                                                    <option value="Processing">
-                                                      PROCESSING
-                                                    </option>
-                                                    <option value="Cancelled">
-                                                      CANCELLED
-                                                    </option>
-                                                    <option value="Transaction Completed">
-                                                      TRANSACTION COMPLETED
+                                                    <option value="Completed">
+                                                      COMPLETED
                                                     </option>
                                                     <option value="Rejected">
                                                       REJECTED
@@ -731,29 +1332,9 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                           </div>
 
                                           <div className="flex justify-center items-center gap-x-2">
-                                            <div className="hs-tooltip inline-block">
-                                              <label className="relative flex  justify-center items-center cursor-pointer">
-                                                <input
-                                                  type="checkbox"
-                                                  name="isRepliable"
-                                                  checked={
-                                                    newMessage.isRepliable
-                                                  }
-                                                  onChange={handleChange}
-                                                  className="hs-tooltip-toggle sr-only peer"
-                                                />
-                                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
-                                              </label>
-                                              <span
-                                                className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                role="tooltip"
-                                              >
-                                                Client can Reply
-                                              </span>
-                                            </div>
                                             <button
                                               type="submit"
-                                              onClick={handleOnSend}
+                                              onClick={handleSendReply}
                                               className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                             >
                                               <span>SEND</span>
