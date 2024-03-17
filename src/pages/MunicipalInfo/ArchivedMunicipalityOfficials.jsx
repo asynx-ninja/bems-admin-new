@@ -448,7 +448,7 @@ const ArchivedOfficials = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <GenerateReportsModal />
+     
       <RestoreOfficialModal selectedItems={selectedItems} />
       <ViewOfficialModal
         selectedOfficial={selectedOfficial}
