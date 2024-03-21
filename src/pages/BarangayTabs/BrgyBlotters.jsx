@@ -674,7 +674,7 @@ const Blotters = () => {
                           <div className="hs-tooltip inline-block">
                             <button
                               type="button"
-                              data-hs-overlay="#hs-reply-modal"
+                              data-hs-overlay="#hs-replys-modal"
                               onClick={() => handleView({ ...item })}
                               className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                             >
