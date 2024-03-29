@@ -1376,7 +1376,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
               <button
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
-                data-hs-overlay="#hs-reply-modal"
+                data-hs-overlay="#hs-replys-modal"
               >
                 CLOSE
               </button>

@@ -35,7 +35,7 @@ const Notifications = () => {
     };
     fetch();
   }, [id, brgy]);
-  const notificationSound = new Audio("/notification/notif.mp3");
+  // const notificationSound = new Audio("/notification/notif.mp3");
   useEffect(() => {
  
     const fetchNotifications = async () => {
@@ -74,11 +74,11 @@ const Notifications = () => {
               notification.read_by.every((item) => item.readerId !== id)
           ).length;
 
-          // play sound if there are new notifications
-          if (unreadCount > unreadNotifications) {
-            notificationSound.currentTime = 0; // Reset the audio to the beginning
-            notificationSound.play();
-          }
+          // // play sound if there are new notifications
+          // if (unreadCount > unreadNotifications) {
+          //   notificationSound.currentTime = 0; // Reset the audio to the beginning
+          //   notificationSound.play();
+          // }
 
           setNotifications(notificationsWithTimestamp);
           setUnreadNotifications(unreadCount);
