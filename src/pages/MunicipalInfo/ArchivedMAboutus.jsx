@@ -21,7 +21,7 @@ const ArchivedAboutusInfo = () => {
   const [aboutus, setAboutus] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
-  const brgy = "Municipal Info";
+  const brgy = "MUNISIPYO";
   const [aboutusInfo, setAboutusinfo] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -36,11 +36,10 @@ const ArchivedAboutusInfo = () => {
       const response = await axios.get(
         `${API_LINK}/aboutus/?brgy=${brgy}&archived=true&page=${currentPage}`
       );
-
       if (response.status === 200) {
-        setPageCount(response.data.pageCount);
-        setFilteredAboutUs(response.data.result);
         setAboutus(response.data.result);
+        setFilteredAboutUs(response.data.result);
+        setPageCount(response.data.pageCount);
       } else setAboutus([]);
     };
 

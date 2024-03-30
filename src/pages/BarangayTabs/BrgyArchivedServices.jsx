@@ -74,7 +74,7 @@ function ArchiveServices() {
   const handleResetFilter = () => {
     setStatusFilter("all");
     setServiceFilter("all");
-    setDateFilter(null);
+    // setDateFilter(null);
     setSearchQuery("");
   };
 
@@ -175,100 +175,7 @@ function ArchiveServices() {
                 </div>
 
                 {/* Service Type Sort */}
-                <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-                  <button
-                    id="hs-dropdown"
-                    type="button"
-                    className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm bg-[#295141] "
-                    style={{ backgroundColor: information?.theme?.primary }}
-                  >
-                    SERVICE TYPE
-                    <svg
-                      className="w-2.5 h-2.5 text-white"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </button>
-                  <ul
-                    className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
-                    aria-labelledby="hs-dropdown"
-                  >
-                    <a
-                      onClick={handleResetFilter}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      RESET FILTERS
-                    </a>
-                    <hr className="border-[#4e4e4e] my-1" />
-                    <a
-                      onClick={() => handleServiceFilter("Healthcare")}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      HEALTHCARE
-                    </a>
-                    <a
-                      onClick={() => handleServiceFilter("Education")}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      EDUCATION
-                    </a>
-                    <a
-                      onClick={() => handleServiceFilter("Social Welfare")}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      SOCIAL WELFARE
-                    </a>
-                    <a
-                      onClick={() => handleServiceFilter("Security and Safety")}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      SECURITY AND SAFETY
-                    </a>
-                    <a
-                      onClick={() => handleServiceFilter("Infrastructure")}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      INFRASTRUCTURE
-                    </a>
-                    <a
-                      onClick={() => handleServiceFilter("Community")}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      COMMUNITY
-                    </a>
-                    <a
-                      onClick={() => handleServiceFilter("Administrative")}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      ADMINISTRATIVE
-                    </a>
-                    <a
-                      onClick={() => handleServiceFilter("Environmental")}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      ENVIRONMENTAL
-                    </a>
-                  </ul>
-                </div>
+              
               </div>
               <div className="sm:flex-col md:flex-row flex sm:w-full md:w-4/12">
                 <div className="flex flex-row w-full md:mr-2">
@@ -338,91 +245,101 @@ function ArchiveServices() {
                 </tr>
               </thead>
               <tbody className="odd:bg-slate-100">
-                {filteredServices.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={tableHeader.length + 1}
-                      className="text-center  overflow-y-hidden h-[calc(100vh_-_400px)] xxxl:h-[calc(100vh_-_326px)]"
-                    >
-                      <img
-                        src={noData}
-                        alt=""
-                        className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
-                      />
-                      <strong className="text-[#535353]">NO DATA FOUND</strong>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredServices.map((item, index) => (
-                    <tr key={index} className="odd:bg-slate-100 text-center">
-                      <td className="px-6 py-3">
-                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                          {item.name}
+              {Services.length > 0 ? (
+                Services.map((item, index) => (
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                  
+                    <td className="px-2 xl:px-3 py-3 w-2/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.service_id}
                         </span>
-                      </td>
-                      <td className="px-6 py-3">
-                        <div className="flex justify-center items-center">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                            {item.details}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-3">
-                        <div className="flex justify-center items-center">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                            {item.type}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-3">
-                        <div className="flex justify-center items-center">
-                          <span className="text-xs sm:text-sm text-black line-clamp-2">
-                            PHP {item.fee}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-3">
+                      </div>
+                    </td>
+                    <td className="px-2 xl:px-6 py-3 w-4/12">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                        {item.name}
+                      </span>
+                    </td>
+                    <td className="px-2 xl:px-6 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-1 tas w-[100px] ">
+                          {item.details}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-2 xl:px-6 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          PHP {item.fee}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-2 xl:px-6 py-3 w-4/12">
                       {item.isApproved === "Approved" && (
                         <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                             APPROVED
                           </span>
                         </div>
                       )}
                       {item.isApproved === "Disapproved" && (
                         <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                             DISAPPROVED
                           </span>
                         </div>
                       )}
                       {item.isApproved === "Pending" && (
                         <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                             PENDING
                           </span>
                         </div>
                       )}
                     </td>
-                      <td className="px-6 py-3">
-                        <div className="flex justify-center space-x-1 sm:space-x-none">
+
+                    <td className="px-2 xl:px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block">
                           <button
                             type="button"
-                            data-hs-overlay="#hs-view-archived-service-modal"
                             onClick={() => handleView({ ...item })}
-                            className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            data-hs-overlay="#hs-view-archived-service-modal"
+                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <AiOutlineEye
                               size={24}
                               style={{ color: "#ffffff" }}
                             />
                           </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            View Service
+                          </span>
                         </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center sm:h-[16.2rem] xl:py-1 lg:h-[17.5rem] xxl:py-32 xl:h-[17.5rem]"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[14rem] xl:w-80 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
+                  </td>
+                </tr>
+              )}
+            </tbody>
             </table>
           </div>
           <div

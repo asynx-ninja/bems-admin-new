@@ -36,6 +36,7 @@ function RestoreRegistrationModal({ selectedItems }) {
             setTimeout(() => {
               setUpdatingStatus(null);
               HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
+              window.location.reload();
             }, 3000);
           }, 3000);
         }

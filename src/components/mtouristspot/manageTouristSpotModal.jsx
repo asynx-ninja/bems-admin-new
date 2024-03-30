@@ -48,8 +48,7 @@ function ManageTouristSpotModal({brgy, touristspotInfo, settouristspotInfo }) {
   
     if (
       !touristspotInfo.name.trim() ||
-      !touristspotInfo.details.trim() ||
-      images.length === 0
+      !touristspotInfo.details.trim()
     ) {
      
       setError("Please fill out all required fields.");

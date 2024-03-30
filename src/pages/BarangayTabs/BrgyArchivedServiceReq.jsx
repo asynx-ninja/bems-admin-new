@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import {  AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import moment from "moment";
@@ -37,24 +37,29 @@ function ArchiveServiceRequests() {
   }, []);
   useEffect(() => {
     const fetch = async () => {
-       try{
-     const response = await axios.get(
-      `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${currentPage}`
-    );
-     if (response.status === 200){
-         let arr = [];
-         response.data.result.map((item) => {
-         arr.push(item.name);
-         })
-         setRequestFilter(arr);
-         }
- 
-       }catch(err){
-     console.log(err)
-       }
-    }
-    fetch()
- }, [brgy]);
+      try {
+        let page = 0;
+        let arr = [];
+        while (true) {
+          const response = await axios.get(
+            `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${page}`
+          );
+          if (response.status === 200 && response.data.result.length > 0) {
+            response.data.result.map((item) => {
+              arr.push(item.name);
+            });
+            page++;
+          } else {
+            break;
+          }
+        }
+        setRequestFilter(arr);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetch();
+  }, [brgy]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -112,7 +117,8 @@ function ArchiveServiceRequests() {
   const tableHeader = [
     "Control #",
     "SERVICE NAME",
-    "REQUESTOR",
+    "SENDER",
+    "TYPE OF SERVICE",
     "DATE",
     "STATUS",
     "ACTIONS",
@@ -132,8 +138,8 @@ function ArchiveServiceRequests() {
   };
 
   const Requests = requests.filter((item) =>
-    item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+);
 
   const TimeFormat = (date) => {
     if (!date) return "";
@@ -145,10 +151,9 @@ function ArchiveServiceRequests() {
     switch (choice) {
       case "date":
         return requests.filter((item) => {
-
           return (
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -159,11 +164,10 @@ function ArchiveServiceRequests() {
         endDate.setDate(startDate.getDate() + 6);
 
 
-
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -172,7 +176,7 @@ function ArchiveServiceRequests() {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -220,7 +224,10 @@ function ArchiveServiceRequests() {
       setFilteredRequests(filters(selected, date));
     }
   };
-
+  const DateFormat = (date) => {
+    const dateFormat = date === undefined ? "" : date.substr(0, 10);
+    return dateFormat;
+  };
   return (
     <>
       <div className="mx-4 mt-8 overflow-y-auto lg:h-[calc(100vh_-_110px)]">
@@ -577,18 +584,17 @@ function ArchiveServiceRequests() {
                   ) : (
                     filteredRequests.map((item, index) => (
                       <tr key={index} className="odd:bg-slate-100 text-center">
-                         <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-4">
                         {item.req_id}
                       </span>
                     </td>
-                        <td className="px-6 py-3">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                            {item.service_name}
-                          </span>
-                        </td>
-                      
-                        <td className="px-6 py-3">
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.service_name}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.form[0].lastName.value +
                           ", " +
@@ -597,81 +603,89 @@ function ArchiveServiceRequests() {
                           item.form[0].middleName.value}
                       </span>
                     </td>
-                        <td className="px-6 py-3">
-                          <div className="flex justify-center items-center">
-                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                            {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
-                          {TimeFormat(item.createdAt) || ""}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-3">
-                          {item.status === "Transaction Completed" && (
-                            <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                                TRANSACTION COMPLETED
-                              </span>
-                            </div>
-                          )}
-                          {item.status === "Rejected" && (
-                            <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                                REJECTED
-                              </span>
-                            </div>
-                          )}
-                          {item.status === "Pending" && (
-                            <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                                PENDING
-                              </span>
-                            </div>
-                          )}
-                          {item.status === "Paid" && (
-                            <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                                PAID
-                              </span>
-                            </div>
-                          )}
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.type}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 xxl:w-3/12">
+                      {item.status === "Transaction Completed" && (
+                        <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            TRANSACTION COMPLETED
+                          </span>
+                        </div>
+                      )}
 
-                          {item.status === "Processing" && (
-                            <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                                PROCESSING
-                              </span>
-                            </div>
-                          )}
+                      {item.status === "Rejected" && (
+                        <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            REJECTED
+                          </span>
+                        </div>
+                      )}
 
-                          {item.status === "Cancelled" && (
-                            <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
-                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                                CANCELLED
-                              </span>
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-6 py-3">
-                          <div className="flex justify-center space-x-1 sm:space-x-none">
-                            <div className="hs-tooltip inline-block">
-                              <button
-                                type="button"
-                                data-hs-overlay="#hs-view-request-modal"
-                                onClick={() => handleView({ ...item })}
-                                className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                              >
-                                <AiOutlineEye
-                                  size={24}
-                                  style={{ color: "#ffffff" }}
-                                />
-                              </button>
-                              <span
-                                className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                role="tooltip"
-                              >
-                                View Request
-                              </span>
-                            </div>
+                      {item.status === "Pending" && (
+                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            PENDING
+                          </span>
+                        </div>
+                      )}
+                      {item.status === "Paid" && (
+                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            PAID
+                          </span>
+                        </div>
+                      )}
+
+                      {item.status === "Processing" && (
+                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            PROCESSING
+                          </span>
+                        </div>
+                      )}
+
+                      {item.status === "Cancelled" && (
+                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            CANCELLED
+                          </span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-view-request-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineEye
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            View Request
+                          </span>
+                        </div>
                             {/* <div className="hs-tooltip inline-block">
                               <button
                                 type="button"

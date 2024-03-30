@@ -262,7 +262,7 @@ const Residents = () => {
                         </span>
                       </td>
 
-                      <td className="px-6 py-3">
+                      <td className="px-6 py-3 w-2/12">
                         <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2 ">
                           {item.firstName +
                             " " +

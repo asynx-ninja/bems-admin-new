@@ -22,7 +22,9 @@ const ArchivedRegistrations = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selecteEventFilter, setSelectedEventFilter] = useState("all");
   const information = GetBrgy(brgy);
+  const [eventFilter, setEventFilter] = useState([]);
   //status
   const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
   //pagination
@@ -34,29 +36,93 @@ const ArchivedRegistrations = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [selected, setSelected] = useState("date");
 
+  const [officials, setOfficials] = useState([]);
+
+  const [selectedEventType, setSelectedEventType] = useState("EVENT TYPE");
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        let page = 0;
+        let arr = [];
+        while (true) {
+          const response = await axios.get(
+            `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${page}`
+          );
+          if (response.status === 200 && response.data.result.length > 0) {
+            response.data.result.map((item) => {
+              arr.push(item.title);
+            });
+            page++;
+          } else {
+            break;
+          }
+        }
+        setEventFilter(arr);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetch();
+  }, [brgy]);
+
+  const handleEventFilter = (selectedType) => {
+    setSelectedEventFilter(selectedType);
+    setSelectedEventType(selectedType);
+  };
+
+
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
         );
 
         if (response.status === 200) {
           setApplications(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredApplications(response.data.result);
-        } else setRequests([]);
+        } else setApplications([]);
       } catch (err) {
         console.log(err);
       }
     };
 
     fetch();
-  }, [brgy, statusFilter, currentPage]);
+  }, [brgy, statusFilter, selecteEventFilter, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
   const Applications = applications.filter((item) =>
     item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -68,14 +134,16 @@ const ArchivedRegistrations = () => {
 
   const handleResetFilter = () => {
     setStatusFilter("all");
-    setRequests();
     setSearchQuery("");
+    setEventFilter("all");
+    setSelectedEventType("EVENT TYPE");
   };
 
   const DateFormat = (date) => {
     const dateFormat = date === undefined ? "" : date.substr(0, 10);
     return dateFormat;
   };
+
   const TimeFormat = (date) => {
     if (!date) return "";
 
@@ -83,8 +151,37 @@ const ArchivedRegistrations = () => {
     return formattedTime;
   };
 
+  const checkboxHandler = (e) => {
+    let isSelected = e.target.checked;
+    let value = e.target.value;
 
-  const tableHeader = ["EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
+    if (isSelected) {
+      setSelectedItems([...selectedItems, value]);
+    } else {
+      setSelectedItems((prevData) => {
+        return prevData.filter((id) => {
+          return id !== value;
+        });
+      });
+    }
+  };
+
+  const checkAllHandler = () => {
+    const applicationsToCheck =
+      Applications.length > 0 ? Applications : applications;
+
+    if (applicationsToCheck.length === selectedItems.length) {
+      setSelectedItems([]);
+    } else {
+      const postIds = applicationsToCheck.map((item) => {
+        return item._id;
+      });
+
+      setSelectedItems(postIds);
+    }
+  };
+
+  const tableHeader = ["APP ID", "EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
 
   const handleView = (item) => {
     setApplication(item);
@@ -106,7 +203,7 @@ const ArchivedRegistrations = () => {
           : b.service_name.localeCompare(a.service_name);
       } else if (sortBy === "status") {
         const order = {
-          "Transaction Completed": 1,
+          "Application Completed": 1,
           Pending: 2,
           Paid: 3,
           Processing: 4,
@@ -134,7 +231,7 @@ const ArchivedRegistrations = () => {
         return applications.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -144,10 +241,11 @@ const ArchivedRegistrations = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
+
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -156,7 +254,7 @@ const ArchivedRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -200,6 +298,7 @@ const ArchivedRegistrations = () => {
     }
   };
 
+
   return (
 
     <div className="mx-4 mt-8 overflow-y-auto lg:h-[calc(100vh_-_110px)]">
@@ -233,19 +332,18 @@ const ArchivedRegistrations = () => {
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
-            <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
+          <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm bg-[#295141] " style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -274,42 +372,42 @@ const ArchivedRegistrations = () => {
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleStatusFilter("Pending")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Paid")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PAID
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Processing")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PROCESSING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Transaction Completed")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    onClick={() => handleStatusFilter("Application Completed")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    TRANSACTION COMPLETED
+                    APPLICATION COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
@@ -321,7 +419,7 @@ const ArchivedRegistrations = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm bg-[#295141] " style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -352,7 +450,7 @@ const ArchivedRegistrations = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
-                  <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                     <label className="text-black font-medium mb-1">
                       DATE RANGE
                     </label>
@@ -407,6 +505,58 @@ const ArchivedRegistrations = () => {
                         />
                       )}
                     </div>
+                  </div>
+                </ul>
+              </div>
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+              <button
+                  id="hs-dropdown"
+                  type="button"
+                  className="sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md font-medium shadow-sm align-middle transition-all text-sm"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
+                  {selectedEventType}
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  aria-labelledby="hs-dropdown"
+                >
+                  <a
+                    onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    RESET FILTERS
+                  </a>
+                  <hr className="border-[#4e4e4e] my-1" />
+                  <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
+                  {eventFilter.map((title, index) => (
+                    <a
+                      key={index}
+                      onClick={() => handleEventFilter(title)}
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                    >
+                      {title}
+                    </a>
+                  ))}
                   </div>
                 </ul>
               </div>
@@ -498,6 +648,11 @@ const ArchivedRegistrations = () => {
                         />
                       </div>
                     </td> */}
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.application_id}
+                      </span>
+                    </td>
                     <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
                         {item.event_name}

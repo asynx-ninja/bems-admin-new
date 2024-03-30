@@ -6,10 +6,9 @@ function ViewOfficialModal({
   brgy,
   officials,
 }) {
- 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 7);
- 
+
     return eventdate;
   };
   return (
@@ -49,24 +48,77 @@ function ViewOfficialModal({
                   </div>
 
                   {/* Request Information */}
-                  <div className="relative mt-4 pb-6 overflow-y-auto flex flex-col w-full h-full rounded-lg space-y-2">
+                  {/* Request Information */}
+                  <div className="relative mt-2 overflow-y-auto flex flex-col w-fullh-full rounded-lg space-y-2">
                     <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
-                      Personal Information
+                      Personal Informations
                     </b>
-                    <h1
-                      className="font-medium mb-1 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      FULL NAME
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      placeholder=""
-                      value={selectedOfficial.name || ""}
-                      readOnly
-                    />
+
+                    <div>
+                      <h1
+                        className="font-medium mb-1 mt-2 text-black text-sm"
+                        style={{ letterSpacing: "0.1em" }}
+                      >
+                        FIRST NAME
+                      </h1>
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline  `}
+                        placeholder=""
+                        value={selectedOfficial.firstName}
+                        disabled
+                      />
+
+                      <h1
+                        className="font-medium mb-1 mt-2 text-black text-sm"
+                        style={{ letterSpacing: "0.1em" }}
+                      >
+                        MIDDLE NAME
+                      </h1>
+                      <input
+                        type="text"
+                        id="middleName"
+                        name="middleName"
+                        className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline `}
+                        placeholder=""
+                        value={selectedOfficial.middleName}
+                        disabled
+                      />
+
+                      <h1
+                        className="font-medium mb-1 mt-2 text-black text-sm"
+                        style={{ letterSpacing: "0.1em" }}
+                      >
+                        SUFFIX
+                      </h1>
+                      <input
+                        type="text"
+                        id="suffix"
+                        name="suffix"
+                        className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        placeholder=""
+                        value={selectedOfficial.suffix}
+                        disabled
+                      />
+
+                      <h1
+                        className="font-medium mb-1 mt-2 text-black text-sm"
+                        style={{ letterSpacing: "0.1em" }}
+                      >
+                        LAST NAME
+                      </h1>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline`}
+                        placeholder=""
+                        value={selectedOfficial.lastName}
+                        disabled
+                      />
+                    </div>
                   </div>
                 </div>
 

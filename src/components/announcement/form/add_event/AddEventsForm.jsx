@@ -3,8 +3,10 @@ import { useState } from "react";
 import axios from "axios";
 import AddSectionForm from "./AddSectionForm";
 import AddFormLoader from "../../loaders/AddFormLoader";
+import GetBrgy from "../../.././GETBrgy/getbrgy";
 
 const AddEventsForm = ({ announcement_id, brgy }) => {
+  const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -67,21 +69,27 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
     },
   });
 
+  const [titleName, setTitleName] = useState("");
+
+  const handleChange = (e) => {
+    setTitleName(e.target.value);
+  };
+
   const [section, setSection] = useState([
-    {
-      section_title: "",
-      section_variable: "",
-      form: [
-        {
-          variable: "",
-          display: "",
-          type: "text",
-          accept: "",
-          value: null,
-          children: [],
-        },
-      ],
-    },
+    // {
+    //   section_title: "",
+    //   section_variable: "",
+    //   form: [
+    //     {
+    //       variable: "",
+    //       display: "",
+    //       type: "text",
+    //       accept: "",
+    //       value: null,
+    //       children: [],
+    //     },
+    //   ],
+    // },
   ]);
 
   const [checked, setChecked] = useState(false);
@@ -95,22 +103,23 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
 
   const handleSubmit = async (e) => {
     try {
-
       // Prepare the request payload
       const requestData = {
+        title: titleName,
         form: form,
         section: section,
       };
 
-      
       if (checked) {
         // Check if there's an active form
         const activeFormResponse = await axios.get(
           `http://localhost:8800/api/event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
         );
-       
+
         if (activeFormResponse.data.length > 0) {
-          throw new Error("There's an active form. Please turn it off before updating the new form.");
+          throw new Error(
+            "There's an active form. Please turn it off before updating the new form."
+          );
         } else {
           setSubmitClicked(true);
           const response = await axios.post(
@@ -150,12 +159,14 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
       console.error(err.message);
       setSubmitClicked(false);
       setCreationStatus("error");
-      setError(err.message || "An error occurred while creating/updating the announcement.");
+      setError(
+        err.message ||
+          "An error occurred while creating/updating the announcement."
+      );
     }
   };
 
- 
-
+  
   return (
     <div>
       <div
@@ -166,7 +177,12 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]  overflow-hidden rounded-t-2xl">
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
+              style={{
+                background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -190,6 +206,23 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
                     />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
                   </label>
+                </div>
+                <div className="my-4">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="name"
+                  >
+                    NAME OF EVENT FORM
+                  </label>
+                  <input
+                    id="titleName"
+                    className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    name="titleName"
+                    type="text"
+                    value={titleName} // Use the updated form_name state here
+                    onChange={handleChange}
+                    placeholder="Event Form Title"
+                  />
                 </div>
                 {/* PERSONAL INFORMATION */}
                 <fieldset className="border-2 border-black">
@@ -251,12 +284,11 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
             </div>
           </div>
         </div>
-       
-      </div>
-      {submitClicked && <AddFormLoader creationStatus="creating" />}
+        {submitClicked && <AddFormLoader creationStatus="creating" />}
         {creationStatus && (
           <AddFormLoader creationStatus={creationStatus} error={error} />
         )}
+      </div>
     </div>
   );
 };

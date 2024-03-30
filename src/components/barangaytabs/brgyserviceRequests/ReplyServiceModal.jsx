@@ -10,8 +10,13 @@ import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
 import { useSearchParams } from "react-router-dom";
+import ReplyLoader from "./loaders/ReplyLoader";
+import moment from "moment";
 import GetBrgy from "../../GETBrgy/getbrgy";
-function ReplyServiceModal({ request, setReques, brgy }) {
+
+
+function ReplyServiceModal({ request, setRequest, brgy }) {
+  const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -23,10 +28,18 @@ function ReplyServiceModal({ request, setReques, brgy }) {
     message: "",
     isRepliable: false,
   });
-  const information = GetBrgy(brgy);
   const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [replyingStatus, setReplyingStatus] = useState(null);
+  const [error, setError] = useState(null);
+  const [service, setService] = useState([]);
+  const [eventWithCounts, setEventWithCounts] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+  const [specificEvent, setSpecificEvent] = useState(null);
 
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
@@ -46,6 +59,32 @@ function ReplyServiceModal({ request, setReques, brgy }) {
     };
     fetch();
   }, [id]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!request.service_id) {
+          // If there is no event_id in the application, do not fetch events
+          return;
+        }
+        const serviceResponse = await axios.get(
+          `${API_LINK}/services/?brgy=${brgy}&service_id=${request.service_id}&archived=false`
+        );
+
+        if (serviceResponse.status === 200) {
+          setService(serviceResponse.data.result[0]);
+        } else {
+          // setEventWithCounts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        console.error("Error response data:", error.response?.data);
+        console.error("Error response status:", error.response?.status);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy, request.service_id]);
 
   useEffect(() => {
     if (request && request.response.length !== 0) {
@@ -79,12 +118,45 @@ function ReplyServiceModal({ request, setReques, brgy }) {
     }
   };
 
+  useEffect(() => {
+    if (request && request.response && request.response.length > 0) {
+      // Sort the responses based on date in ascending order
+      request.response.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      // Initialize with the last index expanded
+      const lastIndex = request.response.length - 1;
+      setExpandedIndexes([lastIndex]);
+    }
+  }, [request]);
+
   const handleChange = (e) => {
-    setNewMessage((prev) => ({
-      ...prev,
-      [e.target.name]:
-        e.target.name === "isRepliable" ? e.target.checked : e.target.value,
-    }));
+    const inputValue = e.target.value;
+
+    if (e.target.name === "isRepliable") {
+      // If isRepliable checkbox is changed, update isRepliable accordingly
+      setNewMessage((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.checked,
+      }));
+    } else if (
+      statusChanger &&
+      (!newMessage.message || newMessage.message.trim() === "")
+    ) {
+      // If statusChanger is true and message is not set, update message with status
+      setNewMessage((prev) => ({
+        ...prev,
+        message: `The status of your event application is ${inputValue}`,
+        [e.target.name]: inputValue,
+      }));
+    } else {
+      // Otherwise, update the input value normally
+      setNewMessage((prev) => ({
+        ...prev,
+        [e.target.name]: inputValue,
+      }));
+    }
   };
 
   const DateFormat = (date) => {
@@ -125,36 +197,120 @@ function ReplyServiceModal({ request, setReques, brgy }) {
     setStatusChanger(!statusChanger);
   };
 
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
+
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       const obj = {
-        sender: `${userData.firstName} ${userData.lastName} (STAFF)`,
+        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
         message: newMessage.message,
         status: request.status,
         isRepliable: newMessage.isRepliable,
         folder_id: request.folder_id,
+        date: new Date(), // Add the current date and time
       };
 
- 
+
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
-      for (let i = 0; i < createFiles.length; i++) {
-        formData.append("files", createFiles[i]);
-      }
 
-      const response = await axios.patch(
-        `${API_LINK}/requests/?req_id=${request._id}`,
-        formData
+
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-    
 
-      // window.location.reload();
+
+      if (res_folder.status === 200) {
+        for (let i = 0; i < createFiles.length; i++) {
+          formData.append("files", createFiles[i]);
+        }
+
+        const response = await axios.patch(
+          `${API_LINK}/requests/?req_id=${request._id}&?request_folder_id=${res_folder.data[0].request}`,
+          formData
+        );
+
+        if (response.status === 200) {
+          const notify = {
+            category: "One",
+            compose: {
+              subject: `REQUEST - ${request.service_name}`,
+              message: `A barangay staff has updated/replied your request for the barangay service of ${
+                request.service_name
+              }.\n\n
+        
+              Request Details:\n
+              - Name: ${
+                request.form && request.form[0]
+                  ? request.form[0].lastName.value
+                  : ""
+              }, ${
+                request.form && request.form[0]
+                  ? request.form[0].firstName.value
+                  : ""
+              } ${
+                request.form && request.form[0]
+                  ? request.form[0].middleName.value
+                  : ""
+              }
+              - Service Applied: ${request.service_name}\n
+              - Request ID: ${request.req_id}\n
+              - Date Created: ${moment(request.createdAt).format(
+                "MMM. DD, YYYY h:mm a"
+              )}\n
+              - Status: ${response.data.status}\n
+              - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
+                userData.middleName
+              }\n\n
+              Please update this service request as you've seen this notification!\n\n
+              Thank you!!,`,
+              go_to: "Requests",
+            },
+            target: {
+              user_id: request.form[0].user_id.value,
+              area: request.brgy,
+            },
+            type: "Resident",
+            banner: service.collections.banner,
+            logo: service.collections.logo,
+          };
+
+  
+
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (result.status === 200) {
+            setTimeout(() => {
+              setSubmitClicked(false);
+              setReplyingStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }, 1000);
+          }
+        }
+      }
     } catch (error) {
       console.log(error);
+      setSubmitClicked(false);
+      setReplyingStatus("error");
+      setError("An error occurred while replying to the service request.");
     }
   };
 
@@ -168,9 +324,12 @@ function ReplyServiceModal({ request, setReques, brgy }) {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#396288] to-[#013D74] overflow-hidden rounded-t-2xl"   style={{
-              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#396288] to-[#013D74]"
+              style={{
+                background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -194,7 +353,14 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                             name="message"
                             onChange={handleChange}
                             rows={7}
-                            className="p-4 pb-12 block w-full border-gray-200 ounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                            value={
+                              newMessage.message
+                                ? newMessage.message
+                                : statusChanger
+                                ? `The status of your service request is ${request.status}`
+                                : ""
+                            }
+                            className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                             placeholder="Input response..."
                           ></textarea>
 
@@ -272,6 +438,16 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                                         id="status"
                                         name="status"
                                         onChange={(e) => {
+                                          if (
+                                            statusChanger &&
+                                            (!newMessage.message ||
+                                              newMessage.message.trim() === "")
+                                          ) {
+                                            setNewMessage((prev) => ({
+                                              ...prev,
+                                              message: `The status of your service request is ${e.target.value}`,
+                                            }));
+                                          }
                                           setRequest((prev) => ({
                                             ...prev,
                                             status: e.target.value,
@@ -281,9 +457,6 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                                         value={request.status}
                                         hidden={!statusChanger}
                                       >
-                                        <option value="Not Responded">
-                                          NOT RESPONDED
-                                        </option>
                                         <option value="Pending">PENDING</option>
                                         <option value="Paid">PAID</option>
                                         <option value="Processing">
@@ -292,8 +465,8 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                                         <option value="Cancelled">
                                           CANCELLED
                                         </option>
-                                        <option value="Completed">
-                                          COMPLETED
+                                        <option value="Transaction Completed">
+                                          TRANSACTION COMPLETED
                                         </option>
                                         <option value="Rejected">
                                           REJECTED
@@ -310,7 +483,7 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                                     <input
                                       type="checkbox"
                                       name="isRepliable"
-                                      defaultChecked={newMessage.isRepliable}
+                                      checked={newMessage.isRepliable}
                                       onChange={handleChange}
                                       className="hs-tooltip-toggle sr-only peer"
                                     />
@@ -428,6 +601,13 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                                         name="message"
                                         onChange={handleChange}
                                         rows={7}
+                                        value={
+                                          newMessage.message
+                                            ? newMessage.message
+                                            : statusChanger
+                                            ? `The status of your service request is ${request.status}`
+                                            : ""
+                                        }
                                         className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                                         placeholder="Input response..."
                                       ></textarea>
@@ -514,6 +694,19 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                                                     id="status"
                                                     name="status"
                                                     onChange={(e) => {
+                                                      if (
+                                                        statusChanger &&
+                                                        (!newMessage.message ||
+                                                          newMessage.message.trim() ===
+                                                            "")
+                                                      ) {
+                                                        setNewMessage(
+                                                          (prev) => ({
+                                                            ...prev,
+                                                            message: `The status of your service request is ${e.target.value}`,
+                                                          })
+                                                        );
+                                                      }
                                                       setRequest((prev) => ({
                                                         ...prev,
                                                         status: e.target.value,
@@ -523,9 +716,6 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                                                     value={request.status}
                                                     hidden={!statusChanger}
                                                   >
-                                                    <option value="Not Responded">
-                                                      NOT RESPONDED
-                                                    </option>
                                                     <option value="Pending">
                                                       PENDING
                                                     </option>
@@ -538,8 +728,8 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                                                     <option value="Cancelled">
                                                       CANCELLED
                                                     </option>
-                                                    <option value="Completed">
-                                                      COMPLETED
+                                                    <option value="Transaction Completed">
+                                                      TRANSACTION COMPLETED
                                                     </option>
                                                     <option value="Rejected">
                                                       REJECTED
@@ -556,7 +746,7 @@ function ReplyServiceModal({ request, setReques, brgy }) {
                                                 <input
                                                   type="checkbox"
                                                   name="isRepliable"
-                                                  defaultChecked={
+                                                  checked={
                                                     newMessage.isRepliable
                                                   }
                                                   onChange={handleChange}
@@ -622,6 +812,10 @@ function ReplyServiceModal({ request, setReques, brgy }) {
             </div>
           </div>
         </div>
+        {submitClicked && <ReplyLoader replyingStatus="replying" />}
+        {replyingStatus && (
+          <ReplyLoader replyingStatus={replyingStatus} error={error} />
+        )}
       </div>
     </div>
   );

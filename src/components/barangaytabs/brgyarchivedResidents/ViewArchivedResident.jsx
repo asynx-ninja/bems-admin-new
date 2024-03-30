@@ -1,9 +1,17 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import GetBrgy from "../../GETBrgy/getbrgy";
+
 function ViewResidentModal({ user, setUser, brgy }) {
-  const information = GetBrgy(brgy)
+  const [verification, setVerification] = useState({
+    ...user.verification,
+  });
+
+
+
+  const information = GetBrgy(brgy);
   const religions = [
     "Roman Catholic",
     "Islam",
@@ -35,18 +43,21 @@ function ViewResidentModal({ user, setUser, brgy }) {
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
               {/* Header */}
-              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#396288] to-[#013D74] overflow-hidden rounded-t-2xl"   style={{
-              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+              <div
+                className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+                style={{
+                  background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                }}
+              >
                 <h3
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  VIEW RESIDENT DETAILS
+                  VIEW ARCHIVED RESIDENT
                 </h3>
               </div>
 
-              <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+              <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
                 <form>
                   <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                     <div className="flex flex-col mb-1 w-full">
@@ -492,7 +503,7 @@ function ViewResidentModal({ user, setUser, brgy }) {
                             type="text"
                             id="facebook_name"
                             className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                            value={user.username}
+                            value={user.socials?.facebook?.name ?? ""}
                             placeholder=""
                             disabled
                           />
@@ -504,7 +515,7 @@ function ViewResidentModal({ user, setUser, brgy }) {
                               type="text"
                               id="facebook_link"
                               className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                              value={user.username}
+                              value={user.socials?.facebook?.link ?? ""}
                               placeholder=""
                               disabled
                             />
@@ -541,7 +552,7 @@ function ViewResidentModal({ user, setUser, brgy }) {
                             type="text"
                             id="facebook_name"
                             className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                            value={user.username}
+                            value={user.socials?.twitter?.name ?? ""}
                             placeholder=""
                             disabled
                           />
@@ -553,7 +564,7 @@ function ViewResidentModal({ user, setUser, brgy }) {
                               type="text"
                               id="facebook_link"
                               className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                              value={user.username}
+                              value={user.socials?.twitter?.link ?? ""}
                               placeholder=""
                               disabled
                             />
@@ -590,7 +601,7 @@ function ViewResidentModal({ user, setUser, brgy }) {
                             type="text"
                             id="facebook_name"
                             className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                            value={user.username}
+                            value={user.socials?.instagram?.name ?? ""}
                             placeholder=""
                             disabled
                           />
@@ -602,10 +613,270 @@ function ViewResidentModal({ user, setUser, brgy }) {
                               type="text"
                               id="facebook_link"
                               className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                              value={user.username}
+                              value={user.socials?.instagram?.link ?? ""}
                               placeholder=""
                               disabled
                             />
+                          </div>
+                        </div>
+                      </div>
+
+                      <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium mt-5 text-lg md:text-lg mb-2">
+                        ACCOUNT VERIFICATION
+                      </b>
+                      <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
+                        <div className="w-full">
+                          <div className="flex flex-col items-center space-y-2 relative">
+                            <div className="w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold mb-2 mt-2"
+                                htmlFor="name"
+                              >
+                                Primary ID
+                              </label>
+                              <select
+                                name="type"
+                                className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                                disabled
+                                value={user?.verification?.primary_id}
+                              >
+                                <option>-- Select Primary ID --</option>
+                                <option value="Philippine Passport">
+                                  Philippine Passport
+                                </option>
+                                <option value="SSS/GSIS/UMID">
+                                  SSS/GSIS/UMID
+                                </option>
+                                <option value="Driver's License">
+                                  Driver's License
+                                </option>
+                                <option value="PRC ID">PRC ID</option>
+                                <option value="OWWA ID">OWWA ID</option>
+                                <option value="iDOLE Card">iDOLE Card</option>
+                                <option value="Voter's ID">Voter's ID</option>
+                                <option value="Voter's Certification">
+                                  Voter's Certification
+                                </option>
+                                <option value="Firearms License">
+                                  Firearms License
+                                </option>
+                                <option value="Senior Citizen ID">
+                                  Senior Citizen ID
+                                </option>
+                                <option value="PWD ID">PWD ID</option>
+                                <option value="NBI Clearance">
+                                  NBI Clearance
+                                </option>
+                                <option value="Alien Certification of Registration or Immigrant Certificate of Registration">
+                                  Alien Certification of Registration or
+                                  Immigrant Certificate of Registration
+                                </option>
+                                <option value="PhilHealth ID">
+                                  PhilHealth ID
+                                </option>
+                                <option value="GOCC ID">GOCC ID</option>
+                                <option value="IBP ID">IBP ID</option>
+                                <option value="School ID">School ID</option>
+                                <option value="Current Valid ePassport">
+                                  Current Valid ePassport
+                                </option>
+                              </select>
+                            </div>
+
+                            <div className="w-full">
+                              <div className="mb-4">
+                                <span className="sr-only">
+                                  Choose profile photo
+                                </span>
+                                <input
+                                  type="file"
+                                  name="primary"
+                                  accept="image/*"
+                                  multiple
+                                  disabled
+                                  className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                                />
+                              </div>
+
+                              <div className="flex flex-row gap-2 overflow-hidden overflow-x-auto">
+                                {user?.verification?.primary_file &&
+                                  user?.verification?.primary_file.length > 0 &&
+                                  user?.verification?.primary_file.map(
+                                    (item, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
+                                      >
+                                        {item.hasOwnProperty("link") ? (
+                                          <img
+                                            src={item.link}
+                                            alt={`Primary File ${idx + 1}`}
+                                            className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          />
+                                        ) : (
+                                          <img
+                                            src={URL.createObjectURL(item)}
+                                            alt={`Primary File ${idx + 1}`}
+                                            className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          />
+                                        )}
+                                        {/* You can customize the following section based on your needs */}
+                                        <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
+                                          <label className="text-xs pl-2">
+                                            {item.name}
+                                          </label>
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-center space-y-2 relative mt-3">
+                            <div className="w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold mb-2 mt-2"
+                                htmlFor="name"
+                              >
+                                Secondary ID
+                              </label>
+                              <select
+                                name="type"
+                                className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                                disabled
+                                value={user?.verification?.secondary_id}
+                              >
+                                <option>-- Select Secondary ID --</option>
+                                <option value="TIN ID">TIN ID</option>
+                                <option value="Postal ID">Postal ID</option>
+                                <option value="Barangay Certification">
+                                  Barangay Certification
+                                </option>
+                                <option value="GSIS e-Card">GSIS e-Card</option>
+                                <option value="Seaman's Book">
+                                  Seaman's Book
+                                </option>
+                                <option value="NCWDP Certification">
+                                  NCWDP Certification
+                                </option>
+                                <option value="DSWD Certification">
+                                  DSWD Certification
+                                </option>
+                                <option value="Company ID">Company ID</option>
+                                <option value="Police Clearance">
+                                  Police Clearance
+                                </option>
+                                <option value="Barangay Clearance">
+                                  Barangay Clearance
+                                </option>
+                                <option value="Cedula">Cedula</option>
+                                <option value="Government Service Record">
+                                  Government Service Record
+                                </option>
+                                <option value="Elementary or High School Form 137 Records">
+                                  Elementary or High School Form 137 Records
+                                </option>
+                                <option value="Transcript of Records from University">
+                                  Transcript of Records from University
+                                </option>
+                                <option value="Land Title">Land Title</option>
+                                <option value="PSA Marriage Contract">
+                                  PSA Marriage Contract
+                                </option>
+                                <option value="PSA Birth Certificate">
+                                  PSA Birth Certificate
+                                </option>
+                                <option value="Homeowner's Certification">
+                                  Homeowner's Certification
+                                </option>
+                              </select>
+
+                              <div className="flex flex-row gap-2 overflow-hidden overflow-x-auto">
+                                {user?.verification?.secondary_file &&
+                                  user?.verification?.secondary_file.length >
+                                    0 &&
+                                  user?.verification?.secondary_file.map(
+                                    (item, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
+                                      >
+                                        {item.hasOwnProperty("link") ? (
+                                          <img
+                                            src={item.link}
+                                            alt={`Secondary File ${idx + 1}`}
+                                            className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                            onClick={() => handleImageTab(item)}
+                                          />
+                                        ) : (
+                                          <img
+                                            src={URL.createObjectURL(item)}
+                                            alt={`Secondary File ${idx + 1}`}
+                                            className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                            onClick={() => handleImageTab(item)}
+                                          />
+                                        )}
+                                        {/* You can customize the following section based on your needs */}
+                                        <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
+                                          <label className="text-xs pl-2">
+                                            {item.name}
+                                          </label>
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-center space-y-2 relative mt-3">
+                            <div className="w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold mb-2 mt-2"
+                                htmlFor="name"
+                              >
+                                Selfie of the Resident
+                              </label>
+                            </div>
+
+                            <div className="w-full">
+                              {user?.verification?.selfie &&
+                                (Array.isArray(user?.verification?.selfie) ? (
+                                  user?.verification?.selfie.map(
+                                    (item, idx) => <></>
+                                  )
+                                ) : (
+                                  <div
+                                    className="w-full border border-gray-300 rounded-xl bg-gray-300 cursor-pointer mt-2"
+                                    onClick={() =>
+                                      handleImageClick(
+                                        user?.verification?.selfie
+                                      )
+                                    }
+                                  >
+                                    <img
+                                      src={
+                                        user?.verification?.selfie instanceof
+                                        File
+                                          ? URL.createObjectURL(
+                                              user?.verification?.selfie
+                                            )
+                                          : user?.verification?.selfie.hasOwnProperty(
+                                              "link"
+                                            )
+                                          ? user?.verification?.selfie.link
+                                          : user?.verification?.selfie.uri
+                                      }
+                                      alt={`Selfie`}
+                                      className="w-full h-[400px] px-2 py-2 object-cover rounded-xl"
+                                    />
+                                    <div className="text-black pb-2 ml-2 rounded-b-xl">
+                                      {user?.verification?.selfie.name}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
                           </div>
                         </div>
                       </div>

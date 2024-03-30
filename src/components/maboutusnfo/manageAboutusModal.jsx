@@ -33,7 +33,7 @@ function ManageAboutus({ brgy, aboutusInfo, setAboutusinfo }) {
     e.preventDefault();
     try {
     // Check if any field is empty
-    if (!aboutusInfo.title || !aboutusInfo.details || !banner) {
+    if (!aboutusInfo.title || !aboutusInfo.details) {
       setError("Please fill out all required fields.");
       return; // Prevent further execution of handleSubmit
     }

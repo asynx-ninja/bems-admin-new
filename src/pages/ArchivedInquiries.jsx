@@ -77,8 +77,8 @@ const Inquiries = () => {
   };
   const handleResetFilter = () => {
     setStatusFilter("all");
-    setInquiries();
     setSearchQuery("");
+    setFilteredInquiries();
   };
   const checkAllHandler = () => {
     const inquiriesToCheck = Inquiries.length > 0 ? Inquiries : inquiries;
