@@ -33,12 +33,12 @@ const SubPendingRequest = () => {
     setCurrentPage(selected);
   };
   return (
-    <div className="w-full lg:w-6/12 md:w-full flex flex-col h-full ">
+    <div className="w-full xxl:w-6/12 md:w-full flex flex-col h-full ">
       <div className="flex flex-col max-h-screen">
         <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4 shrink-0">
           PENDING BARANGAY SERVICES
         </b>
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto lg:h-[calc(100vh_-_480px)] xxl:h-[calc(100vh_-_465px)] xxxl:h-[calc(100vh_-_410px)] w-full">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto lg:h-[calc(100vh_-_580px)] xxl:h-[calc(100vh_-_465px)] xxxl:h-[calc(100vh_-_410px)] w-full">
         <table className="relative table-auto w-full ">
           <thead className="uppercase text-xs md:text-sm bg-gray-100 sticky top-0">
               <tr>
@@ -120,7 +120,7 @@ const SubPendingRequest = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4 bg-[#295141] flex items-center justify-between rounded-b-xl sm:flex-col-reverse md:flex-row sm:py-3">
+      <div className="lg:py-4 lg:px-4 bg-[#295141] flex items-center justify-between rounded-b-xl lg:flex-col-reverse flex-col-reverse  xxl:flex-row sm:py-3">
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
