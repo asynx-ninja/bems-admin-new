@@ -11,7 +11,6 @@ import { useSearchParams } from "react-router-dom";
 import Breadcrumbs from "../../components/barangayaccount/Breadcrumbs";
 import ViewArchivedAdmin from "../../components/barangayaccount/ViewArchivedAdmin";
 import RestoreAdminModal from "../../components/barangayaccount/RestoreAdminModal";
-import GenerateReportsModal from "../../components/barangayaccount/GenerateReportsModal";
 import noData from "../../assets/image/no-data.png";
 const ArchiveBarangayAccount = () => {
   useEffect(() => {
@@ -22,7 +21,6 @@ const ArchiveBarangayAccount = () => {
   const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
-  const brgy = "MUNISIPYO";
   const [user, setUser] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -99,7 +97,6 @@ const ArchiveBarangayAccount = () => {
     "PROFILE",
     "NAME",
     "TYPE",
-    // "GENDER",
     "BARANGAY",
     "ACCOUNT STATUS",
     "ACTIONS",
@@ -112,7 +109,7 @@ const ArchiveBarangayAccount = () => {
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white uppercase"
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white uppercase"
               style={{ letterSpacing: "0.2em" }}
             >
               ARCHIVED barangay ADMIN
@@ -373,7 +370,7 @@ const ArchiveBarangayAccount = () => {
         </div>
         <ViewArchivedAdmin user={user} setUser={setUser} />
         <RestoreAdminModal selectedItems={selectedItems} />
-        <GenerateReportsModal />
+        
       </div>
     </div>
   );

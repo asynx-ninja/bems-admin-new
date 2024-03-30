@@ -6,7 +6,7 @@ function ViewArchivedServiceModal({ selectedService, serSelectedService, brgy })
   const [files, setFiles] = useState([]);
   const [edit, setEdit] = useState(false);
 const information = GetBrgy(brgy);
-  console.log("dada", selectedService);
+ 
   const handleFileChange = (e) => {
     e.preventDefault();
 

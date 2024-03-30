@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 function ViewNotification({notification, setNotification, id, brgy }) {
-  // console.log("Notifications: ", notification);
-  return (
+   return (
         <div
           id="hs-modal-viewNotification"
           className="hs-overlay hidden fixed top-0 left-0 z-[70] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"

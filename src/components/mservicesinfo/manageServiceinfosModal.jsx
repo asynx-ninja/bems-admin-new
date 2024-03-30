@@ -63,7 +63,7 @@ function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos }) {
       if (response.status === 200) {
         const formData = new FormData();
         formData.append("file", icon);
-        console.log([...formData]);
+        
         formData.append("servicesinfo", JSON.stringify(servicesinfos));
 
         const result = await axios.patch(
@@ -72,7 +72,7 @@ function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos }) {
         );
         if (result.status === 200) {
           // Handle successful update
-          console.log("Update successful");
+         
           setTimeout(() => {
             setSubmitClicked(false);
             setUpdatingStatus("success");

@@ -162,7 +162,7 @@ function ReplyRegistrationModal({ application, setApplication }) {
         folder_id: application.folder_id,
       };
 
-      console.log("obj", obj);
+ 
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 

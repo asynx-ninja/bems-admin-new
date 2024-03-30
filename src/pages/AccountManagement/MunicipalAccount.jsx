@@ -1,22 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiMessageSquare } from "react-icons/fi";
+
 import { FiEdit } from "react-icons/fi";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive, FaPlus, FaUserCircle } from "react-icons/fa";
-import { BsPrinter } from "react-icons/bs";
+
 import { useSearchParams } from "react-router-dom";
 import ArchiveAccAdmin from "../../components/municipalaccount/ArchiveAdminModal";
 import StatusAccAdmin from "../../components/municipalaccount/StatusAdmin";
-import GenerateReportsModal from "../../components/municipalaccount/GenerateReportsModal";
 import AddAdminModal from "../../components/municipalaccount/AddAdminModal";
 import ManageAdminModal from "../../components/municipalaccount/ManageAdminModal";
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import API_LINK from "../../config/API";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import PrintPDF from "../../components/municipalaccount/form/PrintPDF";
+
 import noData from "../../assets/image/no-data.png";
 
 const AccountManagement = () => {
@@ -492,7 +490,7 @@ const AccountManagement = () => {
       </div>
       <ArchiveAccAdmin selectedItems={selectedItems} />
       {/* <StatusAccAdmin /> */}
-      <GenerateReportsModal user={user} setUser={setUser} />
+     
       <AddAdminModal brgy={brgy} occupation={occupation} type={type} />
       <ManageAdminModal user={user} setUser={setUser} />
       <StatusAccAdmin status={status} setStatus={setStatus} />

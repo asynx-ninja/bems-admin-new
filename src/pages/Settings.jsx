@@ -98,7 +98,7 @@ const Settings = () => {
         const res = await axios.get(`${API_LINK}/users/specific/${id}`);
         if (res.status === 200) {
           setUserData(res.data[0]);
-          console.log(res.data[0].profile.link);
+       
           setUserAddress({
             street: res.data[0].address.street,
             brgy: res.data[0].address.brgy,
@@ -192,7 +192,7 @@ const Settings = () => {
     });
   };
 
-  // console.log(userSocials)
+ 
 
   const saveChanges = async (e) => {
     if (
@@ -212,7 +212,7 @@ const Settings = () => {
       const result = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${userAddress.brgy}`
       );
-      console.log("wewewesss", userAddress.brgy);
+      
       if (result.status === 200) {
         const obj = {
           firstName: userData.firstName,
@@ -290,7 +290,7 @@ const Settings = () => {
         } else if (response.status === 200) {
           setSubmitClicked(true);
           setError(null);
-          console.log("Update successful:", response);
+         
           setUserData(response.data);
           setUserAddress({
             street: response.data.address.street,
@@ -343,8 +343,7 @@ const Settings = () => {
         `${API_LINK}/auth/${oldUsername}/${oldPassword}`
       );
 
-      console.log("mm", user);
-      console.log(response);
+  
       if (response.status === 200) {
         setSubmitClicked(true);
         setError(null);

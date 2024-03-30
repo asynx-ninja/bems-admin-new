@@ -5,16 +5,14 @@ import Profit from "./BarangayTabs/Reports";
 import Services from "./BarangayTabs/BrgyServices";
 import ServiceRequest from "./BarangayTabs/BrgyServiceRequests";
 import Officials from "./BarangayTabs/BrgyOfficials";
-import ArchivedOfficials from "./BarangayTabs/BrgyArchivedOfficials";
+
 import Residents from "./BarangayTabs/BrgyResidents";
 import Inquiries from "./BarangayTabs/BrgyInquiries";
 import Application from "./BarangayTabs/BrgyEventsApplication";
 import Blotters from "./BarangayTabs/BrgyBlotters";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Announcement from "./BarangayTabs/BrgyAnnouncements";
-import { MdExpandMore, MdExpandLess } from "react-icons/md";
-import axios from "axios";
-import API_LINK from "../config/API";
+
 import GetBrgy from "../components/GETBrgy/getbrgy";
 function BarangayDetails() {
   const [collapseOpen, setCollapseOpen] = useState(false);
@@ -37,14 +35,6 @@ function BarangayDetails() {
     // Store the active tab in local storage whenever it changes
     localStorage.setItem("activeTab", activeTab);
   }, [activeTab]);
-  // useEffect(() => {
-  //   return () => {
-  //     // Reset the active tab to the default value when the component unmounts
-  //     setActiveTab(1);
-  //   };
-  // }, []);
-
-  console.log("SAASA", id);
 
   return (
     <div className="mx-4 lg:mt-[1rem] mt-4 overflow-y-auto lg:h-[calc(100vh_-_90px)] ">
@@ -180,10 +170,10 @@ function BarangayDetails() {
               type="button"
               className={`hs-tab-active:font-semibold uppercase mx-1 my-1 font-bold 
                py-2 px-6 inline-flex items-center gap-2 rounded-full text-xs lg:text-sm whitespace-nowrap text-black hover:bg-white hover:text-[#295141] active ${
-                activeTab === 4
-                  ? "hs-tab-active:bg-gradient-to-r from-[#295141] to-[#408D51] "
-                  : ""
-              } `}
+                 activeTab === 4
+                   ? "hs-tab-active:bg-gradient-to-r from-[#295141] to-[#408D51] "
+                   : ""
+               } `}
               style={{
                 background:
                   activeTab === 4

@@ -59,7 +59,7 @@ function AddAdminModal({ brgy, occupation }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-console.log("g",user.type)
+ 
       if (
         !user.firstName.trim() ||
         !user.lastName.trim() ||

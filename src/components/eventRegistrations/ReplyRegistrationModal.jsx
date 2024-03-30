@@ -200,7 +200,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
         folder_id: application.folder_id,
       };
 
-      console.log("obj", obj);
+ 
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
@@ -259,7 +259,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
           logo: event.collections.logo,
         };
 
-        console.log("Notify: ", notify);
+     
 
         const result = await axios.post(`${API_LINK}/notification/`, notify, {
           headers: {

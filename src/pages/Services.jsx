@@ -8,7 +8,6 @@ import { MdOutlineEditNote } from "react-icons/md";
 import { HiDocumentAdd } from "react-icons/hi";
 import { MdEditDocument } from "react-icons/md";
 import ReactPaginate from "react-paginate";
-import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import CreateServiceModal from "../components/services/CreateServiceModal";
 import ArchiveServicesModal from "../components/services/ArchiveServicesModal";
 import axios from "axios";
@@ -281,21 +280,21 @@ const Services = () => {
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Approved")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     APPROVED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Disapproved")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     DISAPPROVED
@@ -605,7 +604,7 @@ const Services = () => {
       <CreateServiceModal brgy={brgy} />
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
       <ManageServiceModal service={service} setService={setService} brgy={brgy} />
-      <GenerateReportsModal />
+      
       <AddServicesForm service_id={service.service_id} brgy={brgy} />
       <EditServicesForm service_id={service.service_id} brgy={brgy} />
       <AddServicesDocument service_id={service.service_id} brgy={brgy} officials={officials}/>

@@ -20,7 +20,7 @@ function ArchiveRegistrationModal({ selectedItems }) {
           HSOverlay.close(document.getElementById("hs-archive-requests-modal"));
         }, 3000);
 
-        console.log("error", selectedItems);
+ 
         return;
       }
       setSubmitClicked(true);

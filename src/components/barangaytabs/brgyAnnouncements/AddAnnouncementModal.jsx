@@ -58,8 +58,7 @@ function CreateAnnouncementModal() {
         e.target.name === "isOpen" ? e.target.checked : e.target.value,
     }));
   };
-
-  console.log(announcement);
+ 
 
   const handleFileChange = (e) => {
     e.preventDefault();

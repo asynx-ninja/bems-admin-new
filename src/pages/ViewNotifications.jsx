@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { FaCamera } from "react-icons/fa";
-// import banner from "../assets/image/1.png";
+import React, { useEffect} from "react";
+ 
 import { useLocation } from "react-router-dom";
 import header from "../assets/image/notif-header-1.png";
 import { Link } from "react-router-dom";
@@ -19,7 +18,7 @@ const ViewNotifications = ({ setNotification }) => {
   const notification = notificationData
     ? JSON.parse(decodeURIComponent(notificationData))
     : null;
-  console.log("Notification Passed: ", notification);
+ 
 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 10);
@@ -42,7 +41,7 @@ const ViewNotifications = ({ setNotification }) => {
           `${API_LINK}/notification/get_id/?id=${id}`
         );
 
-        console.log("itoba", response.data[0]);
+     
         // Handle the response data here
       } catch (error) {
         console.error(error);
@@ -62,7 +61,7 @@ const ViewNotifications = ({ setNotification }) => {
         const isRead = response.data.read_by.some(
           (item) => item.readerId === id
         );
-        console.log("itoulit", response.data);
+   
 
         if (response.status === 200) {
           if (!isRead) {
@@ -74,8 +73,7 @@ const ViewNotifications = ({ setNotification }) => {
               }
             );
 
-            console.log("Update response", updateResponse.data);
-
+          
           } else {
             // User has already read the notification, do nothing
             console.log("User has already read the notification");

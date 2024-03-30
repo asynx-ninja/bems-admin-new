@@ -5,17 +5,19 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { HiDocumentAdd } from "react-icons/hi";
+import { MdEditDocument } from "react-icons/md";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaArchive } from "react-icons/fa";
-import ReplyServiceModal from "../../components/barangaytabs/brgyserviceRequests/ReplyServiceModal";
-import ArchiveRequestsModal from "../../components/barangaytabs/brgyserviceRequests/ArchiveRequestsModal";
-import imgSrc from "/imgs/bg-header.png";
-import ViewRequestModal from "../../components/barangaytabs/brgyserviceRequests/ViewRequestModal";
+import ReplyServiceModal from "../../components/barangaytabs/brgyblotters/ReplyServiceModal";
+import ViewBlotterModal from "../../components/barangaytabs/brgyblotters/ViewBlotterModal";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import noData from "../../assets/image/no-data.png";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
+import AddBlotterDocument from "../../components/barangaytabs/brgyblotters/document_forms/create_document/AddBlotterDocument";
+import EditBlotterDocument from "../../components/barangaytabs/brgyblotters/document_forms/edit_document/EditBlotterDocument";
 
 const Blotters = () => {
   const [requests, setRequests] = useState([]);
@@ -44,35 +46,61 @@ const Blotters = () => {
 
   const [officials, setOfficials] = useState([]);
 
-  
+  // blotter related
+  const [blotterDetails, setBlotterDetails] = useState([]);
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/getdoneblotters?brgy=${brgy}&archived=false&status=Transaction Completed&type=Barangay - Blotters`
+          `${API_LINK}/requests/getdoneblotters?brgy=${brgy}&archived=false`
         );
-  
         if (response.status === 200) {
-          // Extracting data from the response
-          const { result, pageCount } = response.data;
-  
-          // Update state variables
+          let { result } = response.data;
+
+          // Convert status of fetched requests to "IN PROGRESS"
+          result = result.map((request) => {
+            return {
+              ...request,
+              status: "In Progress",
+            };
+          });
+
           setRequests(result);
-          setPageCount(pageCount);
           setFilteredRequests(result);
         } else {
-          // Handle the case when request is unsuccessful
           setRequests([]);
+          setFilteredRequests([]);
         }
       } catch (error) {
         console.error(error);
+        setRequests([]);
+        setFilteredRequests([]);
       }
     };
-  
+
     fetchRequests();
-  }, [brgy, currentPage]);
-  
+  }, [brgy]);
+
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/blotter/all_patawag/?brgy=${brgy}&archived=false`
+        );
+
+        // filter
+        setBlotterDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+        setBlotterDetails([]);
+      }
+    };
+
+    fetch();
+  }, [brgy]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -268,7 +296,7 @@ const Blotters = () => {
     <div className="">
     <div className="flex flex-col ">
       <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
-        <div
+          <div
             className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem] bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
@@ -278,37 +306,10 @@ const Blotters = () => {
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              BLOTTERS
+              PATAWAG (BLOTTERS)
             </h1>
           </div>
-          <div className="lg:w-3/5 flex flex-row justify-end items-center ">
-            <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
-              <div className="w-full rounded-lg ">
-                <Link to={`/brgyarchivedblotters/?id=${id}&brgy=${brgy}`}>
-                  <div className="hs-tooltip inline-block w-full">
-                    <button
-                      type="button"
-                      data-hs-overlay="#hs-modal-add"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg b w-full text-white font-medium text-sm text-center inline-flex items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"  style={{
-                        background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-                      }}
-                    >
-                      <FaArchive size={24} style={{ color: "#ffffff" }} />
-                      <span className="sm:block md:hidden sm:pl-5">
-                        Archived Blotters
-                      </span>
-                      <span
-                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                        role="tooltip"
-                      >
-                        Archived Blotters
-                      </span>
-                    </button>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </div>
+        
         </div>
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
@@ -319,7 +320,8 @@ const Blotters = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-[#295141]" style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-[#295141]"
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
@@ -353,39 +355,18 @@ const Blotters = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("In Progress")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                    IN PROGRESS
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Paid")}
+                    onClick={() => handleStatusFilter("Completed")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PAID
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Cancelled")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    CANCELLED
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Transaction Completed")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    TRANSACTION COMPLETED
+                    COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
@@ -394,6 +375,13 @@ const Blotters = () => {
                   >
                     REJECTED
                   </a>
+                  <a
+                    onClick={() => handleStatusFilter("NEW")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    NEW
+                  </a>
                 </ul>
               </div>
 
@@ -401,7 +389,8 @@ const Blotters = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-[#295141]" style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm bg-[#295141] "
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -492,9 +481,12 @@ const Blotters = () => {
               </div>
             </div>
 
-            <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12 lg:ml-2 xl:ml-0">
+            <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-4/12 lg:ml-2 xl:ml-0">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="  p-3 rounded-l-md bg-[#295141]" style={{ backgroundColor: information?.theme?.primary }}>
+                <button
+                  className="  p-3 rounded-l-md bg-[#295141]"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -538,23 +530,7 @@ const Blotters = () => {
                   }}
                 />
               </div>
-              <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
-                <div className="hs-tooltip inline-block w-full">
-                  <button
-                    type="button"
-                    data-hs-overlay="#hs-archive-requests-modal"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
-                  >
-                    <AiOutlineStop size={24} style={{ color: "#ffffff" }} />
-                    <span
-                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                      role="tooltip"
-                    >
-                      Archive Selected Requests
-                    </span>
-                  </button>
-                </div>
-              </div>
+            
             </div>
           </div>
         </div>
@@ -562,18 +538,12 @@ const Blotters = () => {
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xl:h-[calc(100vh_-_280px)] xxl:h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
-            <thead className=" sticky top-0 bg-[#295141]" style={{ backgroundColor: information?.theme?.primary }}>
+            <thead
+              className=" sticky top-0 bg-[#295141]"
+              style={{ backgroundColor: information?.theme?.primary }}
+            >
               <tr className="">
-                <th scope="col" className="px-6 py-4">
-                  <div className="flex justify-center items-center">
-                    <input
-                      type="checkbox"
-                      name=""
-                      onClick={checkAllHandler}
-                      id=""
-                    />
-                  </div>
-                </th>
+              
                 {tableHeader.map((item, idx) => (
                   <th
                     scope="col"
@@ -587,136 +557,183 @@ const Blotters = () => {
             </thead>
             <tbody className="odd:bg-slate-100">
               {filteredRequests.length > 0 ? (
-                filteredRequests.map((item, index) => (
-                  <tr key={index} className="odd:bg-slate-100 text-center">
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item._id)}
-                          value={item._id}
-                          onChange={checkboxHandler}
-                        />
-                      </div>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-4">
-                        {item.req_id}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.service_name}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.form[0].lastName.value +
-                          ", " +
-                          item.form[0].firstName.value +
-                          " " +
-                          item.form[0].middleName.value}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 xxl:w-3/12">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
-                          {TimeFormat(item.createdAt) || ""}
+                filteredRequests.map((item, index) => {
+                  // Find the corresponding data in blotterDetails based on req_id
+                  const correspondingBlotterDetail = blotterDetails.find(
+                    (blotterItem) => blotterItem.req_id === item.req_id
+                  );
+
+                  // Extract status from blotterDetails
+                  let status = correspondingBlotterDetail
+                    ? correspondingBlotterDetail.status
+                    : "";
+
+                  // If blotter_status is empty or blank, set status to "In Progress"
+                  if (!status || status.trim() === "") {
+                    status = "NEW";
+                  }
+
+                  // Merge the status with the current item
+                  const mergedItem = {
+                    ...item,
+                    blotter_status: status,
+                  };
+
+                  // Apply status filter
+                  if (
+                    statusFilter !== "all" &&
+                    mergedItem.blotter_status !== statusFilter
+                  ) {
+                    return null; // Skip rendering if status doesn't match the filter
+                  }
+
+                  console.log("blotterDetail sa table: ", mergedItem);
+
+                  return (
+                    <tr key={index} className="odd:bg-slate-100 text-center">
+                     
+                      <td className="w-auto px-6 py-3">
+                        <span className="text-xs sm:text-sm text-black line-clamp-4">
+                          {item.req_id}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
-                      {item.status === "Transaction Completed" && (
-                        <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            TRANSACTION COMPLETED
+                      </td>
+                      <td className="w-auto px-6 py-3">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.service_name}
+                        </span>
+                      </td>
+                      <td className="w-auto px-6 py-3">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.form[0].lastName.value +
+                            ", " +
+                            item.form[0].firstName.value +
+                            " " +
+                            item.form[0].middleName.value}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 xxl:w-auto">
+                        <div className="flex justify-center items-center">
+                          <span className="text-xs sm:text-sm text-black line-clamp-2">
+                            {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                            {TimeFormat(item.createdAt) || ""}
                           </span>
                         </div>
-                      )}
-                      {item.status === "Rejected" && (
-                        <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            REJECTED
-                          </span>
-                        </div>
-                      )}
-                      {item.status === "Pending" && (
-                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
+                      </td>
+                      <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
+                        {mergedItem.blotter_status === "Completed" && (
+                          <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
+                              COMPLETED
+                            </span>
+                          </div>
+                        )}
+                        {mergedItem.blotter_status === "In Progress" && (
+                          <div className="flex items-center justify-center bg-[#d68f3d] m-2 rounded-lg">
+                            <span className="text-sm text-white font-bold p-3 xl:mx-3">
+                              IN PROGRESS
+                            </span>
+                          </div>
+                        )}
+                        {mergedItem.blotter_status === "Rejected" && (
+                          <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
+                              REJECTED
+                            </span>
+                          </div>
+                        )}
+                        {mergedItem.blotter_status === "NEW" && (
+                          <div className="flex items-center justify-center bg-[#6d6fcc] m-2 rounded-lg">
+                            <span className="text-sm text-white font-bold p-3 xl:mx-1">
+                              NEW
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-2 xl:px-6 py-3">
+                        <div className="flex justify-center space-x-1 sm:space-x-none">
+                          <div className="hs-tooltip inline-block">
+                            <button
+                              type="button"
+                              data-hs-overlay="#hs-view-request-modal"
+                              onClick={() => handleView({ ...item })}
+                              className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            >
+                              <AiOutlineEye
+                                size={24}
+                                style={{ color: "#ffffff" }}
+                              />
+                            </button>
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              View Request
+                            </span>
+                          </div>
 
-                      {item.status === "Processing" && (
-                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PROCESSING
-                          </span>
-                        </div>
-                      )}
+                          <div className="hs-tooltip inline-block">
+                            <button
+                              type="button"
+                              data-hs-overlay="#hs-replys-modal"
+                              onClick={() => handleView({ ...item })}
+                              className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            >
+                              <AiOutlineSend
+                                size={24}
+                                style={{ color: "#ffffff" }}
+                              />
+                            </button>
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              Reply to Request
+                            </span>
+                          </div>
 
-                      {item.status === "Cancelled" && (
-                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            CANCELLED
-                          </span>
+                          <div className="hs-tooltip inline-block">
+                            <button
+                              type="button"
+                              data-hs-overlay="#hs-create-serviceDocument-modal"
+                              onClick={() => handleView({ ...item })}
+                              className="hs-tooltip-toggle text-white bg-[#8b1814] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            >
+                              <HiDocumentAdd
+                                size={24}
+                                style={{ color: "#ffffff" }}
+                              />
+                            </button>
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              Create Blotter Document
+                            </span>
+                          </div>
+                          <div className="hs-tooltip inline-block">
+                            <button
+                              type="button"
+                              data-hs-overlay="#hs-edit-serviceDocument-modal"
+                              onClick={() => handleView({ ...item })}
+                              className="hs-tooltip-toggle text-white bg-[#144c8b] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            >
+                              <MdEditDocument
+                                size={24}
+                                style={{ color: "#ffffff" }}
+                              />
+                            </button>
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              Edit Blotter Document
+                            </span>
+                          </div>
                         </div>
-                      )}
-                    </td>
-                    <td className="px-2 xl:px-6 py-3">
-                      <div className="flex justify-center space-x-1 sm:space-x-none">
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-view-request-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <AiOutlineEye
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            View Request
-                          </span>
-                        </div>
-
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-reply-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <AiOutlineSend
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            Reply to Request
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td
@@ -736,7 +753,10 @@ const Blotters = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3 bg-[#295141]" style={{ backgroundColor: information?.theme?.primary }}>
+      <div
+        className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3 bg-[#295141]"
+        style={{ backgroundColor: information?.theme?.primary }}
+      >
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
@@ -754,14 +774,15 @@ const Blotters = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} brgy={brgy} officials={officials} />
+        <ViewBlotterModal request={request} brgy={brgy} officials={officials} />
       ) : null}
       <ReplyServiceModal
         request={request}
         setRequest={setRequest}
         brgy={brgy}
       />
-      <ArchiveRequestsModal selectedItems={selectedItems} />
+      <AddBlotterDocument request={request} brgy={brgy} />
+      <EditBlotterDocument request={request} brgy={brgy} />
     </div>
   );
 };

@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive, FaPlus } from "react-icons/fa";
-import { BsPrinter } from "react-icons/bs";
+ 
 import moment from "moment";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
@@ -158,11 +158,11 @@ const MServicesInfo = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
+   
 
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
+    
   };
 
   const onChangeDate = (e) => {
@@ -190,8 +190,7 @@ const MServicesInfo = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
+      
       setFilteredServices(filters(selected, date));
     }
   };
@@ -201,7 +200,7 @@ const MServicesInfo = () => {
         <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
           <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               SERVICES INFORMATION
@@ -293,7 +292,7 @@ const MServicesInfo = () => {
                   RESET FILTERS
                 </a>
                 <hr className="border-[#4e4e4e] mt-1" />
-                <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                   <label className="text-black font-medium mb-1">
                     DATE RANGE
                   </label>

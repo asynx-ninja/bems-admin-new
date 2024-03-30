@@ -137,7 +137,7 @@ function ReplyServiceModal({ request, setReques, brgy }) {
         folder_id: request.folder_id,
       };
 
-      console.log("obj", obj);
+ 
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
@@ -150,7 +150,7 @@ function ReplyServiceModal({ request, setReques, brgy }) {
         formData
       );
 
-      console.log(response);
+    
 
       // window.location.reload();
     } catch (error) {

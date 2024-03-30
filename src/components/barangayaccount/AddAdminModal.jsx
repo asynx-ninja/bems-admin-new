@@ -33,7 +33,7 @@ function AddAdminModal({ occupation, type }) {
     city: "Rodriguez, Rizal",
     brgy: "",
   });
-  console.log(type);
+ 
   const handleButtonClick = (e) => {
     e.preventDefault();
     setUser((prev) => ({
@@ -73,7 +73,7 @@ function AddAdminModal({ occupation, type }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      console.log("ss", user.brgy);
+   
       if (
         !user.firstName.trim() ||
         !user.lastName.trim() ||

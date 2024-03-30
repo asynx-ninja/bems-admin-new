@@ -1,5 +1,5 @@
 import React from "react";
-import Error from "../../assets/modals/Error.png";
+ 
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { useState } from "react";
@@ -21,7 +21,7 @@ function ArchiveOfficialModal({ selectedItems }) {
           HSOverlay.close(document.getElementById("hs-archive-official-modal"));
         }, 3000);
 
-        console.log("error", selectedItems);
+ 
         return;
       }
       setSubmitClicked(true);

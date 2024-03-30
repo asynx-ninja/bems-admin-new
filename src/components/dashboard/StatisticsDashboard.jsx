@@ -38,7 +38,7 @@ const StatisticsDashboard = () => {
   const id = searchParams.get("id");
   const brgy = "MUNISIPYO";
   const to = "Admin";
-  console.log(id);
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -219,21 +219,7 @@ const StatisticsDashboard = () => {
     fetchData();
   }, [brgy]);
 
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     try {
-  //       const res = await axios.get(`${API_LINK}/admin/specific/${id}`);
-  //       if (res.status === 200) {
-  //         setUserData(res.data[0]);
-
-  //       } else {
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetch();
-  // }, [id]);
+ 
 
   const gradients = [
     { gradient1: "from-[#2E3192]", gradient2: "to-[#2CAFFF]" },
@@ -331,7 +317,7 @@ const StatisticsDashboard = () => {
       icon: <FaPeopleGroup size={15} className="sm:block md:hidden" />,
     },
   ];
-  console.log("a", userData.name);
+ 
   return (
     <div className="flex flex-col w-full">
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl">

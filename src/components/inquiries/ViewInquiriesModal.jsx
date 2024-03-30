@@ -136,10 +136,7 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
       }));
     }
   };
-
-  console.log("StatusChanger: ", statusChanger);
-
-  console.log("New Message: ", newMessage.message);
+ 
 
   const DateFormat = (date) => {
     if (!date) return "";
@@ -171,7 +168,7 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
   const handleOnSend = async (e) => {
     e.preventDefault();
     setSubmitClicked(true);
-    console.log(newMessage);
+   
 
     try {
       
@@ -225,16 +222,14 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
             logo: logo,
           };
 
-          console.log("Inquiry: ", inquiry);
-          console.log("Notify: ", notify);
-          console.log("Result: ", response);
+       
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
             },
           });
-console.log("pangetmo", result)
+ 
           if (result.status === 200) {
             setTimeout(() => {
               setSubmitClicked(false);

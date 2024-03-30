@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive } from "react-icons/fa";
-import { FiEdit } from "react-icons/fi";
+ 
 import moment from "moment";
 import ArchiveModal from "../components/inquiries/ArchiveInquiryModal";
 import Status from "../components/inquiries/Status";
@@ -48,7 +48,7 @@ const Inquiries = () => {
       const response = await axios.get(
         `${API_LINK}/inquiries/admininquiries/?id=${id}&to=${to}&archived=false&status=${statusFilter}&page=${currentPage}`
       );
-      console.log("API URL:");
+     
 
       if (response.status === 200) {
         setInquiries(response.data.result);
@@ -66,8 +66,7 @@ const Inquiries = () => {
     setCurrentPage(selected);
   };
 
-  console.log("inquiries: ", filteredInquiries);
-
+  
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -134,7 +133,7 @@ const Inquiries = () => {
     switch (choice) {
       case "date":
         return inquiries.filter((item) => {
-          console.log(typeof new Date(item.compose.date), selectedDate);
+          
           return (
             new Date(item.compose.date).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -148,7 +147,7 @@ const Inquiries = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
+ 
 
         return inquiries.filter(
           (item) =>
@@ -175,11 +174,10 @@ const Inquiries = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
-
+    
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
+ 
   };
 
   const onChangeDate = (e) => {
@@ -206,8 +204,7 @@ const Inquiries = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
+      
       setFilteredInquiries(filters(selected, date));
     }
   };
@@ -236,7 +233,7 @@ const Inquiries = () => {
         <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
           <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               INQUIRIES
@@ -310,21 +307,21 @@ const Inquiries = () => {
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("In Progress")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     IN PROGRESS
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     COMPLETED
@@ -368,7 +365,7 @@ const Inquiries = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                  <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                     <label className="text-black font-medium mb-1">
                       DATE RANGE
                     </label>

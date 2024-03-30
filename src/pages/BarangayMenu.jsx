@@ -1,18 +1,15 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Logo from "../assets/header/montalban-logo.png";
-import { useSearchParams, useParams } from "react-router-dom";
+ 
+import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
 import { FaPlus } from "react-icons/fa";
 import AddBarangay from "../components/addbarangay/addBarangayModal"
 function BarangayMenu() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [information, setInformation] = useState({});
   const id = searchParams.get("id");
-  // const { id } = useParams();
-  console.log("ssdsds", id);
   const [barangays, setBarangays] = useState([]);
 
   useEffect(() => {
@@ -31,7 +28,7 @@ function BarangayMenu() {
     fetchBarangays();
   }, []);
 
-  console.log(barangays)
+ 
   return (
     <div className="mx-4 mt-4">
       <div className="flex flex-col justify-center items-center mx-auto mt-4 mb-2">

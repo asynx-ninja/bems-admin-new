@@ -1,17 +1,13 @@
 import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { FaArchive, FaPlus, FaTrash, FaUserCircle } from "react-icons/fa";
-import { BsPrinter } from "react-icons/bs";
-import { AiOutlineEye, AiOutlineStop } from "react-icons/ai";
+import { FaArchive, FaPlus, FaUserCircle } from "react-icons/fa";
+import { AiOutlineEye} from "react-icons/ai";
 import { FiEdit, FiMail } from "react-icons/fi";
 import ReactPaginate from "react-paginate";
-import GenerateReportsModal from "../../components/barangaytabs/brgyarchivedResidents/GenerateReportsModal";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
-import PrintPDF from "../../components/barangaytabs/brgyResidents/form/PrintPDF";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import noData from "../../assets/image/no-data.png";
 import AddResidentsModal from "../../components/barangaytabs/brgyResidents/AddResidentModal";
 import StatusResident from "../../components/barangaytabs/brgyResidents/StatusResident";
@@ -96,7 +92,6 @@ const Residents = () => {
         setFilteredResidents(response.data.result);
       } else setUsers([]);
 
-      console.log(response);
     };
 
     fetch();
@@ -144,7 +139,7 @@ const Residents = () => {
             }}
           >
             <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               MANAGE RESIDENTS
@@ -326,8 +321,6 @@ const Residents = () => {
                       );
                       setFilteredResidents(User);
                     }
-
-                    console.log("Officials Fetched", officials);
                   }}
                 />
               </div>
@@ -428,10 +421,10 @@ const Residents = () => {
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Verification Approval" && (
-                        <div className="flex w-full items-center justify-center bg-[#5586cf] xl:m-2 rounded-lg">
+                     {item.isApproved === "For Review" && (
+                        <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            VERIFICATION APPROVAL
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
@@ -459,18 +452,17 @@ const Residents = () => {
                     </td>
                     <td className="xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-modal-editResident"
-                            onClick={() => handleView({ ...item })}
+                      <div className="hs-tooltip inline-block">
+                          <Link
+                             to={`/brgyeditresident/?id=${id}&brgy=${brgy}`} 
+                             state={{...item}}
                             className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <AiOutlineEye
                               size={24}
                               style={{ color: "#ffffff" }}
                             />
-                          </button>
+                          </Link>
                           <span
                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                             role="tooltip"
@@ -552,8 +544,6 @@ const Residents = () => {
         />
       </div>
       <AddResidentsModal brgy={brgy} />
-      <GenerateReportsModal />
-
       <StatusResident
         user={user}
         setUser={setUser}
@@ -561,12 +551,12 @@ const Residents = () => {
         status={status}
         setStatus={setStatus}
       />
-         <MessageResidentModal 
+      <MessageResidentModal 
          user={user}
          setUser={setUser}
          brgy={brgy}
          />
-      <ManageResidentModal user={user} brgy={brgy} setUser={setUser} />
+       <ManageResidentModal user={user} setUser={setUser} brgy={brgy} />
     </div>
   );
 };

@@ -32,7 +32,7 @@ const Login = () => {
         `${API_LINK}/auth/${obj.username}/${obj.password}`
       );
       setErrorMessage("");
-      console.log(res);
+ 
       if (res.status === 200) {
         if (res.data[0].type === "Head Admin" || res.data[0].type === "Admin") {
           const id = res.data[0]._id;
@@ -89,7 +89,7 @@ const Login = () => {
               src={montalban_logo}
               className="absolute bottom-4 left-5 z-50 w-8/12"
               alt=""
-              srcset=""
+              srcSet=""
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -121,8 +121,8 @@ const Login = () => {
                   y2="253.5"
                   gradientUnits="userSpaceOnUse"
                 >
-                  <stop stop-color="white" />
-                  <stop offset="1" stop-color="#DCDCDC" />
+                  <stop stopColor="white" />
+                  <stop offset="1" stopColor="#DCDCDC" />
                 </linearGradient>
               </defs>
             </svg>
@@ -134,9 +134,9 @@ const Login = () => {
               <h1 className="font-heavy text-xl md:text-2xl lg:text-3xl text-center">
                 Login
               </h1>
-              <p className="sm:text-xs md:text-sm lg:text-base text-center font-regular">
+              {/* <p className="sm:text-xs md:text-sm lg:text-base text-center font-regular">
                 Please confirm if you're not a robot.
-              </p>
+              </p> */}
             </div>
             {errorMessage && (
               <div
@@ -147,11 +147,11 @@ const Login = () => {
               </div>
             )}
             {error && (
-              <div class="w-full bg-white border rounded-md border-red-500 flex items-center justify-center">
-                <div class="flex p-4">
-                  <div class="flex-shrink-0">
+              <div className="w-full bg-white border rounded-md border-red-500 flex items-center justify-center">
+                <div className="flex p-4">
+                  <div className="flex-shrink-0">
                     <svg
-                      class="h-4 w-4 text-red-500 mt-0.5"
+                      className="h-4 w-4 text-red-500 mt-0.5"
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
                       height="16"
@@ -161,8 +161,8 @@ const Login = () => {
                       <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
                     </svg>
                   </div>
-                  <div class="ml-3">
-                    <p class="text-sm text-red-700 dark:text-gray-400">
+                  <div className="ml-3">
+                    <p className="text-sm text-red-700 dark:text-gray-400">
                       Incorrect username and password!
                     </p>
                   </div>
@@ -239,11 +239,11 @@ const Login = () => {
           <Link
             to="/tooltip"
               type="button"
-              class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#408D51] to-[#295141] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
+              className="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#408D51] to-[#295141] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
             >
               ?
               <span
-                class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                 role="tooltip"
               >
                 Bagong Montalban Barangay Application

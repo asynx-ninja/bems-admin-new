@@ -6,18 +6,17 @@ function ViewOfficialModal({
   brgy,
   officials,
 }) {
-  console.log("selected", selectedOfficial);
-  console.log("selected", officials);
+ 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 7);
-    console.log(eventdate);
+ 
     return eventdate;
   };
   return (
     <div>
       <div
         id="hs-view-archived-official-modal"
-        class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-10 xxl:ml-0"
+        className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-10 xxl:ml-0"
       >
         {/* Modal */}
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
@@ -36,9 +35,9 @@ function ViewOfficialModal({
               <div className="flex flex-col">
                 <div className="flex flex-col mb-1">
                   {/* Service Description */}
-                  <div class="relative mt-4 flex flex-col w-full">
+                  <div className="relative mt-4 flex flex-col w-full">
                     {/* Modal Images */}
-                    <div class="relative w-full rounded-t-xl">
+                    <div className="relative w-full rounded-t-xl">
                       <div className="mx-auto items-center">
                         <img
                           src={selectedOfficial.picture?.link || ""}
@@ -50,12 +49,12 @@ function ViewOfficialModal({
                   </div>
 
                   {/* Request Information */}
-                  <div class="relative mt-4 pb-6 overflow-y-auto flex flex-col w-full h-full rounded-lg space-y-2">
+                  <div className="relative mt-4 pb-6 overflow-y-auto flex flex-col w-full h-full rounded-lg space-y-2">
                     <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
                       Personal Information
                     </b>
                     <h1
-                      class="font-medium mb-1 text-black text-sm"
+                      className="font-medium mb-1 text-black text-sm"
                       style={{ letterSpacing: "0.1em" }}
                     >
                       FULL NAME
@@ -75,11 +74,11 @@ function ViewOfficialModal({
                 <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-1">
                   Government Information
                 </b>
-                <div class="relative mt-5  overflow-y-auto flex flex-col space-y-4">
+                <div className="relative mt-5  overflow-y-auto flex flex-col space-y-4">
                   {/* Position and Service Rendered */}
                   <div className="w-full">
                     <h1
-                      class="font-bold text-black mx-auto text-sm"
+                      className="font-bold text-black mx-auto text-sm"
                       style={{ letterSpacing: "0.1em" }}
                     >
                       POSITION
@@ -96,7 +95,7 @@ function ViewOfficialModal({
 
                   <div className="w-full mt-2">
                     <h1
-                      class="font-bold text-black mx-auto text-sm"
+                      className="font-bold text-black mx-auto text-sm"
                       style={{ letterSpacing: "0.1em" }}
                     >
                       SERVICE RENDERED
@@ -152,7 +151,7 @@ function ViewOfficialModal({
             </div>
 
             {/* Buttons */}
-            <div class="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+            <div className="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <button
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"

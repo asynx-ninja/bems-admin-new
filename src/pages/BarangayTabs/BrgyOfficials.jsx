@@ -2,13 +2,10 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineStop} from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import { FaArchive, FaPlus, FaUserCircle } from "react-icons/fa";
-
 import CreateOfficialModal from "../../components/barangaytabs/brgyOfficials/CreateOfficialModal";
-import GenerateReportsModal from "../../components/barangaytabs/brgyOfficials/GenerateReportsModal";
 import ArchiveOfficialModal from "../../components/barangaytabs/brgyOfficials/ArchiveOfficialModal";
 import EditOfficialModal from "../../components/barangaytabs/brgyOfficials/ManageOfficialModal";
 import { useSearchParams } from "react-router-dom";
@@ -167,7 +164,7 @@ const Officials = () => {
             }}
           >
         <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               BARANGAY OFFICIALS
@@ -271,28 +268,28 @@ const Officials = () => {
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handlePositionFilter("Barangay Chairman")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY CHAIRMAN
                   </a>
                   <a
                     onClick={() => handlePositionFilter("Barangay Kagawad")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY KAGAWAD
                   </a>
                   <a
                     onClick={() => handlePositionFilter("SK Chairman")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SK CHAIRMAN
                   </a>
                   <a
                     onClick={() => handlePositionFilter("SK Kagawad")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SK KAGAWAD
@@ -352,7 +349,6 @@ const Officials = () => {
                       setFilteredOfficials(Official);
                     }
 
-                    console.log("Officials Fetched", officials);
                   }}
                 />
               </div>
@@ -535,7 +531,6 @@ const Officials = () => {
         />
       </div>
       <CreateOfficialModal brgy={brgy} />
-      <GenerateReportsModal />
       <ArchiveOfficialModal selectedItems={selectedItems} />
       <EditOfficialModal
         selectedOfficial={selectedOfficial}

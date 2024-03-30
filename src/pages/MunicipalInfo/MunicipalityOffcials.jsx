@@ -2,12 +2,11 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineStop  } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import { FaArchive, FaPlus, FaUserCircle } from "react-icons/fa";
 import CreateOfficialModal from "../../components/municipalityofficials/CreateOfficialModal";
-import GenerateReportsModal from "../../components/municipalityofficials/GenerateReportsModal";
+ 
 import ArchiveOfficialModal from "../../components/municipalityofficials/ArchiveOfficialModal";
 import EditOfficialModal from "../../components/municipalityofficials/ManageOfficialModal";
 import { useSearchParams } from "react-router-dom";
@@ -152,7 +151,7 @@ const MunicipalityOfficials = () => {
       <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
           <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               MUNICIPALITY OFFICIALS
@@ -248,35 +247,35 @@ const MunicipalityOfficials = () => {
                 <hr className="border-[#4e4e4e] my-1" />
                 <a
                   onClick={() => handlePositionFilter("City Mayor")}
-                  class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   CITY MAYOR
                 </a>
                 <a
                   onClick={() => handlePositionFilter("Vice Mayor")}
-                  class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   VICE MAYOR
                 </a>
                 <a
                   onClick={() => handlePositionFilter("Congressman")}
-                  class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   CONGRESSMAN
                 </a>
                 <a
                   onClick={() => handlePositionFilter("Councilors")}
-                  class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   COUNCILORS
                 </a>
                 <a
                   onClick={() => handlePositionFilter("Sangguniang Kabataan")}
-                  class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                   href="#"
                 >
                   SANGGUNIANG KABATAAN
@@ -328,7 +327,7 @@ const MunicipalityOfficials = () => {
                       setFilteredOfficials(Officials);
                     }
 
-                    console.log("Officials Fetched", officials);
+             
                   }}
                 />
               </div>
@@ -499,7 +498,7 @@ const MunicipalityOfficials = () => {
         />
       </div>
       <CreateOfficialModal brgy={brgy} />
-      <GenerateReportsModal />
+    
       <ArchiveOfficialModal selectedItems={selectedItems} />
       <EditOfficialModal
         selectedOfficial={selectedOfficial}

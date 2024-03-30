@@ -20,7 +20,7 @@ const SubPendingRequest = () => {
         );
         setServicesreq(servicesResponse.data.result);
         setPageCount(servicesResponse.data.pageCount);
-        console.log("Services Response:", servicesResponse.data);
+     
       } catch (error) {
         console.log("Error fetching data:", error);
       }

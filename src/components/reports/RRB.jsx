@@ -1,6 +1,6 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+
 import axios from "axios";
 import API_LINK from "../../config/API";
 import Chart from "react-apexcharts";

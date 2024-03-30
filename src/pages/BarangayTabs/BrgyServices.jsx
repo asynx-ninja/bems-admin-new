@@ -1,25 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { RiServiceFill } from "react-icons/ri";
-import { Link, useParams, useSearchParams } from "react-router-dom";
-import { RiMoneyDollarCircleFill } from "react-icons/ri";
-import { AiOutlineCheckCircle } from "react-icons/ai";
-import { BsPrinter } from "react-icons/bs";
+import { Link, useSearchParams } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FaArchive, FaPlus } from "react-icons/fa";
-import { MdRestartAlt } from "react-icons/md";
+import { AiOutlineEye } from "react-icons/ai";
+import { FaArchive } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import ViewArchivedServiceModal from "../../components/barangaytabs/brgyServices/ViewArchivedServiceModal";
-import GenerateReportsModal from "../../components/barangaytabs/brgyServices/GenerateReportsModal";
 import StatusResident from "../../components/barangaytabs/brgyServices/StatusService";
 import API_LINK from "../../config/API";
-import PrintPDF from "../../components/barangaytabs/brgyServices/form/PrintPDF";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import noData from "../../assets/image/no-data.png";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
 function Services() {
-  // const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState([]);
@@ -33,14 +24,12 @@ function Services() {
   const [serviceFilter, setServiceFilter] = useState("all");
   const [filteredServices, setFilteredServices] = useState([]);
   const information = GetBrgy(brgy);
-  console.log("sass", brgy);
   const handleView = (service) => {
     setSelectedService(service);
   };
   const handleStatus = (status) => {
     setStatus(status);
     setSelectedService(status.service);
-    console.log("panget2", status.service);
   };
 
   const tableHeader = [
@@ -105,8 +94,8 @@ function Services() {
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
           >
-              <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
+            <h1
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               SERVICE MANAGEMENT
@@ -184,21 +173,21 @@ function Services() {
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Approved")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     APPROVED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Disapproved")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     DISAPPROVED
@@ -250,7 +239,6 @@ function Services() {
                   }}
                 />
               </div>
-             
             </div>
           </div>
         </div>
@@ -432,7 +420,11 @@ function Services() {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ViewArchivedServiceModal selectedService={selectedService} setSelectedService={setSelectedService}   brgy={brgy}/>
+      <ViewArchivedServiceModal
+        selectedService={selectedService}
+        setSelectedService={setSelectedService}
+        brgy={brgy}
+      />
 
       <StatusResident
         status={status}

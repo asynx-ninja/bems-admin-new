@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ViewDropbox = ({ viewFiles, setViewFiles }) => {
-  console.log("View Files", viewFiles);
+ 
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef();
   const navigate = useNavigate();

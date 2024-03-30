@@ -1,17 +1,11 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { AiOutlineSend } from "react-icons/ai";
-import { FaArchive } from "react-icons/fa";
+import {  AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
-import { FaTrashRestore } from "react-icons/fa";
-import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import moment from "moment";
-import RequestsReportsModal from "../../components/barangaytabs/brgyserviceRequests/RequestsReportsModal";
 import ViewRequestModal from "../../components/barangaytabs/brgyserviceRequests/ViewRequestModal";
 import Breadcrumbs from "../../components/barangaytabs/brgyserviceRequests/Breadcrumbs";
 import noData from "../../assets/image/no-data.png";
@@ -47,7 +41,6 @@ function ArchiveServiceRequests() {
      const response = await axios.get(
       `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${currentPage}`
     );
-      console.log(response.data.result)
      if (response.status === 200){
          let arr = [];
          response.data.result.map((item) => {
@@ -96,7 +89,7 @@ function ArchiveServiceRequests() {
             setOfficials(officialsData);
           } else {
             setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
+
           }
         } else {
           setOfficials([]);
@@ -142,7 +135,6 @@ function ArchiveServiceRequests() {
     item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
   const TimeFormat = (date) => {
     if (!date) return "";
 
@@ -153,7 +145,7 @@ function ArchiveServiceRequests() {
     switch (choice) {
       case "date":
         return requests.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
+
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -166,7 +158,7 @@ function ArchiveServiceRequests() {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
+
 
         return requests.filter(
           (item) =>
@@ -193,11 +185,11 @@ function ArchiveServiceRequests() {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
+
 
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
+
   };
 
   const onChangeDate = (e) => {
@@ -224,8 +216,7 @@ function ArchiveServiceRequests() {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
+
       setFilteredRequests(filters(selected, date));
     }
   };
@@ -255,7 +246,7 @@ function ArchiveServiceRequests() {
                 }}
               >
                  <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
                 >
                   ARCHIVED SERVICE REQUESTS
@@ -307,28 +298,28 @@ function ArchiveServiceRequests() {
                       <hr className="border-[#4e4e4e] my-1" />
                       <a
                         onClick={() => handleStatusFilter("Pending")}
-                        class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                         href="#"
                       >
                         PENDING
                       </a>
                       <a
                         onClick={() => handleStatusFilter("Paid")}
-                        class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                         href="#"
                       >
                         PAID
                       </a>
                       <a
                         onClick={() => handleStatusFilter("Processing")}
-                        class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                         href="#"
                       >
                         PROCESSING
                       </a>
                       <a
                         onClick={() => handleStatusFilter("Cancelled")}
-                        class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                         href="#"
                       >
                         CANCELLED
@@ -337,14 +328,14 @@ function ArchiveServiceRequests() {
                         onClick={() =>
                           handleStatusFilter("Transaction Completed")
                         }
-                        class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                         href="#"
                       >
                         TRANSACTION COMPLETED
                       </a>
                       <a
                         onClick={() => handleStatusFilter("Rejected")}
-                        class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                         href="#"
                       >
                         REJECTED
@@ -388,7 +379,7 @@ function ArchiveServiceRequests() {
                         RESET FILTERS
                       </a>
                       <hr className="border-[#4e4e4e] my-1" />
-                      <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                      <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
                         <label className="text-black font-medium mb-1">
                           DATE RANGE
                         </label>
@@ -749,7 +740,7 @@ function ArchiveServiceRequests() {
         {Object.hasOwn(request, "service_id") ? (
           <ViewRequestModal request={request} brgy={brgy} officials={officials}/>
         ) : null}
-        <RequestsReportsModal />
+   
       </div>
     </>
   );

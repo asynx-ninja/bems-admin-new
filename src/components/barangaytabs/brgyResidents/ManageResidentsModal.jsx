@@ -37,8 +37,6 @@ function ManageResidentModal({ user, setUser, brgy }) {
 
   console.log("Verification: ", verification);
 
- 
-
   const religions = [
     "Roman Catholic",
     "Islam",
@@ -228,14 +226,6 @@ function ManageResidentModal({ user, setUser, brgy }) {
   };
 
   const handleFileVerification = (name, files) => {
-    // Map the selected files to create a flattened array of file properties
-    // const fileObjects = Array.from(files).map((file) => ({
-    //   name: file.name,
-    //   uri: URL.createObjectURL(file), // Use createObjectURL to get a blob URL
-    //   type: file.type,
-    //   size: file.size,
-    // }));
-
     setVerification((prev) => ({
       ...prev,
       [name]: [...prev[name], ...files],
@@ -347,28 +337,38 @@ function ManageResidentModal({ user, setUser, brgy }) {
           if (primaryUpload.length > 0) {
             for (let i = 0; i < primaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${user.firstName} - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                name: `${user.lastName}, ${user.firstName
+                  } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
                 size: primaryUpload[i].size,
                 type: primaryUpload[i].type,
                 uri: primaryUpload[i].uri,
               };
-          
+
               console.log("check file: ", file);
-          
-              formData.append("files", new File([primaryUpload[i]], file.name, { type: file.type }));
+
+              formData.append(
+                "files",
+                new File([primaryUpload[i]], file.name, { type: file.type })
+              );
             }
           }
 
           if (secondaryUpload.length > 0)
             for (let i = 0; i < secondaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${user.firstName} - SECONDARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                name: `${user.lastName}, ${user.firstName
+                  } - SECONDARY ID ${moment(new Date()).format(
+                    "MMDDYYYYHHmmss"
+                  )}`,
                 uri: secondaryUpload[i].uri,
                 type: secondaryUpload[i].type,
                 size: secondaryUpload[i].size,
               };
 
-              formData.append("files", new File([secondaryUpload[i]], file.name, { type: file.type }));
+              formData.append(
+                "files",
+                new File([secondaryUpload[i]], file.name, { type: file.type })
+              );
             }
 
           const response = await axios.patch(
@@ -384,7 +384,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
           console.log(response);
 
           if (response.status === 200) {
-            setVerification(response.data.verification);
+            setVerification(response.data?.verification || {});
           }
         }
       } else {
@@ -402,13 +402,13 @@ function ManageResidentModal({ user, setUser, brgy }) {
 
       if (userResponse.status === 200) {
         console.log("User update successful:", userResponse.data);
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
+        // setTimeout(() => {
+        //   setSubmitClicked(false);
+        //   setUpdatingStatus("success");
+        //   setTimeout(() => {
+        //     // window.location.reload();
+        //   }, 3000);
+        // }, 1000);
       } else {
         console.error("User update failed. Status:", userResponse.status);
       }
@@ -1196,16 +1196,21 @@ function ManageResidentModal({ user, setUser, brgy }) {
                                       key={idx}
                                       className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
                                     >
-                                      <img
-                                        src={
-                                          item.hasOwnProperty("link")
-                                            ? item.link
-                                            : item.uri
-                                        }
-                                        alt={`Primary File ${idx + 1}`}
-                                        className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
-                                        onClick={() => handleImageTab(item)}
-                                      />
+                                      {item.hasOwnProperty("link") ? (
+                                        <img
+                                          src={item.link}
+                                          alt={`Primary File ${idx + 1}`}
+                                          className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          onClick={() => handleImageTab(item)}
+                                        />
+                                      ) : (
+                                        <img
+                                          src={URL.createObjectURL(item)}
+                                          alt={`Primary File ${idx + 1}`}
+                                          className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          onClick={() => handleImageTab(item)}
+                                        />
+                                      )}
                                       {/* You can customize the following section based on your needs */}
                                       <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
                                         <label className="text-xs pl-2">
@@ -1332,16 +1337,21 @@ function ManageResidentModal({ user, setUser, brgy }) {
                                         key={idx}
                                         className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
                                       >
-                                        <img
-                                          src={
-                                            item.hasOwnProperty("link")
-                                              ? item.link
-                                              : item.uri
-                                          }
-                                          alt={`Secondary File ${idx + 1}`}
-                                          className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
-                                          onClick={() => handleImageTab(item)}
-                                        />
+                                        {item.hasOwnProperty("link") ? (
+                                          <img
+                                            src={item.link}
+                                            alt={`Secondary File ${idx + 1}`}
+                                            className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                            onClick={() => handleImageTab(item)}
+                                          />
+                                        ) : (
+                                          <img
+                                            src={URL.createObjectURL(item)}
+                                            alt={`Secondary File ${idx + 1}`}
+                                            className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                            onClick={() => handleImageTab(item)}
+                                          />
+                                        )}
                                         {/* You can customize the following section based on your needs */}
                                         <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
                                           <label className="text-xs pl-2">
@@ -1430,13 +1440,13 @@ function ManageResidentModal({ user, setUser, brgy }) {
                                       src={
                                         verification.selfie instanceof File
                                           ? URL.createObjectURL(
-                                              verification.selfie
-                                            )
+                                            verification.selfie
+                                          )
                                           : verification.selfie.hasOwnProperty(
-                                              "link"
-                                            )
-                                          ? verification.selfie.link
-                                          : verification.selfie.uri
+                                            "link"
+                                          )
+                                            ? verification.selfie.link
+                                            : verification.selfie.uri
                                       }
                                       alt={`Selfie`}
                                       className="w-full h-[400px] px-2 py-2 object-cover rounded-xl"
@@ -1453,45 +1463,46 @@ function ManageResidentModal({ user, setUser, brgy }) {
                     </div>
                   </div>
                 </form>
+                <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+                  {!edit ? (
+                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                      <button
+                        type="button"
+                        className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                        onClick={handleOnEdit}
+                      >
+                        EDIT
+                      </button>
+                      <button
+                        type="button"
+                        className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                        data-hs-overlay="#hs-modal-editResident"
+                      >
+                        CLOSE
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                      <button
+                        type="submit"
+                        onClick={handleSave}
+                        className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                      >
+                        SAVE CHANGES
+                      </button>
+                      <button
+                        type="button"
+                        className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                        onClick={handleOnEdit}
+                      >
+                        CANCEL
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-              {/* Buttons */}
-              <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-                {!edit ? (
-                  <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                    <button
-                      type="button"
-                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                      onClick={handleOnEdit}
-                    >
-                      EDIT
-                    </button>
-                    <button
-                      type="button"
-                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                      data-hs-overlay="#hs-modal-editResident"
-                    >
-                      CLOSE
-                    </button>
-                  </div>
-                ) : (
-                  <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                    <button
-                      type="submit"
-                      onClick={handleSave}
-                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                    >
-                      SAVE CHANGES
-                    </button>
-                    <button
-                      type="button"
-                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                      onClick={handleOnEdit}
-                    >
-                      CANCEL
-                    </button>
-                  </div>
-                )}
-              </div>
+
+
             </div>
           </div>
           {submitClicked && <EditLoader updatingStatus="updating" />}

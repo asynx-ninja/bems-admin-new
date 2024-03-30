@@ -1,12 +1,10 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
-import { MdError } from "react-icons/md";
 import ErrorPopup from "./popup/ErrorPopup";
 import moment from "moment";
 function CreateAnnouncementModal({ brgy }) {

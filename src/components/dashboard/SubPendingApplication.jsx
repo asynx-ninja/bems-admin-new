@@ -6,14 +6,14 @@ import { useSearchParams } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
 import ViewRegistrationModal from "./ViewRegistrationModal";
-
+import noData from "../../assets/image/no-data.png";
 const SubPendingApplication = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
-  const brgy ="MUNISIPYO";
+  const brgy = "MUNISIPYO";
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -53,7 +53,7 @@ const SubPendingApplication = () => {
           PENDING EVENT APPLICATIONS
         </b>
         <div className=" scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto lg:h-[calc(100vh_-_480px)] xxl:h-[calc(100vh_-_465px)] xxxl:h-[calc(100vh_-_410px)] w-full">
-        <table className="relative table-auto w-full ">
+          <table className="relative table-auto w-full ">
             <thead className="uppercase text-xs md:text-sm bg-gray-100 sticky top-0">
               <tr>
                 <th className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
@@ -71,39 +71,55 @@ const SubPendingApplication = () => {
               </tr>
             </thead>
             <tbody className="text-sm text-center">
-              {applications.map((item, index) => (
-                <tr key={index} className="even:bg-gray-100">
-                  <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
-                    {item.event_name}
-                  </td>
-                  <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
-                    {item.form[0].lastName.value +
-                      ", " +
-                      item.form[0].firstName.value +
-                      " " +
-                      item.form[0].middleName.value}
-                  </td>
-                  <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
-                    {new Date(item.createdAt).toISOString().split("T")[0]}
-                  </td>
-                  <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
-                    <button
-                      type="button"
-                      data-hs-overlay="#hs-view-application-modal"
-                      onClick={() => handleView({ ...item })}
-                      className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                    >
-                      <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
-                    </button>
-                    <span
-                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                      role="tooltip"
-                    >
-                      View Application
-                    </span>
+              {applications.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="text-center overflow-y-hidden h-[calc(100vh_-_400px)] xxxl:h-[calc(100vh_-_326px)]"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                applications.map((item, index) => (
+                  <tr key={index} className="even:bg-gray-100">
+                    <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
+                      {item.event_name}
+                    </td>
+                    <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
+                      {item.form[0].lastName.value +
+                        ", " +
+                        item.form[0].firstName.value +
+                        " " +
+                        item.form[0].middleName.value}
+                    </td>
+                    <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
+                      {new Date(item.createdAt).toISOString().split("T")[0]}
+                    </td>
+                    <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
+                      <button
+                        type="button"
+                        data-hs-overlay="#hs-view-application-modal"
+                        onClick={() => handleView({ ...item })}
+                        className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                      >
+                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
+                      </button>
+                      <span
+                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                        role="tooltip"
+                      >
+                        View Application
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

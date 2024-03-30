@@ -20,7 +20,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
 
-  console.log("User: ", user);
+ 
 
   const getType = (type) => {
     switch (type) {
@@ -63,8 +63,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
             logo: logo,
           };
   
-          console.log("Notify: ", notify);
-          console.log("Result: ", response);
+          
           
   
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
@@ -149,10 +148,10 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
                           value={status.status}
                         >
                             <option value="Verified">VERIFIED</option>
+                            <option value="For Review">FOR REVIEW</option>
                           <option value="Registered">REGISTERED</option>
                           <option value="Pending">PENDING</option>
                           <option value="Denied">DENIED</option>
-                          <option value="Verification Approval">VERIFICATION APPROVAL</option>
                         </select>
                       </div>
                     </div>

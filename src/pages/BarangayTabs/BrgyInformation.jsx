@@ -4,25 +4,16 @@ import { BsCamera } from "react-icons/bs";
 import { FaUserCircle } from "react-icons/fa";
 import defaultPFP from "../../assets/sample-image/default-pfp.png";
 import { MdOutlineFileUpload } from "react-icons/md";
-import official from "../../assets/sample/official.jpg";
-import header from "/imgs/bg-header.png";
 import {
-  useLocation,
-  useNavigate,
-  matchRoutes,
-  useParams,
   useSearchParams,
 } from "react-router-dom";
 import axios from "axios";
 import API_LINK from "../../config/API";
 
 const Information = () => {
-  const { id } = useParams();
   const [information, setInformation] = useState({});
-
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
-  const [brgyInformation, setBrgyInformation] = useState({});
   const [isEditingMode, setisEditingMode] = useState(false);
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
@@ -39,7 +30,6 @@ const Information = () => {
         const response = await axios.get(
           `${API_LINK}/brgyinfo/?brgy=${brgy}&archived=true`
         );
-        console.log(response);
         if (response.status === 200) {
           setInformation(response.data[0]);
           var logoSrc = document.getElementById("edit_logo");
@@ -73,7 +63,6 @@ const Information = () => {
       const response = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
-      console.log("ede wiw", response.data[0]);
 
       if (response.status === 200) {
         const formData = new FormData();
@@ -86,7 +75,6 @@ const Information = () => {
           `${API_LINK}/brgyinfo/${brgy}/?folder_id=${response.data[0].info}`,
           formData
         );
-        console.log(result);
         window.location.reload();
         // setBrgyInformation({});
       } else {
@@ -139,7 +127,6 @@ const Information = () => {
     }));
   };
 
-  console.log("sss", id);
   useEffect(() => {
     document.title = "Barangay Information | Barangay E-Services Management";
   }, []);

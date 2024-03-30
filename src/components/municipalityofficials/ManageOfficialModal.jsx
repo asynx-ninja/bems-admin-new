@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import EditLoader from "./loaders/EditLoader";
 function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
-  console.log(selectedOfficial);
+ 
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 7);
-    console.log(eventdate);
+ 
     return eventdate;
   };
 
@@ -125,7 +125,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
     <div>
       <div
         id="hs-edit-official-modal"
-        class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-10 xxl:ml-0"
+        className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-10 xxl:ml-0"
       >
         {/* Modal */}
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
@@ -170,9 +170,9 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
               <div className="flex flex-col">
                 <div className="flex flex-col lg:flex-row mb-1">
                   {/* Service Description */}
-                  <div class="relative mt-4 flex flex-col w-full">
+                  <div className="relative mt-4 flex flex-col w-full">
                     {/* Modal Images */}
-                    <div class="relative w-full rounded-t-xl">
+                    <div className="relative w-full rounded-t-xl">
                       <div className="mx-auto items-center">
                         <img
                           src={selectedOfficial.picture?.link || ""}
@@ -184,7 +184,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                     </div>
 
                     <input
-                      class="block p-2 mb-2 w-[250px] md:w-full lg:max-w-[450px] mx-auto text-sm text-black rounded-b-xl cursor-pointer bg-gray-100 "
+                      className="block p-2 mb-2 w-[250px] md:w-full lg:max-w-[450px] mx-auto text-sm text-black rounded-b-xl cursor-pointer bg-gray-100 "
                       id="file_input"
                       type="file"
                       onChange={handlePfpChange}
@@ -296,7 +296,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                 <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-4">
                   Government Information
                 </b>
-                <div class="relative mt-5  overflow-y-auto flex flex-col space-y-4">
+                <div className="relative mt-5  overflow-y-auto flex flex-col space-y-4">
                   {/* Position and Service Rendered */}
                   <div className="w-full">
                     <h1
@@ -324,7 +324,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                   </div>
                   <div className="w-full">
                     <h1
-                      class="font-bold text-black mx-auto text-sm"
+                      className="font-bold text-black mx-auto text-sm"
                       style={{ letterSpacing: "0.1em" }}
                     >
                       POSITION
@@ -410,7 +410,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
             </div>
 
             {/* Buttons */}
-            <div class="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+            <div className="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               {!edit ? (
                 <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                   <button

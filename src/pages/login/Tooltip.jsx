@@ -18,7 +18,7 @@ const Tooltip = () => {
       const response = await axios.get(
         `${API_LINK}/services_info/?brgy=${brgy}&archived=false`
       );
-      console.log("aaa", response.data);
+ 
       if (response.status === 200) setServicesInfo(response.data.result);
       else setServicesInfo([]);
     };

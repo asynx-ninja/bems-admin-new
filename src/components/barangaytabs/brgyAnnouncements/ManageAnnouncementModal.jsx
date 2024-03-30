@@ -65,7 +65,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
   };
 
   const handleChange = (e) => {
-    console.log(e.target.name);
+ 
     setAnnouncement((prev) => ({
       ...prev,
       [e.target.name]:
@@ -107,7 +107,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
           formData.append("files", newFiles[f]);
         }
 
-      console.log("announcement", announcement);
+ 
 
       formData.append("announcement", JSON.stringify(announcement));
 

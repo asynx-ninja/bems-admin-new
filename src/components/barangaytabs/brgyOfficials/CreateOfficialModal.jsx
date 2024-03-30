@@ -73,7 +73,7 @@ function CreateOfficialModal({ brgy }) {
       );
 
       if (result.status === 200) {
-        console.log("Official added successfully!");
+    
         setOfficial({
           name: "",
           position: "",

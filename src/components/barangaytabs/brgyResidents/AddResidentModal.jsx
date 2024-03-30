@@ -3,17 +3,28 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import API_LINK from "../../../config/API";
 import { LiaRandomSolid } from "react-icons/lia";
+import { TiDelete } from "react-icons/ti";
+import { FaCameraRetro } from "react-icons/fa";
 import CreateOccupationList from "./CreateOccupationList";
 import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../../GETBrgy/getbrgy";
+import Webcam from "react-webcam";
+import moment from "moment";
+
 function AddResidentModal({ brgy }) {
+  const WebcamComponent = () => <Webcam />;
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [capture, setCapture] = useState(false);
+
+  const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
   const [emptyFields, setEmptyFields] = useState([]);
   const [empty, setEmpty] = useState(false);
-  const information = GetBrgy(brgy)
   const [user, setUser] = useState({
     user_id: "",
     firstName: "",
@@ -30,7 +41,16 @@ function AddResidentModal({ brgy }) {
     isApproved: "Registered",
     city: "Rodriguez, Rizal",
     brgy: brgy,
+    verification: {
+      primary_id: "",
+      primary_file: [],
+      secondary_id: "",
+      secondary_file: [],
+      selfie: [],
+    },
   });
+
+  
 
   const checkEmptyFields = () => {
     let arr = [];
@@ -81,6 +101,126 @@ function AddResidentModal({ brgy }) {
     }));
   };
 
+  const handleVerification = (name, value) => {
+    setUser((prev) => ({
+      ...prev,
+      verification: {
+        ...prev.verification,
+        [name]: value,
+      },
+    }));
+  };
+
+  const handleFileVerification = (name, files) => {
+    setUser((prev) => ({
+      ...prev,
+      verification: {
+        ...prev.verification,
+        [name]: Array.isArray(prev.verification[name])
+          ? [...prev.verification[name], ...files]
+          : [...files],
+      },
+    }));
+  };
+
+  const handleDelete = (name, idx, e) => {
+    e.preventDefault();
+    e.stopPropagation(); // Stop the event from propagating to the parent container
+
+    const newArray = user.verification[name].filter(
+      (item, index) => index !== idx
+    );
+
+    setUser((prev) => ({
+      ...prev,
+      verification: {
+        ...prev.verification,
+        [name]: newArray,
+      },
+    }));
+  };
+
+  const handleOnCapture = () => {
+    setCapture(!capture);
+  };
+
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
+    setViewerVisible(true);
+  };
+
+  // WEBCAM
+  const videoConstraints = {
+    width: 1280,
+    height: 720,
+    facingMode: "user",
+  };
+
+  function WebcamCapture() {
+    const webcamRef = React.useRef(null);
+    const [capturedImage, setCapturedImage] = useState(null);
+
+    const capture = React.useCallback(
+      async (e) => {
+        e.preventDefault(); // Prevent the default behavior
+        const imageSrc = webcamRef.current.getScreenshot();
+        setCapturedImage(imageSrc);
+
+        try {
+          const response = await fetch(imageSrc);
+          const file = await response.blob();
+
+          // Use the existing Blob for selfie with data:image/jpeg;base64 format
+          let selfieFile = new File(
+            [file],
+            `${user.lastName}, ${user.firstName} - SELFIE`,
+            {
+              type: "image/jpeg",
+              size: file.size,
+              uri: `data:image/jpeg;base64,${imageSrc.split(",")[1]}`,
+            }
+          );
+
+          
+
+          setUser((prev) => ({
+            ...prev,
+            verification: {
+              ...prev.verification,
+              selfie: [selfieFile], // Only keep the new selfie, replacing the existing one
+            },
+          }));
+        } catch (error) {
+          console.error("Error fetching image:", error);
+        }
+      },
+      [webcamRef, user]
+    );
+
+    return (
+      <>
+        <div className="relative">
+          <Webcam
+            audio={false}
+            height={720}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width={1280}
+            className="rounded-xl"
+          />
+          <button
+            onClick={capture}
+            className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-teal-900 text-white shadow-sm absolute bottom-4 left-1/2 transform -translate-x-1/2"
+          >
+            <div className="flex items-center justify-center">
+              <FaCameraRetro size={20} />
+            </div>
+          </button>
+        </div>
+      </>
+    );
+  }
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -89,7 +229,7 @@ function AddResidentModal({ brgy }) {
       const emptyFieldsArr = checkEmptyFields();
 
       if (emptyFieldsArr.length > 0) {
-        console.log(emptyFieldsArr);
+       
         setEmpty(true);
         setSubmitClicked(false);
       } else {
@@ -116,34 +256,121 @@ function AddResidentModal({ brgy }) {
           isApproved: user.isApproved,
           username: user.username,
           password: user.password,
+          verification: user.verification,
+          primary_id: user.verification.primary_id,
+          secondary_id: user.verification.secondary_id,
         };
 
-        const result = await axios.post(`${API_LINK}/users/`, obj);
+        const folderResponse = await axios.get(
+          `${API_LINK}/folder/specific/?brgy=${brgy}`
+        );
 
-        if (result.status === 200) {
-          setUser({
-            user_id: "",
-            firstName: "",
-            lastName: "",
-            email: "",
-            birthday: "",
-            age: "",
-            contact: "",
-            address: "",
-            type: "",
-            username: "",
-            password: "",
-            isArchived: false,
-            isApproved: "Registered",
-            city: "Rodriguez, Rizal",
-            brgy: brgy,
-          });
+        if (folderResponse.status === 200) {
+          var formData = new FormData();
 
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+          formData.append("user", JSON.stringify(obj));
+
+          if (user.verification && user.verification.selfie) {
+            let selfieFile = new File(
+              [user.verification.selfie[0]],
+              `${user.lastName}, ${user.firstName} - SELFIE`,
+              {
+                type: "image/jpeg",
+                size: user.verification.selfie[0].size,
+                uri: user.verification.selfie[0].uri,
+              }
+            );
+
+            formData.append("files", selfieFile);
+          }
+
+          if (user.verification && user.verification.primary_file) {
+            for (let i = 0; i < user.verification.primary_file.length; i++) {
+              let file = {
+                name: `${user.lastName}, ${
+                  user.firstName
+                } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                size: user.verification.primary_file[i].size,
+                type: user.verification.primary_file[i].type,
+                uri: user.verification.primary_file[i].uri,
+              };
+
+          
+
+              formData.append(
+                "files",
+                new File([user.verification.primary_file[i]], file.name, {
+                  type: file.type,
+                })
+              );
+            }
+          }
+
+          if (user.verification && user.verification.secondary_file) {
+            for (let i = 0; i < user.verification.secondary_file.length; i++) {
+              let file = {
+                name: `${user.lastName}, ${
+                  user.firstName
+                } - SECONDARY ID ${moment(new Date()).format(
+                  "MMDDYYYYHHmmss"
+                )}`,
+                uri: user.verification.secondary_file[i].uri,
+                type: user.verification.secondary_file[i].type,
+                size: user.verification.secondary_file[i].size,
+              };
+
+              formData.append(
+                "files",
+                new File([user.verification.secondary_file[i]], file.name, {
+                  type: file.type,
+                })
+              );
+            }
+          }
+
+          const response = await axios.post(
+            `${API_LINK}/users/?folder_id=${folderResponse.data[0].verification}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          if (response.status === 200) {
+     
+            setUser({
+              user_id: "",
+              firstName: "",
+              lastName: "",
+              email: "",
+              birthday: "",
+              age: "",
+              contact: "",
+              address: "",
+              type: "",
+              username: "",
+              password: "",
+              isArchived: false,
+              isApproved: "Registered",
+              city: "Rodriguez, Rizal",
+              brgy: brgy,
+              verification: {
+                primary_id: "",
+                primary_file: [],
+                secondary_id: "",
+                secondary_file: [],
+                selfie: [],
+              },
+            });
+
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }
         }
       }
     } catch (err) {
@@ -200,9 +427,12 @@ function AddResidentModal({ brgy }) {
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
               {/* Header */}
-              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#396288] to-[#013D74] overflow-hidden rounded-t-2xl"   style={{
-              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+              <div
+                className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+                style={{
+                  background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                }}
+              >
                 <h3
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
@@ -235,9 +465,10 @@ function AddResidentModal({ brgy }) {
                               id="firstName"
                               name="firstName"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("firstName") &&
                                 "border-red-500"
-                                }`}
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -271,9 +502,10 @@ function AddResidentModal({ brgy }) {
                               id="lastName"
                               name="lastName"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("lastName") &&
                                 "border-red-500"
-                                }`}
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -309,9 +541,10 @@ function AddResidentModal({ brgy }) {
                               id="birthday"
                               name="birthday"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("birthday") &&
                                 "border-red-500"
-                                }`}
+                              }`}
                               placeholder="mm/dd/yyyy"
                               value={birthdayFormat(user.birthday) || ""}
                             />
@@ -348,9 +581,10 @@ function AddResidentModal({ brgy }) {
                               id="email"
                               name="email"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("email") &&
                                 "border-red-500"
-                                }`}
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -367,9 +601,10 @@ function AddResidentModal({ brgy }) {
                               id="contact"
                               name="contact"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("contact") &&
                                 "border-red-500"
-                                }`}
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -483,9 +718,10 @@ function AddResidentModal({ brgy }) {
                               id="street"
                               name="street"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") &&
+                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("street") &&
                                 "border-red-500"
-                                }`}
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -663,9 +899,10 @@ function AddResidentModal({ brgy }) {
                             id="username"
                             name="username"
                             onChange={handleChange}
-                            className={`shadow appearance-none border w-full p-1.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") &&
+                            className={`shadow appearance-none border w-full p-1.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                              emptyFields.includes("username") &&
                               "border-red-500"
-                              }`}
+                            }`}
                             placeholder=""
                           />
                         </div>
@@ -698,11 +935,341 @@ function AddResidentModal({ brgy }) {
                               id="password"
                               name="password"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("password") &&
                                 "border-red-500"
-                                }`}
+                              }`}
                               value={user.password}
                             />
+                          </div>
+                        </div>
+                      </div>
+
+                      <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium mt-5 text-lg md:text-lg mb-2">
+                        ACCOUNT VERIFICATION
+                      </b>
+                      <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
+                        <div className="w-full">
+                          <div className="flex flex-col items-center space-y-2 relative">
+                            <div className="w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold mb-2 mt-2"
+                                htmlFor="name"
+                              >
+                                Primary ID
+                              </label>
+                              <select
+                                name="primary_id"
+                                onChange={(event) => {
+                                  handleVerification(
+                                    "primary_id",
+                                    event.target.value
+                                  );
+                                }}
+                                className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              >
+                                <option>-- Select Primary ID --</option>
+                                <option value="Philippine Passport">
+                                  Philippine Passport
+                                </option>
+                                <option value="SSS/GSIS/UMID">
+                                  SSS/GSIS/UMID
+                                </option>
+                                <option value="Driver's License">
+                                  Driver's License
+                                </option>
+                                <option value="PRC ID">PRC ID</option>
+                                <option value="OWWA ID">OWWA ID</option>
+                                <option value="iDOLE Card">iDOLE Card</option>
+                                <option value="Voter's ID">Voter's ID</option>
+                                <option value="Voter's Certification">
+                                  Voter's Certification
+                                </option>
+                                <option value="Firearms License">
+                                  Firearms License
+                                </option>
+                                <option value="Senior Citizen ID">
+                                  Senior Citizen ID
+                                </option>
+                                <option value="PWD ID">PWD ID</option>
+                                <option value="NBI Clearance">
+                                  NBI Clearance
+                                </option>
+                                <option value="Alien Certification of Registration or Immigrant Certificate of Registration">
+                                  Alien Certification of Registration or
+                                  Immigrant Certificate of Registration
+                                </option>
+                                <option value="PhilHealth ID">
+                                  PhilHealth ID
+                                </option>
+                                <option value="GOCC ID">GOCC ID</option>
+                                <option value="IBP ID">IBP ID</option>
+                                <option value="School ID">School ID</option>
+                                <option value="Current Valid ePassport">
+                                  Current Valid ePassport
+                                </option>
+                              </select>
+                            </div>
+
+                            <div className="w-full">
+                              <div className="mb-4">
+                                <span className="sr-only">
+                                  Choose profile photo
+                                </span>
+                                <input
+                                  type="file"
+                                  name="primary"
+                                  accept="image/*"
+                                  onChange={(e) =>
+                                    handleFileVerification(
+                                      "primary_file",
+                                      e.target.files
+                                    )
+                                  }
+                                  multiple
+                                  className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                                />
+                              </div>
+
+                              <div className="flex flex-row gap-2 overflow-hidden overflow-x-auto">
+                                {user.verification.primary_file &&
+                                  user.verification.primary_file.length > 0 &&
+                                  user.verification.primary_file.map(
+                                    (item, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
+                                      >
+                                        <img
+                                          src={URL.createObjectURL(item)}
+                                          alt={`Primary File ${idx + 1}`}
+                                          className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          // onClick={() => handleImageTab(item)}
+                                        />
+                                        <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
+                                          <label className="text-xs pl-2">
+                                            {item.name}
+                                          </label>
+
+                                          <button
+                                            onClick={(e) =>
+                                              handleDelete(
+                                                "primary_file",
+                                                idx,
+                                                e
+                                              )
+                                            }
+                                            className="border-black bg-red-500 hover:bg-white rounded-full justify-center items-center self-center mr-2"
+                                          >
+                                            <TiDelete
+                                              size={20}
+                                              className="text-white hover:text-red-500 hover:border-2 rounded-full"
+                                            />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-center space-y-2 relative mt-3">
+                            <div className="w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold mb-2 mt-2"
+                                htmlFor="name"
+                              >
+                                Secondary ID
+                              </label>
+                              <select
+                                name="secondary_id"
+                                onChange={(event) => {
+                                  handleVerification(
+                                    "secondary_id",
+                                    event.target.value
+                                  );
+                                }}
+                                className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              >
+                                <option>-- Select Secondary ID --</option>
+                                <option value="TIN ID">TIN ID</option>
+                                <option value="Postal ID">Postal ID</option>
+                                <option value="Barangay Certification">
+                                  Barangay Certification
+                                </option>
+                                <option value="GSIS e-Card">GSIS e-Card</option>
+                                <option value="Seaman's Book">
+                                  Seaman's Book
+                                </option>
+                                <option value="NCWDP Certification">
+                                  NCWDP Certification
+                                </option>
+                                <option value="DSWD Certification">
+                                  DSWD Certification
+                                </option>
+                                <option value="Company ID">Company ID</option>
+                                <option value="Police Clearance">
+                                  Police Clearance
+                                </option>
+                                <option value="Barangay Clearance">
+                                  Barangay Clearance
+                                </option>
+                                <option value="Cedula">Cedula</option>
+                                <option value="Government Service Record">
+                                  Government Service Record
+                                </option>
+                                <option value="Elementary or High School Form 137 Records">
+                                  Elementary or High School Form 137 Records
+                                </option>
+                                <option value="Transcript of Records from University">
+                                  Transcript of Records from University
+                                </option>
+                                <option value="Land Title">Land Title</option>
+                                <option value="PSA Marriage Contract">
+                                  PSA Marriage Contract
+                                </option>
+                                <option value="PSA Birth Certificate">
+                                  PSA Birth Certificate
+                                </option>
+                                <option value="Homeowner's Certification">
+                                  Homeowner's Certification
+                                </option>
+                              </select>
+                            </div>
+
+                            <div className="w-full">
+                              <div className="mb-4">
+                                <span className="sr-only">
+                                  Choose profile photo
+                                </span>
+                                <input
+                                  type="file"
+                                  name="secondary"
+                                  accept="image/*"
+                                  onChange={(e) =>
+                                    handleFileVerification(
+                                      "secondary_file",
+                                      e.target.files
+                                    )
+                                  }
+                                  multiple
+                                  className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                                />
+                              </div>
+
+                              <div className="flex flex-row gap-2 overflow-hidden overflow-x-auto">
+                                {user.verification.secondary_file &&
+                                  user.verification.secondary_file.length > 0 &&
+                                  user.verification.secondary_file.map(
+                                    (item, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
+                                      >
+                                        <img
+                                          src={URL.createObjectURL(item)}
+                                          alt={`Secondary File ${idx + 1}`}
+                                          className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          // onClick={() => handleImageTab(item)}
+                                        />
+
+                                        <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
+                                          <label className="text-xs pl-2">
+                                            {item.name}
+                                          </label>
+
+                                          <button
+                                            onClick={(e) =>
+                                              handleDelete(
+                                                "secondary_file",
+                                                idx,
+                                                e
+                                              )
+                                            }
+                                            className="border-black bg-red-500 hover:bg-white rounded-full justify-center items-center self-center mr-2"
+                                          >
+                                            <TiDelete
+                                              size={20}
+                                              className="text-white hover:text-red-500 hover:border-2 rounded-full"
+                                            />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-center space-y-2 relative mt-3">
+                            <div className="w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold mb-2 mt-2"
+                                htmlFor="name"
+                              >
+                                Selfie of the Resident
+                              </label>
+                            </div>
+
+                            <div className="w-full">
+                              <div>
+                                {capture ? (
+                                  <button
+                                    type="button"
+                                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm mb-2"
+                                    onClick={handleOnCapture}
+                                  >
+                                    CANCEL
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm mb-2"
+                                    onClick={handleOnCapture}
+                                  >
+                                    TAKE A NEW PHOTO
+                                  </button>
+                                )}
+
+                                {!capture ? (
+                                  <div></div>
+                                ) : (
+                                  <div>
+                                    <WebcamCapture />
+                                  </div>
+                                )}
+                              </div>
+
+                              <div
+                                className="w-full border border-gray-300 rounded-xl bg-gray-300 cursor-pointer mt-2"
+                                // onClick={() =>
+                                //   handleImageClick(verification.selfie)
+                                // }
+                              >
+                                {user.verification.selfie.length > 0 && (
+                                  <img
+                                    src={
+                                      user.verification.selfie[0] instanceof
+                                      File
+                                        ? URL.createObjectURL(
+                                            user.verification.selfie[0]
+                                          )
+                                        : user.verification.selfie[0].hasOwnProperty(
+                                            "link"
+                                          )
+                                        ? user.verification.selfie[0].link
+                                        : user.verification.selfie[0].uri
+                                    }
+                                    alt={`Selfie`}
+                                    className="w-full h-[400px] px-2 py-2 object-cover rounded-xl"
+                                  />
+                                )}
+                                <div className="text-black pb-2 ml-2 rounded-b-xl">
+                                  {user?.verification?.selfie[0]?.name}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

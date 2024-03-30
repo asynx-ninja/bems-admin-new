@@ -52,7 +52,7 @@ function CreateAnnouncementModal() {
     }));
   };
 
-  console.log("cc", barangay.primary);
+ 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -116,7 +116,7 @@ function CreateAnnouncementModal() {
           });
           setLogo();
           setBanner();
-          console.log("theme success");
+        
           setBanner(null);
           setSubmitClicked(false);
           setCreationStatus("success");
