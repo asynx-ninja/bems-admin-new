@@ -35,7 +35,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
     setVerification({ ...user.verification });
   }, [user]);
 
-  console.log("Verification: ", verification);
+
 
   const religions = [
     "Roman Catholic",
@@ -140,8 +140,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
               uri: `data:image/jpeg;base64,${imageSrc.split(",")[1]}`,
             }
           );
-
-          console.log("selfieFile: ", selfieFile);
+X
 
           setVerification((prev) => ({
             ...prev,
@@ -238,7 +237,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
 
     const newArray = verification[name].filter((item, index) => index !== idx);
 
-    console.log("newArray: ", newArray);
+   
 
     setVerification((prev) => ({
       ...prev,
@@ -316,8 +315,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
           formData.append("oldVerification", JSON.stringify(user.verification));
           formData.append("newVerification", JSON.stringify(verification));
 
-          console.log("Primary Upload: ", primaryUpload);
-          console.log("Primary Saved: ", primarySaved);
+        
 
           if (!verification.selfie.hasOwnProperty("link")) {
             // Use the existing Blob for selfie
@@ -344,7 +342,6 @@ function ManageResidentModal({ user, setUser, brgy }) {
                 uri: primaryUpload[i].uri,
               };
 
-              console.log("check file: ", file);
 
               formData.append(
                 "files",
@@ -381,8 +378,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
             }
           );
 
-          console.log(response);
-
+         
           if (response.status === 200) {
             setVerification(response.data?.verification || {});
           }
@@ -401,14 +397,14 @@ function ManageResidentModal({ user, setUser, brgy }) {
       );
 
       if (userResponse.status === 200) {
-        console.log("User update successful:", userResponse.data);
-        // setTimeout(() => {
-        //   setSubmitClicked(false);
-        //   setUpdatingStatus("success");
-        //   setTimeout(() => {
-        //     // window.location.reload();
-        //   }, 3000);
-        // }, 1000);
+      
+        setTimeout(() => {
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            // window.location.reload();
+          }, 3000);
+        }, 1000);
       } else {
         console.error("User update failed. Status:", userResponse.status);
       }

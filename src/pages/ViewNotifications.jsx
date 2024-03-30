@@ -86,8 +86,24 @@ const ViewNotifications = ({ setNotification }) => {
     };
 
     updateReadBy();
-  }, []);
-
+  }, [id, notification._id]);
+  const getLinkBasedOnGoTo = () => {
+    switch (notification.compose.go_to) {
+      case "Events":
+        return `/events_management/?id=${id}`;
+      case "Application":
+        return `/events_registrations/?id=${id}`;
+      case "Services":
+        return `/services/?id=${id}`;
+      case "Requests":
+        return `/requests/?id=${id}`;
+      case "Inquiries":
+        return `/inquiries/?id=${id}`;
+      default:
+        // Default link when go_to is not recognized
+        return `/dashboard/?id=${id}`;
+    }
+  };
   return (
     <div>
       <div className="mx-4 overflow-y-auto lg:mt-[1rem] mt-0 scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb h-[calc(100vh_-_100px)] lg:h-[calc(100vh_-_100px)]">
@@ -135,21 +151,21 @@ const ViewNotifications = ({ setNotification }) => {
               </div>
             </div>
             <Link
-              to={`/dashboard/?id=${id}&brgy=${brgy}`}
+              to={getLinkBasedOnGoTo()}
               className="w-full"
               onClick={() => {
                 window.innerWidth >= 300 && window.innerWidth <= 1920
                   ? document
-                      .getQuerySelector("[data-hs-overlay-backdrop-template]")
+                      .querySelector("[data-hs-overlay-backdrop-template]")
                       .remove()
                   : null;
               }}
             >
               <button
                 type="button"
-                className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-b-xl borde text-sm font-base bg-teal-700 text-white shadow-sm uppercase"
+                className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-b-xl borde text-sm font-base bg-teal-700 text-white shadow-sm"
               >
-                RETURN TO {notification.compose.go_to}
+                CHECK {notification.compose.go_to.toUpperCase()} MANAGEMENT PAGE
               </button>
             </Link>
           </div>

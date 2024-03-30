@@ -35,8 +35,7 @@ function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos }) {
       e.preventDefault();
       if (
         !servicesinfos.name.trim() ||
-        !servicesinfos.details.trim() ||
-        !icon
+        !servicesinfos.details.trim() 
       ) {
         // Highlight empty fields with red border
         if (!servicesinfos.name.trim()) {

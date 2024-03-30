@@ -599,7 +599,7 @@ const Inquiries = () => {
                               )}
                             </span>
                           )}
-                          <button
+                          {/* <button
                             type="button"
                             data-hs-overlay="#hs-modal-viewInquiries"
                             onClick={() => handleView({ ...item })}
@@ -609,6 +609,15 @@ const Inquiries = () => {
                                 : ""
                             }`}
                             disabled={item.isApproved === "Completed"}
+                          > */}
+
+
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-modal-viewInquiries"
+                            onClick={() => handleView({ ...item })}
+                            className={`hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 items-center rounded-lg `}
+                            
                           >
                             <AiOutlineEye
                               size={24}

@@ -84,18 +84,19 @@ const Residents = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/users/?brgy=${brgy}&type=Resident&page=${currentPage}`
+        `${API_LINK}/users/?brgy=${brgy}&type=Resident&status=${statusFilter}&page=${currentPage}`
       );
       if (response.status === 200) {
-        setPageCount(response.data.pageCount);
         setUsers(response.data.result);
-        setFilteredResidents(response.data.result);
-      } else setUsers([]);
-
+        setPageCount(response.data.pageCount);
+      } else {
+        setUsers([]);
+      }
     };
 
     fetch();
-  }, [currentPage]);
+  }, [brgy, statusFilter, currentPage]);
+  
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
@@ -116,7 +117,9 @@ const Residents = () => {
   const handleView = (item) => {
     setUser(item);
   };
-
+  const handleStatus = (status) => {
+    setStatus(status);
+  };
   const handleResetFilter = () => {
     setStatusFilter("all");
     setSearchQuery("");
@@ -149,9 +152,9 @@ const Residents = () => {
             <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
               <div className="w-full rounded-lg flex justify-center">
                 <div className="hs-tooltip inline-block w-full">
-                  <button
+                  <Link
                     type="button"
-                    data-hs-overlay="#hs-modal-addResident"
+                    to={`/addresidents/?id=${id}&brgy=${brgy}`}
                     className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
                     style={{
                       background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
@@ -168,7 +171,7 @@ const Residents = () => {
                     >
                       Add Residents
                     </span>
-                  </button>
+                  </Link>
                 </div>
               </div>
               <div className="w-full rounded-lg ">
@@ -389,8 +392,8 @@ const Residents = () => {
                       </span>
                     </td>
 
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2 ">
+                    <td className="px-6 py-3 w-2/12">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2 truncate ">
                         {item.lastName +
                           " " +
                           item.firstName +
@@ -454,8 +457,8 @@ const Residents = () => {
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                       <div className="hs-tooltip inline-block">
                           <Link
-                             to={`/brgyeditresident/?id=${id}&brgy=${brgy}`} 
-                             state={{...item}}
+                            to={`/editresidentS/?id=${id}&brgy=${brgy}`}
+                            state={{ ...item }}
                             className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <AiOutlineEye

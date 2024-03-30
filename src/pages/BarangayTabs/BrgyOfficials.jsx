@@ -268,31 +268,66 @@ const Officials = () => {
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handlePositionFilter("Barangay Chairman")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY CHAIRMAN
                   </a>
                   <a
                     onClick={() => handlePositionFilter("Barangay Kagawad")}
-                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY KAGAWAD
                   </a>
                   <a
+                    onClick={() => handlePositionFilter("Secretary")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SECRETARY
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("Assistant Secretary")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    ASSISTANT SECRETARY
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("Treasurer")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    TREASURER
+                  </a>
+                  <a
                     onClick={() => handlePositionFilter("SK Chairman")}
-                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SK CHAIRMAN
                   </a>
                   <a
                     onClick={() => handlePositionFilter("SK Kagawad")}
-                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SK KAGAWAD
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("SK Secretary")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SK Secretary
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("SK Treasurer")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SK TREASURER
                   </a>
                 </ul>
               </div>
@@ -460,7 +495,11 @@ const Officials = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                          {item.lastName}, {item.firstName}
+                        {item.lastName +
+                            ", " +
+                            item.firstName +
+                            " " +
+                            item.middleName}
                         </span>
                       </div>
                     </td>

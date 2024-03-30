@@ -44,8 +44,8 @@ import MArchivedRequests from "../pages/ArchivedRequests";
 import MServices from "../pages/Services";
 import MArchivedServices from "../pages/ArchivedServices";
 import Tooltip from "../pages/login/Tooltip";
-import EditResident from "../components/barangaytabs/brgyResidents/ManageResidentsModal"
-
+import EditResident from "../components/barangaytabs/brgyResidents/EditResident/ediResident"
+import AddResident from "../components/barangaytabs/brgyResidents/AddResident/AddResidents"
 const pages = [
   {
     path: "/",
@@ -221,6 +221,15 @@ const pages = [
     path: "/brgyeditresident",
     element: <Navbar comp={<EditResident />} />,
   },
+  {
+    path: "/editresidents",
+    element: <Navbar comp={<EditResident />} />,
+  },
+  {
+    path: "/addresidents",
+    element: <Navbar comp={<AddResident />} />,
+  },
+
   {
     path: "/brgyarchivedresidents",
     element: <Navbar comp={<ArchivedResidents />} />,

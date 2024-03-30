@@ -22,7 +22,7 @@ const ArchivedServicesInfo = () => {
   const [servicesinfo, setServicesInfo] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
-  const brgy = "Municipal Info";
+  const brgy = "MUNISIPYO";
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
 

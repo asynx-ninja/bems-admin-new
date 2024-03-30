@@ -6,6 +6,7 @@ import API_LINK from "../../config/API";
 import Chart from "react-apexcharts";
 import moment from "moment";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
+
 const Reports = () => {
   const [services, setServices] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -19,7 +20,11 @@ const Reports = () => {
   const [registeredCount, setRegisteredCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
   const [deniedCount, setDeniedCount] = useState(0);
+  const [verifiedCount, setVerifiedCount] = useState(0);
+  const [verificationApprovalCount, setVerificationApprovalCount] = useState(0);
+  const [forReviewCount, setForReviewCount] = useState(0);
   const information = GetBrgy(brgy);
+
   useEffect(() => {
     document.title = "Reports | Barangay E-Services Management";
     const fetchData = async () => {
@@ -117,9 +122,11 @@ const Reports = () => {
           }
         );
 
-        const data = response.data[0];
+        if (response.status === 200) {
+          const data = response.data[0];
 
-        if (data) {
+          console.log("total residents: ", data);
+
           const { residents } = data;
           const registeredCount = residents.filter(
             (resident) => resident.status === "Registered"
@@ -130,10 +137,22 @@ const Reports = () => {
           const deniedCount = residents.filter(
             (resident) => resident.status === "Denied"
           ).length;
+          const verifiedCount = residents.filter(
+            (resident) => resident.status === "Verified"
+          ).length;
+          const verificationApprovalCount = residents.filter(
+            (resident) => resident.status === "Verification Approval"
+          ).length;
+          const forReviewCount = residents.filter(
+            (resident) => resident.status === "Unknown"
+          ).length;
 
           setRegisteredCount(registeredCount);
           setPendingCount(pendingCount);
           setDeniedCount(deniedCount);
+          setVerifiedCount(verifiedCount);
+          setVerificationApprovalCount(verificationApprovalCount);
+          setForReviewCount(forReviewCount);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -153,13 +172,34 @@ const Reports = () => {
   }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
-    series: [registeredCount, pendingCount, deniedCount],
+    series: [
+      registeredCount,
+      pendingCount,
+      deniedCount,
+      verifiedCount,
+      verificationApprovalCount,
+      forReviewCount,
+    ],
     options: {
-      colors: ["#4caf50", "#ff9800", "#ac4646"], // Colors for Registered, Pending, Denied
+      colors: [
+        "#4caf50",
+        "#ff9800",
+        "#ac4646",
+        "#6f75c2",
+        "#5586cf",
+        "#91406f",
+      ], // Colors for Registered, Pending, Denied
       chart: {
         background: "transparent",
       },
-      labels: ["Registered", "Pending", "Denied"],
+      labels: [
+        "Registered",
+        "Pending",
+        "Denied",
+        "Verified",
+        "Verification Approval",
+        "For Review",
+      ],
     },
   };
 
@@ -799,7 +839,7 @@ const Reports = () => {
 
         // Make the API request
         const response = await axios.get(
-          `${API_LINK}/requests/est_brgy_revenue`,
+          `${API_LINK}/requests/est_brgy_revenue/`,
           {
             params: {
               ...params,
@@ -1275,23 +1315,19 @@ const Reports = () => {
 
   return (
     <div className="">
-      {/* Body */}
-      <div>
-        {/* Header */}
+    {/* Body */}
+    <div>
+      {/* Header */}
 
-        <div className="flex lg:justify-end mb-3 w-full lg:w-auto ">
-          <div className="flex flex-col w-full lg:w-auto">
-            <div
-              id="toggle-count"
-              className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
+      <div className="flex lg:justify-end mb-3 w-full lg:w-auto ">
+        <div className="flex flex-col w-full lg:w-auto">
+          <div
+            id="toggle-count"
+              className="flex p-0.5 bg-teal-700 rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
               style={{ backgroundColor: information?.theme?.primary }}
             >
               <button
-                className={`px-3 py-2 w-full   bg-gray-700 text-gray-800 rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none   ${
-                  timeRange === "specific"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full bg-teal-700  rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "specific"
@@ -1304,11 +1340,7 @@ const Reports = () => {
                 Specific
               </button>
               <button
-                className={`px-3 py-2 w-full  bg-gray-700 text-gray-800 rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none ${
-                  timeRange === "today"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full  bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "today"
@@ -1321,11 +1353,7 @@ const Reports = () => {
                 Today
               </button>
               <button
-                className={`px-3 py-2 w-full  bg-gray-700 text-gray-800 rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none ${
-                  timeRange === "weekly"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "weekly"
@@ -1338,11 +1366,7 @@ const Reports = () => {
                 Weekly
               </button>
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none ${
-                  timeRange === "monthly"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full  bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "monthly"
@@ -1355,11 +1379,7 @@ const Reports = () => {
                 Monthly
               </button>
               <button
-                className={`px-3 py-2 w-full  bg-gray-700 text-gray-800 rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none ${
-                  timeRange === "annual"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "annual"
@@ -1442,7 +1462,7 @@ const Reports = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:items-center shadow-sm rounded-xl gap-3 ">
           <div
-            className="flex flex-col p-4  rounded-xl  bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -1461,7 +1481,7 @@ const Reports = () => {
           </div>
 
           <div
-            className="flex flex-col p-4  rounded-xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -1480,9 +1500,8 @@ const Reports = () => {
               </p>
             </div>
           </div>
-
           <div
-            className="flex flex-col p-4  rounded-xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -1504,9 +1523,8 @@ const Reports = () => {
               </p>
             </div>
           </div>
-
           <div
-            className="flex flex-col p-4  rounded-xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] "
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}

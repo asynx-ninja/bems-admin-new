@@ -124,9 +124,9 @@ const ArchivedRegistrations = () => {
 
   const handleResetFilter = () => {
     setStatusFilter("all");
-    setRequests();
+    setApplications();
     setSearchQuery("");
-    setEventFilter("all")
+    setEventFilter("all");
   };
 
   const DateFormat = (date) => {
