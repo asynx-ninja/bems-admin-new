@@ -22,22 +22,60 @@ const Officials = () => {
   const [selectedOfficial, setSelectedOfficial] = useState({});
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
-  const [positionFilter, setPositionFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredOfficials, setFilteredOfficials] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [positionFilter, setPositionFilter] = useState("all");
+  const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
+  const returnLogo = () => {
+    switch (brgy) {
+      case "BALITE":
+        return BALITE;
+
+      case "BURGOS":
+        return BURGOS;
+
+      case "GERONIMO":
+        return GERONIMO;
+
+      case "MACABUD":
+        return MACABUD;
+
+      case "MANGGAHAN":
+        return MANGGAHAN;
+
+      case "MASCAP":
+        return MASCAP;
+
+      case "PURAY":
+        return PURAY;
+
+      case "ROSARIO":
+        return ROSARIO;
+
+      case "SAN ISIDRO":
+        return SAN_ISIDRO;
+
+      case "SAN JOSE":
+        return SAN_JOSE;
+
+      case "SAN RAFAEL":
+        return SAN_RAFAEL;
+    }
+  };
+
+
+
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
     setSortColumn(sortBy);
 
     const sortedData = officials.slice().sort((a, b) => {
-      if (sortBy === "name") {
+      if (sortBy === "lastName") {
         return newSortOrder === "asc"
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
+          ? a.lastName.localeCompare(b.lastName)
+          : b.lastName.localeCompare(a.lastName);
       } else if (sortBy === "rendered_service") {
         const dateA = new Date(a.fromYear);
         const dateB = new Date(b.fromYear);
@@ -67,14 +105,16 @@ const Officials = () => {
   };
 
   const checkAllHandler = () => {
-    if (officials.length === selectedItems.length) {
+    const officialsToCheck = Officials.length > 0 ? Officials : officials;
+
+    if (officialsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const officialIds = officials.map((item) => {
+      const postIds = officialsToCheck.map((item) => {
         return item._id;
       });
 
-      setSelectedItems(officialIds);
+      setSelectedItems(postIds);
     }
   };
 
@@ -91,12 +131,10 @@ const Officials = () => {
           const officialsData = response.data.result || [];
 
           if (officialsData.length > 0) {
-            setOfficials(officialsData);
             setPageCount(response.data.pageCount);
-            setFilteredOfficials(response.data.result);
+            setOfficials(officialsData);
           } else {
             setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
           }
         } else {
           setOfficials([]);
@@ -109,11 +147,23 @@ const Officials = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy, positionFilter]);
+  }, [currentPage, brgy, positionFilter]); // Add positionFilter dependency
+
+  const handlePositionFilter = (selectedPosition) => {
+    setPositionFilter(selectedPosition);
+  };
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
+
+  const Officials = officials.filter((item) => {
+    const fullName =
+      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
+    const nameMatches = fullName.includes(searchQuery.toLowerCase());
+
+    return nameMatches;
+  });
 
   const handleEditClick = async (official) => {
     setSelectedOfficial(official);
@@ -127,30 +177,26 @@ const Officials = () => {
     "ACTIONS",
   ];
 
-  const handleResetFilter = () => {
-    setPositionFilter("all");
-  };
-
-  const handlePositionFilter = (selectedPosition) => {
-    setPositionFilter(selectedPosition);
-  };
-
   const dateFormat = (fromYear, toYear) => {
     const startDate = fromYear ? new Date(fromYear) : null;
     const endDate = toYear ? new Date(toYear) : null;
 
     const startYearMonth = startDate
       ? `${startDate.toLocaleString("default", {
-          month: "short",
-        })} ${startDate.getFullYear()}`
+        month: "short",
+      })} ${startDate.getFullYear()}`
       : "";
     const endYearMonth = endDate
       ? `${endDate.toLocaleString("default", {
-          month: "short",
-        })} ${endDate.getFullYear()}`
+        month: "short",
+      })} ${endDate.getFullYear()}`
       : "";
 
     return `${startYearMonth} ${endYearMonth}`;
+  };
+
+  const handleResetFilter = () => {
+    setPositionFilter("all");
   };
 
   return (
@@ -361,30 +407,10 @@ const Officials = () => {
                   type="text"
                   name="hs-table-with-pagination-search"
                   id="hs-table-with-pagination-search"
-                  className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
+                  className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-
-                    if (e.target.value.trim() === "") {
-                      // If the search input is empty, fetch all data
-                      setOfficials(officials);
-                    } else {
-                      // If the search input is not empty, filter the data
-                      const Official = officials.filter(
-                        (item) =>
-                          item.firstName
-                            .toLowerCase()
-                            .includes(e.target.value.toLowerCase()) ||
-                          item.lastName
-                            .toLowerCase()
-                            .includes(e.target.value.toLowerCase())
-                      );
-                      setFilteredOfficials(Official);
-                    }
-
-                  }}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
@@ -438,7 +464,7 @@ const Officials = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {filteredOfficials.length === 0 ? (
+              {Officials.length === 0 ? (
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
@@ -453,7 +479,7 @@ const Officials = () => {
                   </td>
                 </tr>
               ) : (
-                filteredOfficials.map((item, index) => (
+                Officials.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
