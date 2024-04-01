@@ -52,14 +52,14 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
 
       if (detail.isActive) {
         const activeFormResponse = await axios.get(
-          `http://localhost:8800/api/event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
+          `${API_LINK}/event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
         );
         if (
           activeFormResponse.data.length === 0 ||
           activeFormResponse.data[0].version === detail.version
         ) {
           const response = await axios.patch(
-            `http://localhost:8800/api/event_form/`,
+            `${API_LINK}/event_form/`,
             {
               detail: detail,
             },
@@ -85,7 +85,7 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
         }
       } else {
         const response = await axios.patch(
-          `http://localhost:8800/api/event_form/`,
+          `${API_LINK}/event_form/`,
           {
             detail: detail,
           },

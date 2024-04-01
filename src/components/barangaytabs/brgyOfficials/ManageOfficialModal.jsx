@@ -243,10 +243,13 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                         Barangay Chairman
                       </option>
                       <option value="Barangay Kagawad">Barangay Kagawad</option>
+                      <option value="Secretary">Secretary</option>
+                      <option value="Assistant Secretary">Assistant Secretary</option>
+                      <option value="Treasurer">Treasurer</option>
                       <option value="SK Chairman">SK Chairman</option>
                       <option value="SK Kagawad">SK Kagawad</option>
-                      <option value="Secretary">Secretary</option>
-                      <option value="Treasurer">Treasurer</option>
+                      <option value="SK Secretary">SK Secretary</option>
+                      <option value="SK Treasurer">SK Treasurer</option>
                     </select>
                   </div>
                   <div className="w-full mt-2">

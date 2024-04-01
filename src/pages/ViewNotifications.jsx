@@ -90,9 +90,9 @@ const ViewNotifications = ({ setNotification }) => {
   const getLinkBasedOnGoTo = () => {
     switch (notification.compose.go_to) {
       case "Events":
-        return `/events_management/?id=${id}`;
+        return `/announcements/?id=${id}`;
       case "Application":
-        return `/events_registrations/?id=${id}`;
+        return `/events_registration/?id=${id}`;
       case "Services":
         return `/services/?id=${id}`;
       case "Requests":

@@ -4,7 +4,7 @@ import axios from "axios";
 import AddSectionForm from "./AddSectionForm";
 import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../.././GETBrgy/getbrgy";
-
+import API_LINK from "../../../../config/API";
 const AddEventsForm = ({ announcement_id, brgy }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -113,7 +113,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
       if (checked) {
         // Check if there's an active form
         const activeFormResponse = await axios.get(
-          `http://localhost:8800/api/event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
+          `${API_LINK}event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
         );
 
         if (activeFormResponse.data.length > 0) {
@@ -123,7 +123,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
         } else {
           setSubmitClicked(true);
           const response = await axios.post(
-            `http://localhost:8800/api/event_form/?brgy=${brgy}&event_id=${announcement_id}&checked=${checked}`,
+            `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement_id}&checked=${checked}`,
             requestData,
             {
               headers: {
@@ -141,7 +141,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
         setSubmitClicked(true);
         // Make the POST request
         const response = await axios.post(
-          `http://localhost:8800/api/event_form/?brgy=${brgy}&event_id=${announcement_id}&checked=${checked}`,
+          `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement_id}&checked=${checked}`,
           requestData,
           {
             headers: {
