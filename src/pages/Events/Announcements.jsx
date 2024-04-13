@@ -250,7 +250,7 @@ const EventsManagement = () => {
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    data-hs-overlay="#hs-modal-add "
+                    data-hs-overlay="#hs-modal-add"
                     className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm  text-center inline-flex items-center "
                   >
                     <FaPlus size={24} style={{ color: "#ffffff" }} />
