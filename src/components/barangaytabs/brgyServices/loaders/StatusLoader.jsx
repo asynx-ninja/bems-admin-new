@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 
 function StatusLoader({ updatingStatus, error }) {
   const textPrompts = {
-    updating: "Updating the status of inquiry...",
+    updating: "Updating the status of service...",
     waiting: "Please wait...",
-    success: "Inquiry Status Updated Successfully!",
-    error: "Error updating inquiry. Please try again.",
+    success: "Service Status Updated Successfully!",
+    error: "Error updating service. Please try again.",
   };
 
   const [loadingText, setLoadingText] = useState(
-    textPrompts[updatingStatus] || "Updating the status of inquiry..."
+    textPrompts[updatingStatus] || "Updating the status of service..."
   );
   const [loading, setLoading] = useState(updatingStatus === "updating");
 
