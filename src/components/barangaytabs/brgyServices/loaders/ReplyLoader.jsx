@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 
 function ReplyLoader({ replyStatus, error }) {
   const textPrompts = {
-    replying: "Replying to the inquiry...",
+    replying: "Replying to the service...",
     waiting: "Please wait...",
-    success: "Inquiry Reply Sent!",
-    error: "Error replying to the inquiry. Please try again.",
+    success: "Service Reply Sent!",
+    error: "Error replying to the service. Please try again.",
   };
 
   const [loadingText, setLoadingText] = useState(
-    textPrompts[replyStatus] || "Replying to the inquiry..."
+    textPrompts[replyStatus] || "Replying to the service..."
   );
   const [loading, setLoading] = useState(replyStatus === "replying");
 
