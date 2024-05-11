@@ -113,7 +113,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
       if (checked) {
         // Check if there's an active form
         const activeFormResponse = await axios.get(
-          `${API_LINK}event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
+          `${API_LINK}/event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
         );
 
         if (activeFormResponse.data.length > 0) {

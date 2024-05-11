@@ -22,7 +22,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
   const [viewFiles, setViewFiles] = useState([]);
   const [newMessage, setNewMessage] = useState({
     message: "",
-    isRepliable: false,
+    isRepliable: true,
   });
   const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
@@ -446,7 +446,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                               </div>
 
                               <div className="flex justify-center items-center gap-x-2">
-                                <div className="hs-tooltip inline-block">
+                                {/* <div className="hs-tooltip inline-block">
                                   <label className="relative flex  justify-center items-center cursor-pointer">
                                     <input
                                       type="checkbox"
@@ -463,7 +463,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                   >
                                     Client can Reply
                                   </span>
-                                </div>
+                                </div> */}
                                 <button
                                   type="submit"
                                   onClick={handleOnSend}
@@ -713,7 +713,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                           </div>
 
                                           <div className="flex justify-center items-center gap-x-2">
-                                            <div className="hs-tooltip inline-block">
+                                            {/* <div className="hs-tooltip inline-block">
                                               <label className="relative flex  justify-center items-center cursor-pointer">
                                                 <input
                                                   type="checkbox"
@@ -732,7 +732,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                               >
                                                 Client can Reply
                                               </span>
-                                            </div>
+                                            </div> */}
                                             <button
                                               type="submit"
                                               onClick={handleOnSend}
