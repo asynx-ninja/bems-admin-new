@@ -13,7 +13,9 @@ import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import noData from "../../assets/image/no-data.png";
+import {io} from 'socket.io-client'
 
+const socket = io(`http://localhost:8800/`)
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });
@@ -56,6 +58,8 @@ const EventsRegistrations = () => {
     fetch();
   }, [brgy]);
 
+
+
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -74,6 +78,8 @@ const EventsRegistrations = () => {
 
     fetch();
   }, [brgy, statusFilter, selecteEventFilter, currentPage]);
+ 
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,6 +109,8 @@ const EventsRegistrations = () => {
 
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
+
+ 
 
   const handleEventFilter = (selectedType) => {
     setSelectedEventFilter(selectedType);
@@ -167,6 +175,23 @@ const EventsRegistrations = () => {
     setApplication(item);
   };
 
+  useEffect(() => {
+    const handleInquiries = (inquiry) => {
+      setApplication((prevApplication) => ({
+        ...prevApplication,
+        response: [...prevApplication.response, inquiry],
+      }));
+    };
+  
+    socket.on('receive-inquiry', handleInquiries);
+  
+    return () => {
+      socket.off('receive-inquiry', handleInquiries);
+    };
+  }, []);
+  
+  
+  
   const DateFormat = (date) => {
     const dateFormat = date === undefined ? "" : date.substr(0, 10);
     return dateFormat;
@@ -181,7 +206,6 @@ const EventsRegistrations = () => {
     switch (choice) {
       case "date":
         return applications.filter((item) => {
-        
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -193,8 +217,6 @@ const EventsRegistrations = () => {
         const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
-
-      
 
         return applications.filter(
           (item) =>
@@ -221,11 +243,7 @@ const EventsRegistrations = () => {
   };
 
   const onSelect = (e) => {
- 
-
     setSelected(e.target.value);
-
-  
   };
 
   const onChangeDate = (e) => {
@@ -252,11 +270,11 @@ const EventsRegistrations = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      
+
       setFilteredApplications(filters(selected, date));
     }
   };
-
+  console.log("ito yun",applications)
   return (
     <div className="mx-4 ">
       {/* Body */}
@@ -650,7 +668,7 @@ const EventsRegistrations = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                        {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
                           {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>

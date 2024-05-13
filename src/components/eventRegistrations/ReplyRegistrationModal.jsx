@@ -12,6 +12,10 @@ import EditDropbox from "./EditDropbox";
 import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
+import {io} from 'socket.io-client'
+
+const socket = io(`https://bems-server.onrender.com`)
+
 function ReplyRegistrationModal({ application, setApplication, brgy }) {
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
@@ -190,7 +194,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
-      setSubmitClicked(true);
+      // setSubmitClicked(true);
 
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (STAFF)`,
@@ -200,7 +204,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
         folder_id: application.folder_id,
       };
 
- 
+      socket.emit('send-inquiry', (obj))
+      
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
@@ -269,11 +274,11 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
 
         if (result.status === 200) {
           setTimeout(() => {
-            setSubmitClicked(false);
-            setReplyingStatus("success");
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
+            // setSubmitClicked(false);
+            // setReplyingStatus("success");
+            // setTimeout(() => {
+            //   window.location.reload();
+            // }, 3000);
           }, 1000);
         }
       }
