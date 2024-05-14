@@ -12,7 +12,10 @@ import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
-function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
+import { io } from 'socket.io-client'
+
+const socket = io(`http://localhost:8800`)
+function ViewInquiriesModal({ inquiry, setInquiry, brgy, setUpdate }) {
   const [reply, setReply] = useState(false);
   const [upload, setUpload] = useState(false);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
@@ -167,7 +170,7 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
   };
   const handleOnSend = async (e) => {
     e.preventDefault();
-    setSubmitClicked(true);
+    // setSubmitClicked(true);
    
 
     try {
@@ -180,6 +183,8 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
           folder_id: inquiry.folder_id,
           status: inquiry.status,
         };
+        socket.emit('send-muni_inquiry', (obj))
+
         var formData = new FormData();
         formData.append("response", JSON.stringify(obj));
         for (let i = 0; i < createFiles.length; i++) {
@@ -192,6 +197,8 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
         );
 
         if (response.status === 200) {
+          setNewMessage({ message: '' });
+          setReply(false)
           const notify = {
             category: "One",
             compose: {
@@ -231,13 +238,13 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
           });
  
           if (result.status === 200) {
-            setTimeout(() => {
-              setSubmitClicked(false);
-              setReplyStatus("success");
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            }, 1000);
+            // setTimeout(() => {
+            //   setSubmitClicked(false);
+            //   setReplyStatus("success");
+            //   setTimeout(() => {
+            //     window.location.reload();
+            //   }, 3000);
+            // }, 1000);
           }
         
 
@@ -804,6 +811,9 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
                     type="button"
                     className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                     data-hs-overlay="#hs-modal-viewInquiries"
+                    onClick={() => {
+                      setUpdate(true); // Set update to true
+                    }}
                   >
                     CLOSE
                   </button>

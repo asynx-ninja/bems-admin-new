@@ -13,10 +13,13 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
 import noData from "../assets/image/no-data.png";
+import { io } from 'socket.io-client'
 
+const socket = io(`http://localhost:8800`)
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [update, setUpdate] = useState(false)
   const id = searchParams.get("id");
   const brgy = "MUNISIPYO";
   const [inquiries, setInquiries] = useState([]);
@@ -51,6 +54,7 @@ const Inquiries = () => {
      
 
       if (response.status === 200) {
+        setUpdate(false)
         setInquiries(response.data.result);
         setFilteredInquiries(response.data.result);
         setPageCount(response.data.pageCount);
@@ -60,7 +64,7 @@ const Inquiries = () => {
     };
 
     fetchInquiries();
-  }, [id, to, statusFilter, currentPage]);
+  }, [id, to, statusFilter, currentPage, update]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -115,9 +119,27 @@ const Inquiries = () => {
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
+
+
   const handleView = (item) => {
     setInquiry(item);
   };
+
+  useEffect(() => {
+    const handleMuniInq = (muni_inquiry) => {
+      setInquiry((prevMuniInq) => ({
+        ...prevMuniInq,
+        response: [...prevMuniInq.response, muni_inquiry],
+      }));
+    };
+
+    socket.on('receive-muni_inquiry', handleMuniInq);
+
+    return () => {
+      socket.off('receive-muni_inquiry', handleMuniInq);
+    };
+  }, [socket, setInquiry]);
+
 
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
@@ -615,7 +637,10 @@ const Inquiries = () => {
                           <button
                             type="button"
                             data-hs-overlay="#hs-modal-viewInquiries"
-                            onClick={() => handleView({ ...item })}
+                            onClick={() => {
+                              handleView({ ...item }); // Call handleView function
+                              setUpdate(true); // Set update to true
+                            }}
                             className={`hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 items-center rounded-lg `}
                             
                           >
@@ -693,6 +718,7 @@ const Inquiries = () => {
           inquiry={inquiry}
           setInquiry={setInquiry}
           brgy={brgy}
+          setUpdate={setUpdate}
         />
         <Status status={status} setStatus={setStatus} />
       </div>

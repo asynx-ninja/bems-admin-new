@@ -15,7 +15,7 @@ import axios from "axios";
 import noData from "../../assets/image/no-data.png";
 import { io } from 'socket.io-client'
 
-const socket = io(`https://server-bems.onrender.com`)
+const socket = io(`http://localhost:8800`)
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });
@@ -176,19 +176,20 @@ const EventsRegistrations = () => {
   };
 
   useEffect(() => {
-    const handleInquiries = (inquiry) => {
-      setApplication((prevApplication) => ({
+    const handleEventAppli = (event_appli) => {
+      setApplication((prevApplication = { response: [] }) => ({
         ...prevApplication,
-        response: [...prevApplication.response, inquiry],
+        response: [...(prevApplication.response || []),event_appli],
       }));
+      setUpdate(true);
     };
 
-    socket.on('receive-inquiry', handleInquiries);
+    socket.on('receive-event_appli', handleEventAppli);
 
     return () => {
-      socket.off('receive-inquiry', handleInquiries);
+      socket.off('receive-event_appli', handleEventAppli);
     };
-  }, []);
+  }, [socket, setApplication]);
 
 
 
@@ -722,7 +723,7 @@ const EventsRegistrations = () => {
                           <button
                             type="button"
                             data-hs-overlay="#hs-view-application-modal"
-                            onClick={() => handleView({ ...item })}
+                            onClick={() => { handleView({ ...item }); setUpdate(true); }}
                             className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <AiOutlineEye

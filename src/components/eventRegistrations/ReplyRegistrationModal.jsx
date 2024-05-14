@@ -14,7 +14,7 @@ import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import { io } from 'socket.io-client'
 
-const socket = io(`https://server-bems.onrender.com`)
+const socket = io(`http://localhost:8800`)
 
 function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }) {
   const [reply, setReply] = useState(false);
@@ -128,29 +128,29 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
   //       e.target.name === "isRepliable" ? e.target.checked : e.target.value,
   //   }));
   // };
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(`${API_LINK}/application/${application._id}`);
-      if (response.status === 200) {
-        setApplication(response.data);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        // Handle error
-      }
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
-      // Handle error
-    }
-  };
+  // const fetchData = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axios.get(`${API_LINK}/application/?app_id=${application._id}`);
+  //     if (response.status === 200) {
+  //       setApplication(response.data);
+  //       setIsLoading(false);
+  //     } else {
+  //       setIsLoading(false);
+  //       // Handle error
+  //     }
+  //   } catch (error) {
+  //     setIsLoading(false);
+  //     console.log(error);
+  //     // Handle error
+  //   }
+  // };
 
-  useEffect(() => {
-    if (!isLoading) {
-      fetchData();
-    }
-  }, [isLoading]);
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     fetchData();
+  //   }
+  // }, [isLoading]);
   const handleChange = (e) => {
     const inputValue = e.target.value;
 
@@ -218,7 +218,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
     try {
       e.preventDefault();
 
-
+     
       // setSubmitClicked(true);
 
       const obj = {
@@ -229,7 +229,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
         folder_id: application.folder_id,
       };
 
-      socket.emit('send-inquiry', (obj))
+      socket.emit('send-event_appli', (obj))
 
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
@@ -246,7 +246,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
       if (response.status === 200) {
         setNewMessage({ message: '' });
         setUpdate(true)
-        setReply(false)
+        
+        // setReply(false)
         const notify = {
           category: "One",
           compose: {
@@ -803,7 +804,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                 data-hs-overlay="#hs-reply-modal"
                 onClick={() => {
-                  setUpdate(true); // Set update to true
+                  setReply(false) // Set update to true
+                  setUpdate(true)
                 }}
               >
                 CLOSE
