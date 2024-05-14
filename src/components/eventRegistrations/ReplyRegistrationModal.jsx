@@ -14,7 +14,7 @@ import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import { io } from 'socket.io-client'
 
-const socket = io(`http://localhost:8800`)
+const socket = io(`https://bems-server.onrender.com`)
 
 function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }) {
   const [reply, setReply] = useState(false);

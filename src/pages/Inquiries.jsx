@@ -15,7 +15,7 @@ import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
 import noData from "../assets/image/no-data.png";
 import { io } from 'socket.io-client'
 
-const socket = io(`http://localhost:8800`)
+const socket = io(`https://bems-server.onrender.com`)
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
