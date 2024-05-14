@@ -14,7 +14,7 @@ import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import { io } from 'socket.io-client'
 
-const socket = io(`https://bems-server.onrender.com`)
+const socket = io(`https://server-bems.onrender.com`)
 
 function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }) {
   const [reply, setReply] = useState(false);
@@ -217,7 +217,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
-     
+
 
       // setSubmitClicked(true);
 
@@ -245,7 +245,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
 
       if (response.status === 200) {
         setNewMessage({ message: '' });
-        
+        setUpdate(true)
+        setReply(false)
         const notify = {
           category: "One",
           compose: {
@@ -291,10 +292,10 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
           },
         });
 
-        if (result.status === 200) {
-          setUpdate(true)
-          
-        }
+        // if (result.status === 200) {
+        //   setUpdate(true)
+
+        // }
       }
       // window.location.reload();
     } catch (error) {
@@ -305,11 +306,11 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
     }
   };
 
-  const handleUpdate = () => {
-    const status = false
-    setUpdate(!status)
-    setReply(status)
-  }
+  // const handleUpdate = () => {
+  //   const status = false
+  //   setUpdate(!status)
+  //   setReply(status)
+  // }
   return (
     <div>
       <div
@@ -521,8 +522,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
                       <div
                         key={index}
                         className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${expandedIndexes.includes(index)
-                            ? "h-auto border-b"
-                            : ""
+                          ? "h-auto border-b"
+                          : ""
                           }`}
                         onClick={() => handleToggleClick(index)}
                       >
@@ -801,9 +802,9 @@ function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                 data-hs-overlay="#hs-reply-modal"
-                onClick={handleUpdate} // Trigger update after closing modal
-                
-                
+                onClick={() => {
+                  setUpdate(true); // Set update to true
+                }}
               >
                 CLOSE
               </button>

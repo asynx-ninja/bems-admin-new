@@ -15,7 +15,7 @@ import axios from "axios";
 import noData from "../../assets/image/no-data.png";
 import { io } from 'socket.io-client'
 
-const socket = io(`https://bems-server.onrender.com`)
+const socket = io(`https://server-bems.onrender.com`)
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });
@@ -742,7 +742,10 @@ const EventsRegistrations = () => {
                           <button
                             type="button"
                             data-hs-overlay="#hs-reply-modal"
-                            onClick={() => handleView({ ...item })}
+                            onClick={() => {
+                              handleView({ ...item }); // Call handleView function
+                              setUpdate(true); // Set update to true
+                            }}
                             className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <AiOutlineSend
