@@ -13,7 +13,7 @@ import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import noData from "../../assets/image/no-data.png";
-import {io} from 'socket.io-client'
+import { io } from 'socket.io-client'
 
 const socket = io(`https://bems-server.onrender.com`)
 const EventsRegistrations = () => {
@@ -25,7 +25,7 @@ const EventsRegistrations = () => {
   const brgy = "MUNISIPYO";
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [update, setUpdate] = useState(false)
   //Status filter and pagination
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
@@ -59,7 +59,6 @@ const EventsRegistrations = () => {
   }, [brgy]);
 
 
-
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -70,6 +69,7 @@ const EventsRegistrations = () => {
           setApplications(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredApplications(response.data.result);
+          setUpdate(false)
         } else setApplications([]);
       } catch (err) {
         console.log(err);
@@ -77,8 +77,8 @@ const EventsRegistrations = () => {
     };
 
     fetch();
-  }, [brgy, statusFilter, selecteEventFilter, currentPage]);
- 
+  }, [brgy, statusFilter, selecteEventFilter, currentPage, update]);
+
 
 
   useEffect(() => {
@@ -110,7 +110,7 @@ const EventsRegistrations = () => {
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
 
- 
+
 
   const handleEventFilter = (selectedType) => {
     setSelectedEventFilter(selectedType);
@@ -182,16 +182,16 @@ const EventsRegistrations = () => {
         response: [...prevApplication.response, inquiry],
       }));
     };
-  
+
     socket.on('receive-inquiry', handleInquiries);
-  
+
     return () => {
       socket.off('receive-inquiry', handleInquiries);
     };
   }, []);
-  
-  
-  
+
+
+
   const DateFormat = (date) => {
     const dateFormat = date === undefined ? "" : date.substr(0, 10);
     return dateFormat;
@@ -208,7 +208,7 @@ const EventsRegistrations = () => {
         return applications.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -221,7 +221,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -230,7 +230,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -274,7 +274,6 @@ const EventsRegistrations = () => {
       setFilteredApplications(filters(selected, date));
     }
   };
-  console.log("ito yun",applications)
   return (
     <div className="mx-4 ">
       {/* Body */}
@@ -329,9 +328,8 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -504,9 +502,8 @@ const EventsRegistrations = () => {
                 >
                   EVENT TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -811,7 +808,10 @@ const EventsRegistrations = () => {
         application={application}
         setApplication={setApplication}
         brgy={brgy}
+        setUpdate={setUpdate}
       />
+
+
       <ArchiveRegistrationModal selectedItems={selectedItems} />
     </div>
   );

@@ -12,11 +12,11 @@ import EditDropbox from "./EditDropbox";
 import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
-import {io} from 'socket.io-client'
+import { io } from 'socket.io-client'
 
 const socket = io(`https://bems-server.onrender.com`)
 
-function ReplyRegistrationModal({ application, setApplication, brgy }) {
+function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }) {
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -41,6 +41,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
     },
   });
   const [currentPage, setCurrentPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     setFiles(application.length === 0 ? [] : application.file);
   }, [application]);
@@ -127,10 +128,32 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
   //       e.target.name === "isRepliable" ? e.target.checked : e.target.value,
   //   }));
   // };
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${API_LINK}/application/${application._id}`);
+      if (response.status === 200) {
+        setApplication(response.data);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        // Handle error
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+      // Handle error
+    }
+  };
 
+  useEffect(() => {
+    if (!isLoading) {
+      fetchData();
+    }
+  }, [isLoading]);
   const handleChange = (e) => {
     const inputValue = e.target.value;
-  
+
     if (e.target.name === "isRepliable") {
       // If isRepliable checkbox is changed, update isRepliable accordingly
       setNewMessage((prev) => ({
@@ -194,6 +217,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
+     
+
       // setSubmitClicked(true);
 
       const obj = {
@@ -205,7 +230,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
       };
 
       socket.emit('send-inquiry', (obj))
-      
+
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
@@ -219,38 +244,34 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
       );
 
       if (response.status === 200) {
-       
+        setNewMessage({ message: '' });
+        
         const notify = {
           category: "One",
           compose: {
             subject: `APPLICATION - ${application.event_name}`,
-            message: `A municipalit staff has updated your event application form for the event of ${
-              application.event_name
-            }.\n\n
+            message: `A municipalit staff has updated your event application form for the event of ${application.event_name
+              }.\n\n
       
             Application Details:\n
-            - Name: ${
-              application.form && application.form[0]
+            - Name: ${application.form && application.form[0]
                 ? application.form[0].lastName.value
                 : ""
-            }, ${
-              application.form && application.form[0]
+              }, ${application.form && application.form[0]
                 ? application.form[0].firstName.value
                 : ""
-            } ${
-              application.form && application.form[0]
+              } ${application.form && application.form[0]
                 ? application.form[0].middleName.value
                 : ""
-            }
+              }
             - Event Applied: ${application.event_name}\n
             - Application ID: ${application.application_id}\n
             - Date Created: ${moment(application.createdAt).format(
-              "MMM. DD, YYYY h:mm a"
-            )}\n
+                "MMM. DD, YYYY h:mm a"
+              )}\n
             - Status: ${application.status}\n
-            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
-              userData.middleName
-            }\n\n
+            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${userData.middleName
+              }\n\n
             Please update this application as you've seen this notification!\n\n
             Thank you!!,`,
             go_to: "Application",
@@ -264,8 +285,6 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
           logo: event.collections.logo,
         };
 
-     
-
         const result = await axios.post(`${API_LINK}/notification/`, notify, {
           headers: {
             "Content-Type": "application/json",
@@ -273,13 +292,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
         });
 
         if (result.status === 200) {
-          setTimeout(() => {
-            // setSubmitClicked(false);
-            // setReplyingStatus("success");
-            // setTimeout(() => {
-            //   window.location.reload();
-            // }, 3000);
-          }, 1000);
+          setUpdate(true)
+          
         }
       }
       // window.location.reload();
@@ -291,6 +305,11 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
     }
   };
 
+  const handleUpdate = () => {
+    const status = false
+    setUpdate(!status)
+    setReply(status)
+  }
   return (
     <div>
       <div
@@ -317,7 +336,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                 </b>
                 <form>
                   {!application.response ||
-                  application.response.length === 0 ? (
+                    application.response.length === 0 ? (
                     <div className="flex flex-col items-center">
                       <div className="relative w-full mx-2">
                         <div className="relative w-full">
@@ -330,8 +349,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                               newMessage.message
                                 ? newMessage.message
                                 : statusChanger
-                                ? `The status of your event application is ${application.status}`
-                                : ""
+                                  ? `The status of your event application is ${application.status}`
+                                  : ""
                             }
                             className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                             placeholder="Input response..."
@@ -501,11 +520,10 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                     application.response.map((responseItem, index) => (
                       <div
                         key={index}
-                        className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${
-                          expandedIndexes.includes(index)
+                        className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${expandedIndexes.includes(index)
                             ? "h-auto border-b"
                             : ""
-                        }`}
+                          }`}
                         onClick={() => handleToggleClick(index)}
                       >
                         {!expandedIndexes.includes(index) ? (
@@ -578,8 +596,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                           newMessage.message
                                             ? newMessage.message
                                             : statusChanger
-                                            ? `The status of your event application is ${application.status}`
-                                            : ""
+                                              ? `The status of your event application is ${application.status}`
+                                              : ""
                                         }
                                         className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                                         placeholder="Input response..."
@@ -672,7 +690,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                                         statusChanger &&
                                                         (!newMessage.message ||
                                                           newMessage.message.trim() ===
-                                                            "")
+                                                          "")
                                                       ) {
                                                         setNewMessage(
                                                           (prev) => ({
@@ -783,6 +801,9 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                 data-hs-overlay="#hs-reply-modal"
+                onClick={handleUpdate} // Trigger update after closing modal
+                
+                
               >
                 CLOSE
               </button>
