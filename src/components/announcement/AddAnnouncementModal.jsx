@@ -7,7 +7,10 @@ import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import moment from "moment";
-function CreateAnnouncementModal({ brgy }) {
+import Socket_link from "../../config/Socket";
+import { io } from "socket.io-client";
+const socket = io(Socket_link);
+function CreateAnnouncementModal({ brgy, setUpdate }) {
   const [announcement, setAnnouncement] = useState({
     title: "",
     details: "",
@@ -118,7 +121,7 @@ function CreateAnnouncementModal({ brgy }) {
       };
 
       formData.append("announcement", JSON.stringify(obj));
-
+      socket.emit("send-get_events", obj);
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
@@ -130,6 +133,7 @@ function CreateAnnouncementModal({ brgy }) {
         );
 
         if (response.status === 200) {
+          setUpdate((prevState) => !prevState);
           let notify;
 
           const formattedDate = moment(announcement.date).format(
@@ -168,7 +172,8 @@ function CreateAnnouncementModal({ brgy }) {
             setSubmitClicked(false);
             setCreationStatus("success");
             setTimeout(() => {
-              window.location.reload();
+              setCreationStatus(null);
+              HSOverlay.close(document.getElementById("hs-modal-add"));
             }, 3000);
           }
         }

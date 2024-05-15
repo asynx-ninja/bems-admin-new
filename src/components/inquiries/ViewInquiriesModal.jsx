@@ -13,8 +13,8 @@ import EditDropbox from "./EditDropbox";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import { io } from 'socket.io-client'
-
-const socket = io(`https://bems-server.onrender.com`)
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link)
 function ViewInquiriesModal({ inquiry, setInquiry, brgy, setUpdate }) {
   const [reply, setReply] = useState(false);
   const [upload, setUpload] = useState(false);

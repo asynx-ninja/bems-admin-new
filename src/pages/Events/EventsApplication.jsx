@@ -14,8 +14,8 @@ import API_LINK from "../../config/API";
 import axios from "axios";
 import noData from "../../assets/image/no-data.png";
 import { io } from 'socket.io-client'
-
-const socket = io(`https://bems-server.onrender.com`)
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link)
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });

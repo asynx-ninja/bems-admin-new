@@ -13,8 +13,8 @@ import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import { io } from 'socket.io-client'
-
-const socket = io(`https://server-bems.onrender.com`)
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link)
 
 function ReplyRegistrationModal({ application, setApplication, brgy, setUpdate }) {
   const [reply, setReply] = useState(false);

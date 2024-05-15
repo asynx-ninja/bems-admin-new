@@ -19,7 +19,9 @@ import ManageAnnouncementModal from "../../components/announcement/ManageAnnounc
 import AddEventsForm from "../../components/announcement/form/add_event/AddEventsForm";
 import EditEventsForm from "../../components/announcement/form/edit_event/EditEventsForm";
 import noData from "../../assets/image/no-data.png";
-
+import { io } from 'socket.io-client'
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link)
 const EventsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
@@ -37,6 +39,7 @@ const EventsManagement = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [selected, setSelected] = useState("date");
+  const [update, setUpdate] = useState(false)
    useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,6 +47,7 @@ const EventsManagement = () => {
           `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
         );
         if (announcementsResponse.status === 200) {
+          setUpdate(false)
           const announcementsData = announcementsResponse.data.result.map(
             async (announcement) => {
               const completedResponse = await axios.get(
@@ -77,7 +81,7 @@ const EventsManagement = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy]);
+  }, [currentPage, brgy, update]);
 
 
   const handlePageChange = ({ selected }) => {
@@ -136,6 +140,21 @@ const EventsManagement = () => {
   const handleView = (item) => {
     setAnnouncement(item);
   };
+
+  useEffect(() => {
+    const handleEventAppli = (get_events) => {
+      setAnnouncement((prevApplication)  ({
+        ...prevApplication
+      }));
+      setUpdate(true);
+    };
+
+    socket.on('receive-get_events', handleEventAppli);
+
+    return () => {
+      socket.off('receive-get_events', handleEventAppli);
+    };
+  }, [socket, setAnnouncement]);
 
   const DateFormat = (date) => {
     const dateFormat = date === undefined ? "" : date.substr(0, 10);
@@ -252,6 +271,9 @@ const EventsManagement = () => {
                     type="button"
                     data-hs-overlay="#hs-modal-add"
                     className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm  text-center inline-flex items-center "
+                    onClick={() => {
+                      setUpdate(true); // Set update to true
+                    }}
                   >
                     <FaPlus size={24} style={{ color: "#ffffff" }} />
                     <span className="sm:block md:hidden sm:pl-5">
@@ -580,7 +602,9 @@ const EventsManagement = () => {
                         <button
                           type="button"
                           data-hs-overlay="#hs-edit-eventsForm-modal"
-                          onClick={() => handleView({ ...item })}
+                          onClick={() => {
+                            handleView({ ...item }); // Call handleView function
+                          }}
                           className="hs-tooltip-toggle text-white bg-purple-700 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
                           <MdOutlineEditNote
@@ -653,12 +677,13 @@ const EventsManagement = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddModal brgy={brgy} />
+        <AddModal brgy={brgy} setUpdate={setUpdate}/>
         <ArchiveModal selectedItems={selectedItems} />
         <ManageAnnouncementModal
           announcement={announcement}
           setAnnouncement={setAnnouncement}
           brgy={brgy}
+          
         />
         <AddEventsForm announcement_id={announcement.event_id} brgy={brgy} />
         <EditEventsForm announcement_id={announcement.event_id} brgy={brgy} />
