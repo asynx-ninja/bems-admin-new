@@ -38,25 +38,38 @@ const Inquiries = () => {
   const [selected, setSelected] = useState("date");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
 
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/inquiries/admininquiries/?id=${id}&to=${to}&archived=true&status=${statusFilter}&page=${currentPage}`
-      );
-      if (response.status === 200) {
-        setInquiries(response.data.result);
-        setFilteredInquiries(response.data.result);
-        setPageCount(response.data.pageCount);
-      } else setInquiries([]);
- 
-    };
+  const [allInquiries, setAllInquiries] = useState([]);
 
-    fetch();
-  }, [statusFilter, currentPage]);
+  useEffect(() => {
+    document.title = "Inquiries | Barangay E-Services Management";
+  
+    const fetchInquiries = async () => {
+      const response = await axios.get(
+        `${API_LINK}/inquiries/admininquiries/?id=${id}&to=${to}&archived=true&status=${statusFilter}`
+      );
+  
+      if (response.status === 200) {
+        setUpdate(false);
+        setAllInquiries(response.data.result);
+        setInquiries(response.data.result.slice(0, 10)); // Set initial page data
+        setFilteredInquiries(response.data.result.slice(0, 10));
+        setPageCount(Math.ceil(response.data.result.length / 10)); // Calculate page count based on all data
+      } else {
+        setInquiries([]);
+        setFilteredInquiries([]);
+      }
+    };
+  
+    fetchInquiries();
+  }, [id, to, statusFilter, update]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredInquiries(allInquiries.slice(start, end));
   };
+  
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -419,16 +432,13 @@ const Inquiries = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Inquiries = inquiries.filter(
+                    const filteredData = allInquiries.filter(
                       (item) =>
-                        item.name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.inq_id
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase())
+                        item.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+                        item.inq_id.toLowerCase().includes(e.target.value.toLowerCase())
                     );
-                    setFilteredInquiries(Inquiries);
+                    setFilteredInquiries(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>
