@@ -7,10 +7,8 @@ import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import moment from "moment";
-import Socket_link from "../../config/Socket";
-import { io } from "socket.io-client";
-const socket = io(Socket_link);
-function CreateAnnouncementModal({ brgy, setUpdate }) {
+
+function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
   const [announcement, setAnnouncement] = useState({
     title: "",
     details: "",
@@ -97,7 +95,7 @@ function CreateAnnouncementModal({ brgy, setUpdate }) {
         return; // Prevent further execution of handleSubmit
       }
       setSubmitClicked(true);
-      
+
       const formData = new FormData();
       const newFiles = [banner, logo, ...files].filter((file) => file);
 
@@ -114,7 +112,7 @@ function CreateAnnouncementModal({ brgy, setUpdate }) {
       };
 
       formData.append("announcement", JSON.stringify(obj));
-      socket.emit("send-get_events", obj);
+     
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
@@ -126,7 +124,7 @@ function CreateAnnouncementModal({ brgy, setUpdate }) {
         );
 
         if (response.status === 200) {
-          setUpdate((prevState) => !prevState);
+        
           let notify;
 
           const formattedDate = moment(announcement.date).format(
@@ -171,6 +169,8 @@ function CreateAnnouncementModal({ brgy, setUpdate }) {
           }
         }
       }
+      socket.emit("send-get_events", obj);
+      setUpdate((prevState) => !prevState);
     } catch (err) {
       console.error(err);
       setSubmitClicked(false);

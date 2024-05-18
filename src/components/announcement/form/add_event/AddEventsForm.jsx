@@ -5,10 +5,67 @@ import AddSectionForm from "./AddSectionForm";
 import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../.././GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
-import Socket_link from "../../../../config/Socket";
-import { io } from "socket.io-client";
-const socket = io(Socket_link);
-const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUpdate }) => {
+
+
+const Initialize={
+  user_id: { display: "user id", checked: true, type: "text", value: "" },
+  firstName: {
+    display: "first name",
+    checked: true,
+    type: "text",
+    value: "",
+  },
+  middleName: {
+    display: "middle name",
+    checked: true,
+    type: "text",
+    value: "",
+  },
+  lastName: { display: "last name", checked: true, type: "text", value: "" },
+  suffix: { display: "suffix", checked: true, type: "text", value: "" },
+  birthday: { display: "birthday", checked: false, type: "date", value: "" },
+  age: { display: "age", checked: false, type: "number", value: 1 },
+  sex: { display: "sex", checked: false, type: "radio", value: "" },
+  contact: { display: "contact", checked: false, type: "text", value: "" },
+  civil_status: {
+    display: "civil status",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+  height: {
+    display: "height (ft)",
+    checked: false,
+    type: "text",
+    value: "",
+  },
+  weight: {
+    display: "weight (kg)",
+    checked: false,
+    type: "number",
+    value: 0,
+  },
+  address: {
+    display: "address",
+    checked: false,
+    type: "text",
+    value: "",
+  },
+  religion: {
+    display: "religion",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+  email: { display: "email", checked: false, type: "email", value: "" },
+  occupation: {
+    display: "occupation",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+}
+const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUpdate, socket }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -73,7 +130,7 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
   });
 
   const [titleName, setTitleName] = useState("");
-
+ 
   const handleChange = (e) => {
     setTitleName(e.target.value);
   };
@@ -160,6 +217,7 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
           }
         );
         if (response.status === 200) {
+          setForm(Initialize)
           setSubmitClicked(false);
           setCreationStatus("success");
           setTimeout(() => {
@@ -258,7 +316,7 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
                             <input
                               className="mr-2"
                               type="checkbox"
-                              defaultChecked={value.checked}
+                              checked={value.checked}
                               onChange={(e) => handleFormChange(e, key)}
                             />
                             {value.display.toUpperCase()}

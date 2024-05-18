@@ -26,7 +26,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
   };
 
   useEffect(() => {
-    setFiles(announcement.length === 0 ? [] : announcement.collections.file);
+    setFiles(announcement.length === 0 || !announcement.collections ? [] : announcement.collections.file);
 
     var logoSrc = document.getElementById("edit_logo");
     logoSrc.src =

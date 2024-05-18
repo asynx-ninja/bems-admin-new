@@ -452,8 +452,8 @@ function ReplyRegistrationModal({
                             `${userData?.firstName?.toUpperCase() ?? ""} ${
                               userData?.lastName?.toUpperCase() ?? ""
                             } (${userData.type})`
-                              ? "flex flex-col justify-end items-end mb-5 w-full h-auto"
-                              : "flex flex-col justify-start items-start mb-5 w-full h-auto"
+                              ? "flex flex-col justify-end items-end mb-2 w-full h-auto"
+                              : "flex flex-col justify-start items-start mb-2 w-full h-auto"
                           }
                         >
                           <div className="flex flex-col items-end mb-5 h-auto">
@@ -480,7 +480,7 @@ function ReplyRegistrationModal({
                             ) : null}
                             {responseItem.file &&
                               responseItem.file.length > 0 && (
-                                <div className="flex flex-row rounded-xl w-full  md:py-2">
+                                <div className="flex flex-col rounded-xl bg-custom-green-button w-full mt-2 px-2 md:px-4 py-2">
                                   <ViewDropbox
                                     viewFiles={responseItem.file || []}
                                     setViewFiles={setViewFiles}
@@ -494,38 +494,6 @@ function ReplyRegistrationModal({
                           </div>
                           {index === application.response.length - 1 ? (
                             <div className="flex flex-row items-center w-full">
-                              {application.status === "Cancelled" ||
-                              application.status === "Rejected" ? (
-                                <div>
-                                  <p className="text-center text-[14px]">
-                                    You are unable to reply to this conversation
-                                    due to the status of your Application is on{" "}
-                                    <b
-                                      className={`font-medium text-${setColor(
-                                        application.status
-                                      )}`}
-                                    >
-                                      {application.status}
-                                    </b>
-                                  </p>
-                                </div>
-                              ) : null}
-                              <button
-                                type="button"
-                                className={
-                                  application.status === "Cancelled" ||
-                                  application.status === "Rejected"
-                                    ? "hidden"
-                                    : "h-8 w-full lg:w-32 py-1 px-2 gap-2 mt-4 rounded-full borde text-sm font-base bg-custom-green-header text-white shadow-sm"
-                                }
-                                onClick={handleOnReply}
-                                hidden={reply}
-                              >
-                                REPLY
-                              </button>
-                              {!reply ? (
-                                <div></div>
-                              ) : (
                                 <div className="relative w-full mt-4 mx-2">
                                   {errMsg ? (
                                     <div className="w-[100%] bg-red-500 rounded-md mb-[10px] flex">
@@ -538,6 +506,7 @@ function ReplyRegistrationModal({
                                     <textarea
                                       id="message"
                                       name="message"
+                                      multiple
                                       onChange={handleChange}
                                       className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                                       placeholder="Input response..."
@@ -566,6 +535,109 @@ function ReplyRegistrationModal({
                                           >
                                             <IoIosAttach size={24} />
                                           </button>
+                                          <div className="flex flex-col lg:flex-row">
+                                              <div className="w-full">
+                                                <div className="flex flex-row space-x-4">
+                                                  {!statusChanger ? (
+                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                      <div className="hs-tooltip inline-block">
+                                                        <button
+                                                          onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleOnStatusChanger();
+                                                          }}
+                                                          className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
+                                                        >
+                                                          <FaTasks
+                                                            size={24}
+                                                            className="mx-auto"
+                                                          />
+                                                          <span
+                                                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                            role="tooltip"
+                                                          >
+                                                            Change Application
+                                                            Status
+                                                          </span>
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                  ) : (
+                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                      <div className="hs-tooltip inline-block">
+                                                        <button
+                                                          onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleOnStatusChanger();
+                                                          }}
+                                                          className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                                        >
+                                                          <MdOutlineCancel
+                                                            size={24}
+                                                            className="mx-auto"
+                                                          />
+                                                        </button>
+                                                        <span
+                                                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                          role="tooltip"
+                                                        >
+                                                          Change Application
+                                                          Status
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                  )}
+                                                  <select
+                                                    id="status"
+                                                    name="status"
+                                                    onChange={(e) => {
+                                                      if (
+                                                        statusChanger &&
+                                                        (!newMessage.message ||
+                                                          newMessage.message.trim() ===
+                                                          "")
+                                                      ) {
+                                                        setNewMessage(
+                                                          (prev) => ({
+                                                            ...prev,
+                                                            message: `The status of your event application is ${e.target.value}`,
+                                                          })
+                                                        );
+                                                      }
+                                                      setApplication(
+                                                        (prev) => ({
+                                                          ...prev,
+                                                          status:
+                                                            e.target.value,
+                                                        })
+                                                      );
+                                                    }}
+                                                    className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                                    value={application.status}
+                                                    hidden={!statusChanger}
+                                                  >
+                                                    <option value="Pending">
+                                                      PENDING
+                                                    </option>
+                                                    <option value="Paid">
+                                                      PAID
+                                                    </option>
+                                                    <option value="Processing">
+                                                      PROCESSING
+                                                    </option>
+                                                    <option value="Cancelled">
+                                                      CANCELLED
+                                                    </option>
+                                                    <option value="Application Completed">
+                                                      APPLICATION COMPLETED
+                                                    </option>
+                                                    <option value="Rejected">
+                                                      REJECTED
+                                                    </option>
+                                                  </select>
+                                                </div>
+                                              </div>
+                                            </div>
                                         </div>
 
                                         <div className="flex items-center gap-x-1">
@@ -597,7 +669,6 @@ function ReplyRegistrationModal({
                                     <div></div>
                                   )}
                                 </div>
-                              )}
                             </div>
                           ) : null}
                         </div>
