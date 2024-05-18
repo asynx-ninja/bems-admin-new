@@ -170,7 +170,7 @@ const EventsRegistrations = () => {
     }
   };
 
-  const tableHeader = ["EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
+  const tableHeader = ["APPLICATION ID", "EVENT NAME", "SENDER", "STATUS", "ACTIONS"];
 
   const handleView = (item) => {
     setApplication(item);
@@ -185,96 +185,87 @@ const EventsRegistrations = () => {
       }));
     };
     socket.on("receive-event_appli", handleEventAppli);
-    console.log(handleEventAppli)
-
     return () => {
-    socket.off("receive-event_appli", handleEventAppli);
+      socket.off("receive-event_appli", handleEventAppli);
     };
   }, [socket, setApplication]);
 
 
-  const DateFormat = (date) => {
-    const dateFormat = date === undefined ? "" : date.substr(0, 10);
-    return dateFormat;
-  };
   const TimeFormat = (date) => {
     if (!date) return "";
 
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
-  const filters = (choice, selectedDate) => {
-    switch (choice) {
-      case "date":
-        return applications.filter((item) => {
-          return (
-            new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
-            new Date(item.createdAt).getDate() === selectedDate.getDate()
-          );
-        });
-      case "week":
-        const startDate = selectedDate;
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6);
+  // const filters = (choice, selectedDate, applications) => {
+  //   switch (choice) {
+  //     case "date":
+  //       return applications.filter((item) => {
+  //         const itemDate = new Date(item.createdAt);
+  //         return (
+  //           itemDate.getFullYear() === selectedDate.getFullYear() &&
+  //           itemDate.getMonth() === selectedDate.getMonth() &&
+  //           itemDate.getDate() === selectedDate.getDate()
+  //         );
+  //       });
+  //     case "week":
+  //       const startDate = new Date(selectedDate);
+  //       const endDate = new Date(startDate);
+  //       endDate.setDate(startDate.getDate() + 6);
 
-        return applications.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
-            new Date(item.createdAt).getDate() >= startDate.getDate() &&
-            new Date(item.createdAt).getDate() <= endDate.getDate()
-        );
-      case "month":
-        return applications.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
-        );
-      case "year":
-        return applications.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear()
-        );
-    }
-  };
+  //       return applications.filter((item) => {
+  //         const itemDate = new Date(item.createdAt);
+  //         return itemDate >= startDate && itemDate <= endDate;
+  //       });
+  //     case "month":
+  //       return applications.filter((item) => {
+  //         const itemDate = new Date(item.createdAt);
+  //         return (
+  //           itemDate.getFullYear() === selectedDate.getFullYear() &&
+  //           itemDate.getMonth() === selectedDate.getMonth()
+  //         );
+  //       });
+  //     case "year":
+  //       return applications.filter((item) => {
+  //         const itemDate = new Date(item.createdAt);
+  //         return itemDate.getFullYear() === selectedDate.getFullYear();
+  //       });
+  //     default:
+  //       return applications; // Return all applications if no valid choice is selected
+  //   }
+  // };
 
-  const onSelect = (e) => {
-    setSelected(e.target.value);
-  };
+  // const onSelect = (e) => {
+  //   setSelected(e.target.value);
+  // };
 
-  const onChangeDate = (e) => {
-    const date = new Date(e.target.value);
-    setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date));
-  };
+  // const onChangeDate = (e) => {
+  //   const date = new Date(e.target.value);
+  //   setSpecifiedDate(date);
+  //   setFilteredApplications(filters(selected, date, applications));
+  // };
 
-  const onChangeWeek = (e) => {
-    const date = moment(e.target.value).toDate();
-    setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date));
-  };
+  // const onChangeWeek = (e) => {
+  //   const date = new Date(e.target.value);
+  //   setSpecifiedDate(date);
+  //   setFilteredApplications(filters(selected, date, applications));
+  // };
 
-  const onChangeMonth = (e) => {
-    const date = moment(e.target.value).toDate();
-    setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date));
-  };
+  // const onChangeMonth = (e) => {
+  //   const date = new Date(e.target.value);
+  //   setSpecifiedDate(date);
+  //   setFilteredApplications(filters(selected, date, applications));
+  // };
 
-  const onChangeYear = (e) => {
-    if (e.target.value === "") {
-      setFilteredApplications(applications);
-    } else {
-      const date = new Date(e.target.value, 0, 1);
-      setSpecifiedDate(date);
-
-      setFilteredApplications(filters(selected, date));
-    }
-  };
+  // const onChangeYear = (e) => {
+  //   if (e.target.value === "") {
+  //     setFilteredApplications(applications);
+  //   } else {
+  //     const date = new Date(e.target.value, 0, 1);
+  //     setSpecifiedDate(date);
+  //     setFilteredApplications(filters(selected, date, applications));
+  //   }
+  // };
 
   return (
     <div className="mx-4 ">
@@ -388,11 +379,11 @@ const EventsRegistrations = () => {
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Transaction Completed")}
+                    onClick={() => handleStatusFilter("Application Completed")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    TRANSACTION COMPLETED
+                    APPLICATION COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
@@ -404,7 +395,7 @@ const EventsRegistrations = () => {
                 </ul>
               </div>
 
-              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+              {/* <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
                   type="button"
@@ -496,7 +487,7 @@ const EventsRegistrations = () => {
                     </div>
                   </div>
                 </ul>
-              </div>
+              </div> */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
@@ -654,6 +645,11 @@ const EventsRegistrations = () => {
                     </td>
                     <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                        {item.application_id}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
                         {item.event_name}
                       </span>
                     </td>
@@ -666,19 +662,19 @@ const EventsRegistrations = () => {
                           item.form[0].middleName.value}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    {/* <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
                           {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
                           {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
-                    </td>
+                    </td> */}
                     <td className="px-6 py-3 xxl:w-3/12">
-                      {item.status === "Transaction Completed" && (
+                      {item.status === "Application Completed" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            TRANSACTION COMPLETED
+                            APPLICATION COMPLETED
                           </span>
                         </div>
                       )}

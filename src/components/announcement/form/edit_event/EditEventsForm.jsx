@@ -8,7 +8,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate }) => {
+const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, socket }) => {
   const information = GetBrgy(brgy);
 
   const [details, setDetails] = useState([]);
@@ -16,20 +16,16 @@ const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate }) =>
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedFormIndex, setSelectedFormIndex] = useState("");
 
-
-  useEffect(() => {
-    // function to filter
-  
+useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
           `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement_id}`
         );
-        // filter
         setDetails(response.data);
         setEditUpdate((prevState) => !prevState);
-        console.log("sabinisoj", editupdate)
       } catch (err) {
         console.log(err.message);
       }
@@ -73,7 +69,6 @@ const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate }) =>
             }
           );
 
-         
           setTimeout(() => {
             setSubmitClicked(false);
             setUpdatingStatus("success");
@@ -119,6 +114,7 @@ const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate }) =>
 
   const handleSelectChange = (e) => {
     setDetail(details[e.target.value]);
+    setSelectedFormIndex(e.target.value);
   };
 
   const handleChange = (e) => {
@@ -126,6 +122,14 @@ const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate }) =>
       ...prev,
       title: e.target.value,
     }));
+  };
+  const handleResetModal = () => {
+    setDetail({});
+    setSelectedFormIndex("");
+    setDetail({ title: "" });
+    document.querySelector('select[name="form"]').value = "";
+  
+    
   };
 
   return (
@@ -266,6 +270,7 @@ const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate }) =>
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-edit-eventsForm-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

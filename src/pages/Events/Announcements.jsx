@@ -668,13 +668,14 @@ const EventsManagement = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddModal brgy={brgy} setUpdate={setUpdate} />
+        <AddModal brgy={brgy} setUpdate={setUpdate} socket={socket}/>
         <ArchiveModal selectedItems={selectedItems} />
         <ManageAnnouncementModal
           announcement={announcement}
           setAnnouncement={setAnnouncement}
           brgy={brgy}
           setUpdate={setUpdate}
+          socket={socket}
         />
         <AddEventsForm
           announcement_id={announcement.event_id}
@@ -682,12 +683,14 @@ const EventsManagement = () => {
           setUpdate={setUpdate}
           editupdate={editupdate}
           setEditUpdate={setEditUpdate}
+          socket={socket}
         />
         <EditEventsForm
           announcement_id={announcement.event_id}
           brgy={brgy}
           editupdate={editupdate}
           setEditUpdate={setEditUpdate}
+          socket={socket}
         />
       </div>
     </div>
