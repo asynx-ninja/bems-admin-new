@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive } from "react-icons/fa";
- 
+
 import moment from "moment";
 import ArchiveModal from "../components/inquiries/ArchiveInquiryModal";
 import Status from "../components/inquiries/Status";
@@ -13,13 +13,13 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
 import noData from "../assets/image/no-data.png";
-import { io } from 'socket.io-client'
+import { io } from "socket.io-client";
 import Socket_link from "../config/Socket";
-const socket = io(Socket_link)
+const socket = io(Socket_link);
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [update, setUpdate] = useState(false)
+  const [inqsupdate, setInqsUpdate] = useState(false);
   const id = searchParams.get("id");
   const brgy = "MUNISIPYO";
   const [inquiries, setInquiries] = useState([]);
@@ -47,27 +47,26 @@ const Inquiries = () => {
 
   useEffect(() => {
     document.title = "Inquiries | Barangay E-Services Management";
-  
+
     const fetchInquiries = async () => {
       const response = await axios.get(
         `${API_LINK}/inquiries/admininquiries/?id=${id}&to=${to}&archived=false&status=${statusFilter}`
       );
-  
+
       if (response.status === 200) {
-        setUpdate(false);
         setAllInquiries(response.data.result);
         setInquiries(response.data.result.slice(0, 10)); // Set initial page data
         setFilteredInquiries(response.data.result.slice(0, 10));
-        setPageCount(Math.ceil(response.data.result.length / 10)); // Calculate page count based on all data
+        setPageCount(response.data.pageCount); // Calculate page count based on all data
       } else {
         setInquiries([]);
         setFilteredInquiries([]);
       }
+      setInqsUpdate((prevState) => !prevState);
     };
-  
+
     fetchInquiries();
-  }, [id, to, statusFilter, update]);
-  
+  }, [id, to, statusFilter, inqsupdate]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -75,9 +74,7 @@ const Inquiries = () => {
     const end = start + 10;
     setFilteredInquiries(allInquiries.slice(start, end));
   };
-  
 
-  
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -127,9 +124,9 @@ const Inquiries = () => {
     return formattedTime;
   };
 
-
   const handleView = (item) => {
     setInquiry(item);
+    setInqsUpdate((prevState) => !prevState);
   };
 
   useEffect(() => {
@@ -140,13 +137,14 @@ const Inquiries = () => {
       }));
     };
 
-    socket.on('receive-muni_inquiry', handleMuniInq);
-
+    socket.on("receive-muni_inquiry", handleMuniInq);
+   
     return () => {
-      socket.off('receive-muni_inquiry', handleMuniInq);
+      socket.off("receive-muni_inquiry", handleMuniInq);
+     
     };
-  }, [socket, setInquiry]);
 
+  }, [socket, setInquiry]);
 
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
@@ -162,7 +160,6 @@ const Inquiries = () => {
     switch (choice) {
       case "date":
         return inquiries.filter((item) => {
-          
           return (
             new Date(item.compose.date).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -201,10 +198,7 @@ const Inquiries = () => {
   };
 
   const onSelect = (e) => {
-    
     setSelected(e.target.value);
-
- 
   };
 
   const onChangeDate = (e) => {
@@ -231,7 +225,7 @@ const Inquiries = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      
+
       setFilteredInquiries(filters(selected, date));
     }
   };
@@ -259,7 +253,7 @@ const Inquiries = () => {
       <div className="flex flex-col ">
         <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
-          <h1
+            <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
@@ -485,8 +479,12 @@ const Inquiries = () => {
                     setSearchQuery(e.target.value);
                     const filteredData = allInquiries.filter(
                       (item) =>
-                        item.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        item.inq_id.toLowerCase().includes(e.target.value.toLowerCase())
+                        item.name
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.inq_id
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase())
                     );
                     setFilteredInquiries(filteredData.slice(0, 10)); // Show first page of filtered results
                     setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
@@ -634,16 +632,13 @@ const Inquiries = () => {
                             disabled={item.isApproved === "Completed"}
                           > */}
 
-
                           <button
                             type="button"
                             data-hs-overlay="#hs-modal-viewInquiries"
                             onClick={() => {
-                              handleView({ ...item }); // Call handleView function
-                              setUpdate(true); // Set update to true
+                              handleView({ ...item });
                             }}
                             className={`hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 items-center rounded-lg `}
-                            
                           >
                             <AiOutlineEye
                               size={24}
@@ -719,7 +714,9 @@ const Inquiries = () => {
           inquiry={inquiry}
           setInquiry={setInquiry}
           brgy={brgy}
-          setUpdate={setUpdate}
+          setInqsUpdate={setInqsUpdate}
+          inqsupdate={inqsupdate}
+          socket={socket}
         />
         <Status status={status} setStatus={setStatus} />
       </div>

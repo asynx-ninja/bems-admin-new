@@ -45,7 +45,7 @@ const Inquiries = () => {
   
     const fetchInquiries = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/admininquiries/?id=${id}&to=${to}&archived=true&status=${statusFilter}`
+        `${API_LINK}/inquiries/admininquiries/?id=${id}&to=${to}&archived=false&status=${statusFilter}`
       );
   
       if (response.status === 200) {
@@ -53,7 +53,7 @@ const Inquiries = () => {
         setAllInquiries(response.data.result);
         setInquiries(response.data.result.slice(0, 10)); // Set initial page data
         setFilteredInquiries(response.data.result.slice(0, 10));
-        setPageCount(Math.ceil(response.data.result.length / 10)); // Calculate page count based on all data
+        setPageCount(response.data.pageCount); // Calculate page count based on all data
       } else {
         setInquiries([]);
         setFilteredInquiries([]);

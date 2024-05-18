@@ -35,10 +35,10 @@ const ArchivedEvents = () => {
     const fetchData = async () => {
       try {
         const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=true&page=${currentPage}`
+          `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
         );
-
         if (announcementsResponse.status === 200) {
+          setUpdate(false)
           const announcementsData = announcementsResponse.data.result.map(
             async (announcement) => {
               const completedResponse = await axios.get(
@@ -56,7 +56,7 @@ const ArchivedEvents = () => {
 
           Promise.all(announcementsData).then((announcementsWithCounts) => {
             setAnnouncementWithCounts(announcementsWithCounts);
-            setFilteredAnnouncements(announcementsWithCounts);
+            setFilteredAnnouncements(announcementsWithCounts.slice(0, 10));
           });
 
           setPageCount(announcementsResponse.data.pageCount);
@@ -72,11 +72,15 @@ const ArchivedEvents = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy]);
+  }, [brgy]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredAnnouncements(announcements.slice(start, end));
   };
+  
 
   const Announcements = announcements.filter(
     (item) =>
@@ -368,12 +372,13 @@ const ArchivedEvents = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Announcements = announcements.filter((item) =>
-                      item.title
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
+                    const filteredData = announcements.filter(
+                      (item) =>
+                        item.title.toLowerCase().includes(e.target.value.toLowerCase())
+                      
                     );
-                    setFilteredAnnouncements(Announcements);
+                    setFilteredAnnouncements(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

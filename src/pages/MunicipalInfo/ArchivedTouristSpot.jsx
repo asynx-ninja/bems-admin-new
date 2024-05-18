@@ -35,28 +35,29 @@ const ArchivedTouristSpot = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/tourist_spot/?brgy=${brgy}&archived=true&page=${currentPage}`
+        `${API_LINK}/tourist_spot/?section=${section}&archived=true`
       );
-      if (response.status === 200) 
-      {
-        setFilteredTouristSpot(response.data.result);
+      if (response.status === 200) {
         setPageCount(response.data.pageCount);
+        setFilteredTouristSpot(response.data.result.slice(0, 10));
         settouristSpot(response.data.result);
-      }
-      else settouristSpot([]);
+      } else settouristSpot([]);
     };
 
     fetch();
-  }, [currentPage]);
+  }, []);
 
   const Tourist = touristspot.filter((item) =>
   item.name.toLowerCase().includes(searchQuery.toLowerCase())
 );
 
 
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
+const handlePageChange = ({ selected }) => {
+  setCurrentPage(selected);
+  const start = selected * 10;
+  const end = start + 10;
+  setFilteredTouristSpot(touristspot.slice(start, end));
+};
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -331,12 +332,13 @@ const ArchivedTouristSpot = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Tourist = touristspot.filter((item) =>
+                    const filteredData = touristspot.filter((item) =>
                       item.name
                         .toLowerCase()
                         .includes(e.target.value.toLowerCase())
                     );
-                    setFilteredTouristSpot(Tourist);
+                    setFilteredTouristSpot(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

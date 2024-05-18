@@ -31,7 +31,7 @@ const ArchivedRegistrations = () => {
   //pagination
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-
+  const [update, setUpdate] = useState(false);
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredApplications, setFilteredApplications] = useState([]);
@@ -64,20 +64,23 @@ const ArchivedRegistrations = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&title=${selecteEventFilter}`
         );
         if (response.status === 200) {
           setApplications(response.data.result);
-          setPageCount(response.data.pageCount);
-          setFilteredApplications(response.data.result);
-        } else setApplications([]); 
+          setFilteredApplications(response.data.result.slice(0, 10)); // Update filtered applications with all data
+          setPageCount(response.data.pageCount); // Update page count based on all data
+          setUpdate(false);
+        } else {
+          setApplications([]);
+        }
       } catch (err) {
         console.log(err);
       }
-    }; 
-
+    };
+  
     fetch();
-  }, [brgy, statusFilter, selecteEventFilter, currentPage]);
+  }, [brgy, statusFilter, selecteEventFilter, update]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -112,7 +115,11 @@ const ArchivedRegistrations = () => {
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredApplications(applications.slice(start, end));
   };
+  
 
   const Applications = applications.filter((item) =>
     item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -568,13 +575,13 @@ const ArchivedRegistrations = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Applications = applications.filter((item) =>
-                      item.event_name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
+                    const filteredData = applications.filter(
+                      (item) =>
+                        item.event_name.toLowerCase().includes(e.target.value.toLowerCase())
+                      
                     );
-
-                    setFilteredApplications(Applications);
+                    setFilteredApplications(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

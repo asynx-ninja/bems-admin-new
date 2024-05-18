@@ -34,18 +34,18 @@ const ArchivedServicesInfo = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/services_info/?brgy=${brgy}&archived=true&page=${currentPage}`
+        `${API_LINK}/services_info/?brgy=${brgy}&archived=true`
       );
       if (response.status === 200) {
         setPageCount(response.data.pageCount);
-        setFilteredServices(response.data.result);
+        setFilteredServices(response.data.result.slice(0, 10));
         setServicesInfo(response.data.result);
       }
         
       else setServicesInfo([]);
     };
-    fetch();
-  }, [currentPage]);
+    fetch()
+  }, []);
 
   const Services = servicesinfo.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -53,6 +53,9 @@ const ArchivedServicesInfo = () => {
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredServices(servicesinfo.slice(start, end));
   };
 
   const checkboxHandler = (e) => {
@@ -330,12 +333,13 @@ const ArchivedServicesInfo = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Services = servicesinfo.filter((item) =>
-                      item.name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
+                    const filteredData = servicesinfo.filter(
+                      (item) =>
+                        item.name.toLowerCase().includes(e.target.value.toLowerCase())
+                      
                     );
-                    setFilteredServices(Services);
+                    setFilteredServices(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

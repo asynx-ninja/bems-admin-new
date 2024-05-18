@@ -97,14 +97,7 @@ function CreateAnnouncementModal({ brgy, setUpdate }) {
         return; // Prevent further execution of handleSubmit
       }
       setSubmitClicked(true);
-      // const emptyFieldsArr = checkEmptyFieldsForAnnouncement();
-
-      // if (emptyFieldsArr.length > 0) {
-      //   setEmpty(true);
-      //   setSubmitClicked(false);
-      //   return;
-      // }
-
+      
       const formData = new FormData();
       const newFiles = [banner, logo, ...files].filter((file) => file);
 

@@ -5,7 +5,10 @@ import AddSectionForm from "./AddSectionForm";
 import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../.././GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
-const AddEventsForm = ({ announcement_id, brgy }) => {
+import Socket_link from "../../../../config/Socket";
+import { io } from "socket.io-client";
+const socket = io(Socket_link);
+const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUpdate }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -102,13 +105,14 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
   };
 
   const handleSubmit = async (e) => {
-    try {
+    try {     
       // Prepare the request payload
       const requestData = {
         title: titleName,
         form: form,
         section: section,
       };
+      socket.emit("send-get_events_forms", requestData);
 
       if (checked) {
         // Check if there's an active form
@@ -131,15 +135,21 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
               },
             }
           );
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }
+          if (response.status === 200) {
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            setTimeout(() => {
+              setCreationStatus(null);
+              HSOverlay.close(document.getElementById("hs-create-eventsForm-modal"));
+              setEditUpdate((prevState) => !prevState);
+              console.log("addforms", editupdate)
+            }, 3000);
+          }
+        } 
       } else {
-        setSubmitClicked(true);
+      
         // Make the POST request
+        setSubmitClicked(true);
         const response = await axios.post(
           `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement_id}&checked=${checked}`,
           requestData,
@@ -149,12 +159,19 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
             },
           }
         );
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+        if (response.status === 200) {
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            setCreationStatus(null);
+            HSOverlay.close(document.getElementById("hs-create-eventsForm-modal"));
+            console.log("addforms", editupdate)
+            setEditUpdate((prevState) => !prevState);
+          }, 3000);
+        }
       }
+      setUpdate(true);
+    
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);

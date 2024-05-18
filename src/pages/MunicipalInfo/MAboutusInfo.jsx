@@ -35,25 +35,28 @@ const MHomepageInfo = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/aboutus/?brgy=${brgy}&archived=false&page=${currentPage}`
+        `${API_LINK}/aboutus/?brgy=${brgy}&archived=false`
       );
       if (response.status === 200) {
         setAboutus(response.data.result);
-        setFilteredAboutUs(response.data.result);
+        setFilteredAboutUs(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
       } else setAboutus([]);
     };
 
     fetch();
-  }, [currentPage]);
+  }, []);
 
   const Aboutus = aboutus.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredAboutUs(aboutus.slice(start, end));
   };
+
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -385,12 +388,13 @@ const MHomepageInfo = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Aboutus = aboutus.filter((item) =>
-                      item.title
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
+                    const filteredData = aboutus.filter(
+                      (item) =>
+                        item.title.toLowerCase().includes(e.target.value.toLowerCase())
+                      
                     );
-                    setFilteredAboutUs(Aboutus);
+                    setFilteredAboutUs(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

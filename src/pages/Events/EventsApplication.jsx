@@ -2,7 +2,7 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaArchive } from "react-icons/fa";
@@ -13,9 +13,10 @@ import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import noData from "../../assets/image/no-data.png";
-import { io } from 'socket.io-client'
+import { io } from "socket.io-client";
 import Socket_link from "../../config/Socket";
-const socket = io(Socket_link)
+
+const socket = io(Socket_link);
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });
@@ -25,7 +26,7 @@ const EventsRegistrations = () => {
   const brgy = "MUNISIPYO";
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchQuery, setSearchQuery] = useState("");
-  const [update, setUpdate] = useState(false)
+  const [eventupdate, setEventUpdate] = useState(false);
   //Status filter and pagination
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
@@ -58,28 +59,27 @@ const EventsRegistrations = () => {
     fetch();
   }, [brgy]);
 
-
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}`
         );
         if (response.status === 200) {
           setApplications(response.data.result);
-          setPageCount(response.data.pageCount);
-          setFilteredApplications(response.data.result);
-          setUpdate(false)
-        } else setApplications([]);
+          setFilteredApplications(response.data.result.slice(0, 10)); // Update filtered applications with all data
+          setPageCount(response.data.pageCount); // Update page count based on all data
+        } else {
+          setApplications([]);
+        }
+        setEventUpdate((prevState) => !prevState);
       } catch (err) {
         console.log(err);
       }
     };
 
     fetch();
-  }, [brgy, statusFilter, selecteEventFilter, currentPage, update]);
-
-
+  }, [brgy, statusFilter, selecteEventFilter, eventupdate]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,14 +110,15 @@ const EventsRegistrations = () => {
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
 
-
-
   const handleEventFilter = (selectedType) => {
     setSelectedEventFilter(selectedType);
   };
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredApplications(applications.slice(start, end));
   };
 
   const handleStatusFilter = (selectedStatus) => {
@@ -173,24 +174,23 @@ const EventsRegistrations = () => {
 
   const handleView = (item) => {
     setApplication(item);
+    setEventUpdate((prevState) => !prevState);
   };
 
   useEffect(() => {
     const handleEventAppli = (event_appli) => {
-      setApplication((prevApplication = { response: [] }) => ({
+      setApplication((prevApplication) => ({
         ...prevApplication,
-        response: [...(prevApplication.response || []),event_appli],
+        response: [...(prevApplication.response || []), event_appli],
       }));
-      setUpdate(true);
     };
-
-    socket.on('receive-event_appli', handleEventAppli);
+    socket.on("receive-event_appli", handleEventAppli);
+    console.log(handleEventAppli)
 
     return () => {
-      socket.off('receive-event_appli', handleEventAppli);
+    socket.off("receive-event_appli", handleEventAppli);
     };
   }, [socket, setApplication]);
-
 
 
   const DateFormat = (date) => {
@@ -209,7 +209,7 @@ const EventsRegistrations = () => {
         return applications.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -222,7 +222,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -231,7 +231,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -275,6 +275,7 @@ const EventsRegistrations = () => {
       setFilteredApplications(filters(selected, date));
     }
   };
+
   return (
     <div className="mx-4 ">
       {/* Body */}
@@ -329,8 +330,9 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -503,8 +505,9 @@ const EventsRegistrations = () => {
                 >
                   EVENT TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -578,13 +581,13 @@ const EventsRegistrations = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Application = applications.filter((item) =>
+                    const filteredData = applications.filter((item) =>
                       item.event_name
                         .toLowerCase()
                         .includes(e.target.value.toLowerCase())
                     );
-
-                    setFilteredApplications(Application);
+                    setFilteredApplications(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>
@@ -723,7 +726,9 @@ const EventsRegistrations = () => {
                           <button
                             type="button"
                             data-hs-overlay="#hs-view-application-modal"
-                            onClick={() => { handleView({ ...item }); setUpdate(true); }}
+                            onClick={() => {
+                              handleView({ ...item });
+                            }}
                             className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <AiOutlineEye
@@ -744,8 +749,7 @@ const EventsRegistrations = () => {
                             type="button"
                             data-hs-overlay="#hs-reply-modal"
                             onClick={() => {
-                              handleView({ ...item }); // Call handleView function
-                              setUpdate(true); // Set update to true
+                              handleView({ ...item });
                             }}
                             className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
@@ -812,10 +816,10 @@ const EventsRegistrations = () => {
         application={application}
         setApplication={setApplication}
         brgy={brgy}
-        setUpdate={setUpdate}
+        setEventUpdate={setEventUpdate}
+        eventupdate={eventupdate}
+        socket={socket}
       />
-
-
       <ArchiveRegistrationModal selectedItems={selectedItems} />
     </div>
   );

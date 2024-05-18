@@ -8,7 +8,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditEventsForm = ({ announcement_id, brgy }) => {
+const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate }) => {
   const information = GetBrgy(brgy);
 
   const [details, setDetails] = useState([]);
@@ -17,23 +17,26 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
 
+
   useEffect(() => {
     // function to filter
+  
     const fetch = async () => {
       try {
         const response = await axios.get(
           `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement_id}`
         );
-
         // filter
         setDetails(response.data);
+        setEditUpdate((prevState) => !prevState);
+        console.log("sabinisoj", editupdate)
       } catch (err) {
         console.log(err.message);
       }
     };
 
     fetch();
-  }, [brgy, announcement_id]);
+  }, [brgy, announcement_id, editupdate]);
 
 
   const handleFormChange = (e, key) => {

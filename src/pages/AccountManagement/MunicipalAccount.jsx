@@ -75,12 +75,12 @@ const AccountManagement = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/municipal_admin/?brgy=${brgy}&page=${currentPage}&type=${adminFilter}`
+          `${API_LINK}/municipal_admin/?brgy=${brgy}&type=${adminFilter}&archived=false`
         );
         if (response.status === 200) {
           setPageCount(response.data.pageCount);
           setUsers(response.data.result); // Update the state variable with the fetched users
-          setFilteredUser(response.data.result);
+          setFilteredUser(response.data.result.slice(0, 10));
         } else {
           // Handle error here
           console.error("Error fetching users:", response.error);
@@ -92,14 +92,16 @@ const AccountManagement = () => {
     };
 
     fetchUsers();
-  }, [currentPage, adminFilter]);
+  }, [adminFilter]);
 
   const handleAdminFilter = (type) => {
     setAdminFilter(type);
   };
-
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredUser(users.slice(start, end));
   };
   const handleView = (item) => {
     setUser(item);
@@ -257,25 +259,14 @@ const AccountManagement = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-
-                    if (e.target.value.trim() === "") {
-                      // If the search input is empty, fetch all data
-                      setUsers(users);
-                    } else {
-                      // If the search input is not empty, filter the data
-                      const Users = users.filter(
-                        (item) =>
-                          item.firstName
-                            .toLowerCase()
-                            .includes(e.target.value.toLowerCase()) ||
-                          item.lastName
-                            .toLowerCase()
-                            .includes(e.target.value.toLowerCase())
-                      );
-                      setFilteredUser(Users);
-                    }
-
-                    console.log("Officials Fetched", officials);
+                    const filteredData = users.filter(
+                      (item) =>
+                        item.firstName.toLowerCase().includes(e.target.value.toLowerCase())||
+                        item.lastName.toLowerCase().includes(e.target.value.toLowerCase())
+                      
+                    );
+                    setFilteredUser(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

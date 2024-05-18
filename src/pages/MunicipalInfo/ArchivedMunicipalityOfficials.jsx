@@ -81,18 +81,18 @@ const ArchivedOfficials = () => {
   };
 
   useEffect(() => {
-    document.title = "Archived Municipal Officials | Barangay E-Services Management";
+    document.title = "Municipal Officials | Barangay E-Services Management";
 
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/mofficials/?brgy=${brgy}&archived=true&page=${currentPage}&position=${positionFilter}`
+          `${API_LINK}/mofficials/?brgy=${brgy}&archived=true&position=${positionFilter}`
         );
 
         if (response.status === 200) {
           setPageCount(response.data.pageCount)
           setOfficials(response.data.result)
-          setFilteredOfficials(response.data.result)
+          setFilteredOfficials(response.data.result.slice(0, 10))
         } else {
           // Handle error here
           console.error("Error fetching users:", response.error);
@@ -103,7 +103,7 @@ const ArchivedOfficials = () => {
     };
 
     fetchData();
-  }, [brgy, currentPage, positionFilter]);
+  }, [brgy , positionFilter]);
 
   const handlePositionFilter = (selectedPosition) => {
     setPositionFilter(selectedPosition);
@@ -115,6 +115,9 @@ const ArchivedOfficials = () => {
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredOfficials(officials.slice(start, end));
   };
   const tableHeader = [
     "IMAGE",
@@ -264,21 +267,14 @@ const ArchivedOfficials = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-
-                    if (e.target.value.trim() === '') {
-                      // If the search input is empty, fetch all data
-                      setFilteredOfficials(officials);
-                    } else {
-                      // If the search input is not empty, filter the data
-                      const Officials = officials.filter(
-                        (item) =>
-                          item.firstName.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                          item.lastName.toLowerCase().includes(e.target.value.toLowerCase())
-                      );
-                      setFilteredOfficials(Officials);
-                    }
-
-                  
+                    const filteredData = officials.filter(
+                      (item) =>
+                        item.firstName.toLowerCase().includes(e.target.value.toLowerCase())||
+                        item.lastName.toLowerCase().includes(e.target.value.toLowerCase())
+                      
+                    );
+                    setFilteredOfficials(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

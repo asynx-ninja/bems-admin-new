@@ -28,28 +28,6 @@ const MunicipalityOfficials = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [filteredOfficials, setFilteredOfficials] = useState([]);
 
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
-
-    const sortedData = officials.slice().sort((a, b) => {
-      if (sortBy === "name") {
-        return newSortOrder === "asc"
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
-      } else if (sortBy === "rendered_service") {
-        const dateA = new Date(a.fromYear);
-        const dateB = new Date(b.fromYear);
-
-        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
-      }
-
-      return 0;
-    });
-
-    setOfficials(sortedData);
-  };
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -84,13 +62,13 @@ const MunicipalityOfficials = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/mofficials/?brgy=${brgy}&archived=false&page=${currentPage}&position=${positionFilter}`
+          `${API_LINK}/mofficials/?brgy=${brgy}&archived=false&position=${positionFilter}`
         );
 
         if (response.status === 200) {
           setPageCount(response.data.pageCount)
           setOfficials(response.data.result)
-          setFilteredOfficials(response.data.result)
+          setFilteredOfficials(response.data.result.slice(0, 10))
         } else {
           // Handle error here
           console.error("Error fetching users:", response.error);
@@ -101,7 +79,7 @@ const MunicipalityOfficials = () => {
     };
 
     fetchData();
-  }, [brgy, currentPage, positionFilter]);
+  }, [brgy , positionFilter]);
 
   const handlePositionFilter = (selectedPosition) => {
     setPositionFilter(selectedPosition);
@@ -111,8 +89,12 @@ const MunicipalityOfficials = () => {
     setPositionFilter("all");
   };
 
+  
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredOfficials(officials.slice(start, end));
   };
 
   const handleEditClick = async (official) => {
@@ -313,21 +295,14 @@ const MunicipalityOfficials = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-
-                    if (e.target.value.trim() === '') {
-                      // If the search input is empty, fetch all data
-                      setOfficials(officials);
-                    } else {
-                      // If the search input is not empty, filter the data
-                      const Officials = officials.filter(
-                        (item) =>
-                          item.firstName.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                          item.lastName.toLowerCase().includes(e.target.value.toLowerCase())
-                      );
-                      setFilteredOfficials(Officials);
-                    }
-
-             
+                    const filteredData = officials.filter(
+                      (item) =>
+                        item.firstName.toLowerCase().includes(e.target.value.toLowerCase())||
+                        item.lastName.toLowerCase().includes(e.target.value.toLowerCase())
+                      
+                    );
+                    setFilteredOfficials(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

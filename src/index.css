@@ -1,6 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+@layer tailwind-base, primereact, tailwind-utilities;
+
+/* IMPORTANT: In "styled" mode you must add the PrimeReact Theme here. Do NOT include in "unstyled" mode */
+@import 'primereact/resources/themes/lara-light-blue/theme.css' layer(primereact);
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
 
 :root {
   scroll-behavior: smooth;
@@ -174,6 +186,13 @@ input[type='number']::-webkit-outer-spin-button {
   }
 }
 
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #ff0000; /* Red background color */
+  text-align: center; /* Center align text */
+}
 
 /* Handle on hover
 ::-webkit-scrollbar-thumb:hover {
