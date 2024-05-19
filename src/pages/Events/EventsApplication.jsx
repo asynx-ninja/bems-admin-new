@@ -170,7 +170,13 @@ const EventsRegistrations = () => {
     }
   };
 
-  const tableHeader = ["APPLICATION ID", "EVENT NAME", "SENDER", "STATUS", "ACTIONS"];
+  const tableHeader = [
+    "APPLICATION ID",
+    "EVENT NAME",
+    "SENDER",
+    "STATUS",
+    "ACTIONS",
+  ];
 
   const handleView = (item) => {
     setApplication(item);
@@ -189,7 +195,6 @@ const EventsRegistrations = () => {
       socket.off("receive-event_appli", handleEventAppli);
     };
   }, [socket, setApplication]);
-
 
   const TimeFormat = (date) => {
     if (!date) return "";

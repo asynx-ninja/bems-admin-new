@@ -54,11 +54,7 @@ function ReplyRegistrationModal({
   useEffect(() => {
     setFiles(application.length === 0 ? [] : application.file);
   }, [application]);
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [application.response]);
+
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -316,6 +312,33 @@ function ReplyRegistrationModal({
     else if (status === "Rejected") return "red-800";
     else return "black";
   };
+
+  // useEffect(() => {
+  //   var container = document.getElementById("scrolltobottom");
+  //   container.scrollTop = container.scrollHeight;
+  // });
+
+  // useEffect(() => {
+  //   if (chatContainerRef.current) {
+  //     chatContainerRef.current.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, [application.response]);
+
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    const scroll = document.getElementById("scrolltobottom");
+
+    if (
+      container &&
+      application &&
+      application.response &&
+      application.response.length > 0 &&
+      scroll
+    ) {
+      container.scrollTop = container.scrollHeight;
+      scroll.scrollTop = container.scrollHeight;
+    }
+  }, [application.response]);
   return (
     <div>
       <div
@@ -334,7 +357,11 @@ function ReplyRegistrationModal({
                 REPLY TO EVENT APPLICATION
               </h3>
             </div>
-            <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+            <div
+             ref={chatContainerRef}
+              id="scrolltobottom"
+              className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]"
+            >
               <div className="border-solid border-0 border-black/50 border-b-2 flex justify-between items-center mb-4">
                 <b className="uppercase font-medium text-lg md:text-lg">
                   Evaluation
@@ -409,108 +436,99 @@ function ReplyRegistrationModal({
                                       <IoIosAttach size={24} />
                                     </button>
                                     <div className="flex flex-col lg:flex-row">
-                                              <div className="w-full">
-                                                <div className="flex flex-row space-x-4">
-                                                  {!statusChanger ? (
-                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                      <div className="hs-tooltip inline-block">
-                                                        <button
-                                                          onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleOnStatusChanger();
-                                                          }}
-                                                          className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
-                                                        >
-                                                          <FaTasks
-                                                            size={24}
-                                                            className="mx-auto"
-                                                          />
-                                                          <span
-                                                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                            role="tooltip"
-                                                          >
-                                                            Change Application
-                                                            Status
-                                                          </span>
-                                                        </button>
-                                                      </div>
-                                                    </div>
-                                                  ) : (
-                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                      <div className="hs-tooltip inline-block">
-                                                        <button
-                                                          onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleOnStatusChanger();
-                                                          }}
-                                                          className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
-                                                        >
-                                                          <MdOutlineCancel
-                                                            size={24}
-                                                            className="mx-auto"
-                                                          />
-                                                        </button>
-                                                        <span
-                                                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                          role="tooltip"
-                                                        >
-                                                          Change Application
-                                                          Status
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                  )}
-                                                  <select
-                                                    id="status"
-                                                    name="status"
-                                                    onChange={(e) => {
-                                                      if (
-                                                        statusChanger &&
-                                                        (!newMessage.message ||
-                                                          newMessage.message.trim() ===
-                                                          "")
-                                                      ) {
-                                                        setNewMessage(
-                                                          (prev) => ({
-                                                            ...prev,
-                                                            message: `The status of your event application is ${e.target.value}`,
-                                                          })
-                                                        );
-                                                      }
-                                                      setApplication(
-                                                        (prev) => ({
-                                                          ...prev,
-                                                          status:
-                                                            e.target.value,
-                                                        })
-                                                      );
-                                                    }}
-                                                    className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                                    value={application.status}
-                                                    hidden={!statusChanger}
+                                      <div className="w-full">
+                                        <div className="flex flex-row space-x-4">
+                                          {!statusChanger ? (
+                                            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                              <div className="hs-tooltip inline-block">
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleOnStatusChanger();
+                                                  }}
+                                                  className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
+                                                >
+                                                  <FaTasks
+                                                    size={24}
+                                                    className="mx-auto"
+                                                  />
+                                                  <span
+                                                    className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                    role="tooltip"
                                                   >
-                                                    <option value="Pending">
-                                                      PENDING
-                                                    </option>
-                                                    <option value="Paid">
-                                                      PAID
-                                                    </option>
-                                                    <option value="Processing">
-                                                      PROCESSING
-                                                    </option>
-                                                    <option value="Cancelled">
-                                                      CANCELLED
-                                                    </option>
-                                                    <option value="Application Completed">
-                                                      APPLICATION COMPLETED
-                                                    </option>
-                                                    <option value="Rejected">
-                                                      REJECTED
-                                                    </option>
-                                                  </select>
-                                                </div>
+                                                    Change Application Status
+                                                  </span>
+                                                </button>
                                               </div>
                                             </div>
+                                          ) : (
+                                            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                              <div className="hs-tooltip inline-block">
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleOnStatusChanger();
+                                                  }}
+                                                  className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                                >
+                                                  <MdOutlineCancel
+                                                    size={24}
+                                                    className="mx-auto"
+                                                  />
+                                                </button>
+                                                <span
+                                                  className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                  role="tooltip"
+                                                >
+                                                  Change Application Status
+                                                </span>
+                                              </div>
+                                            </div>
+                                          )}
+                                          <select
+                                            id="status"
+                                            name="status"
+                                            onChange={(e) => {
+                                              if (
+                                                statusChanger &&
+                                                (!newMessage.message ||
+                                                  newMessage.message.trim() ===
+                                                    "")
+                                              ) {
+                                                setNewMessage((prev) => ({
+                                                  ...prev,
+                                                  message: `The status of your event application is ${e.target.value}`,
+                                                }));
+                                              }
+                                              setApplication((prev) => ({
+                                                ...prev,
+                                                status: e.target.value,
+                                              }));
+                                            }}
+                                            className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                            value={application.status}
+                                            hidden={!statusChanger}
+                                          >
+                                            <option value="Pending">
+                                              PENDING
+                                            </option>
+                                            <option value="Paid">PAID</option>
+                                            <option value="Processing">
+                                              PROCESSING
+                                            </option>
+                                            <option value="Cancelled">
+                                              CANCELLED
+                                            </option>
+                                            <option value="Application Completed">
+                                              APPLICATION COMPLETED
+                                            </option>
+                                            <option value="Rejected">
+                                              REJECTED
+                                            </option>
+                                          </select>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
 
                                   <div className="flex items-center gap-x-1">
@@ -597,181 +615,171 @@ function ReplyRegistrationModal({
                           </div>
                           {index === application.response.length - 1 ? (
                             <div className="flex flex-row items-center w-full">
-                                <div className="relative w-full mt-4 mx-2">
-                                  {errMsg ? (
-                                    <div className="w-[100%] bg-red-500 rounded-md mb-[10px] flex">
-                                      <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
-                                        Please enter a message or insert a file!
-                                      </p>
-                                    </div>
-                                  ) : null}
-                                  <div className="relative w-full">
-                                    <textarea
-                                      id="message"
-                                      name="message"
-                                      multiple
-                                      onChange={handleChange}
-                                      className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
-                                      placeholder="Input response..."
-                                    ></textarea>
+                              <div className="relative w-full mt-4 mx-2">
+                                {errMsg ? (
+                                  <div className="w-[100%] bg-red-500 rounded-md mb-[10px] flex">
+                                    <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
+                                      Please enter a message or insert a file!
+                                    </p>
+                                  </div>
+                                ) : null}
+                                <div className="relative w-full">
+                                  <textarea
+                                    id="message"
+                                    name="message"
+                                    multiple
+                                    onChange={handleChange}
+                                    className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                                    placeholder="Input response..."
+                                  ></textarea>
 
-                                    <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
-                                      <div className="flex justify-between items-center">
-                                        <div className="flex items-center">
-                                          <input
-                                            type="file"
-                                            name="file"
-                                            onChange={(e) =>
-                                              handleFileChange(e)
-                                            }
-                                            ref={fileInputRef}
-                                            accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
-                                            multiple="multiple"
-                                            className="hidden"
-                                          />
-                                          <button
-                                            id="button"
-                                            onClick={
-                                              handleAdd || handleOnUpload
-                                            }
-                                            className="mt-2 rounded-xl px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
-                                          >
-                                            <IoIosAttach size={24} />
-                                          </button>
-                                          <div className="flex flex-col lg:flex-row">
-                                              <div className="w-full">
-                                                <div className="flex flex-row space-x-4">
-                                                  {!statusChanger ? (
-                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                      <div className="hs-tooltip inline-block">
-                                                        <button
-                                                          onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleOnStatusChanger();
-                                                          }}
-                                                          className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
-                                                        >
-                                                          <FaTasks
-                                                            size={24}
-                                                            className="mx-auto"
-                                                          />
-                                                          <span
-                                                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                            role="tooltip"
-                                                          >
-                                                            Change Application
-                                                            Status
-                                                          </span>
-                                                        </button>
-                                                      </div>
-                                                    </div>
-                                                  ) : (
-                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                      <div className="hs-tooltip inline-block">
-                                                        <button
-                                                          onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleOnStatusChanger();
-                                                          }}
-                                                          className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
-                                                        >
-                                                          <MdOutlineCancel
-                                                            size={24}
-                                                            className="mx-auto"
-                                                          />
-                                                        </button>
-                                                        <span
-                                                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                          role="tooltip"
-                                                        >
-                                                          Change Application
-                                                          Status
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                  )}
-                                                  <select
-                                                    id="status"
-                                                    name="status"
-                                                    onChange={(e) => {
-                                                      if (
-                                                        statusChanger &&
-                                                        (!newMessage.message ||
-                                                          newMessage.message.trim() ===
-                                                          "")
-                                                      ) {
-                                                        setNewMessage(
-                                                          (prev) => ({
-                                                            ...prev,
-                                                            message: `The status of your event application is ${e.target.value}`,
-                                                          })
-                                                        );
-                                                      }
-                                                      setApplication(
-                                                        (prev) => ({
-                                                          ...prev,
-                                                          status:
-                                                            e.target.value,
-                                                        })
-                                                      );
-                                                    }}
-                                                    className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                                    value={application.status}
-                                                    hidden={!statusChanger}
-                                                  >
-                                                    <option value="Pending">
-                                                      PENDING
-                                                    </option>
-                                                    <option value="Paid">
-                                                      PAID
-                                                    </option>
-                                                    <option value="Processing">
-                                                      PROCESSING
-                                                    </option>
-                                                    <option value="Cancelled">
-                                                      CANCELLED
-                                                    </option>
-                                                    <option value="Application Completed">
-                                                      APPLICATION COMPLETED
-                                                    </option>
-                                                    <option value="Rejected">
-                                                      REJECTED
-                                                    </option>
-                                                  </select>
+                                  <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
+                                    <div className="flex justify-between items-center">
+                                      <div className="flex items-center">
+                                        <input
+                                          type="file"
+                                          name="file"
+                                          onChange={(e) => handleFileChange(e)}
+                                          ref={fileInputRef}
+                                          accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
+                                          multiple="multiple"
+                                          className="hidden"
+                                        />
+                                        <button
+                                          id="button"
+                                          onClick={handleAdd || handleOnUpload}
+                                          className="mt-2 rounded-xl px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
+                                        >
+                                          <IoIosAttach size={24} />
+                                        </button>
+                                        <div className="flex flex-col lg:flex-row">
+                                          <div className="w-full">
+                                            <div className="flex flex-row space-x-4">
+                                              {!statusChanger ? (
+                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                  <div className="hs-tooltip inline-block">
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleOnStatusChanger();
+                                                      }}
+                                                      className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
+                                                    >
+                                                      <FaTasks
+                                                        size={24}
+                                                        className="mx-auto"
+                                                      />
+                                                      <span
+                                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                        role="tooltip"
+                                                      >
+                                                        Change Application
+                                                        Status
+                                                      </span>
+                                                    </button>
+                                                  </div>
                                                 </div>
-                                              </div>
+                                              ) : (
+                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                  <div className="hs-tooltip inline-block">
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleOnStatusChanger();
+                                                      }}
+                                                      className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                                    >
+                                                      <MdOutlineCancel
+                                                        size={24}
+                                                        className="mx-auto"
+                                                      />
+                                                    </button>
+                                                    <span
+                                                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                      role="tooltip"
+                                                    >
+                                                      Change Application Status
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                              )}
+                                              <select
+                                                id="status"
+                                                name="status"
+                                                onChange={(e) => {
+                                                  if (
+                                                    statusChanger &&
+                                                    (!newMessage.message ||
+                                                      newMessage.message.trim() ===
+                                                        "")
+                                                  ) {
+                                                    setNewMessage((prev) => ({
+                                                      ...prev,
+                                                      message: `The status of your event application is ${e.target.value}`,
+                                                    }));
+                                                  }
+                                                  setApplication((prev) => ({
+                                                    ...prev,
+                                                    status: e.target.value,
+                                                  }));
+                                                }}
+                                                className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                                value={application.status}
+                                                hidden={!statusChanger}
+                                              >
+                                                <option value="Pending">
+                                                  PENDING
+                                                </option>
+                                                <option value="Paid">
+                                                  PAID
+                                                </option>
+                                                <option value="Processing">
+                                                  PROCESSING
+                                                </option>
+                                                <option value="Cancelled">
+                                                  CANCELLED
+                                                </option>
+                                                <option value="Application Completed">
+                                                  APPLICATION COMPLETED
+                                                </option>
+                                                <option value="Rejected">
+                                                  REJECTED
+                                                </option>
+                                              </select>
                                             </div>
+                                          </div>
                                         </div>
+                                      </div>
 
-                                        <div className="flex items-center gap-x-1">
-                                          <button
-                                            type="submit"
-                                            onClick={handleOnSend}
-                                            className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
-                                          >
-                                            <span>SEND</span>
-                                            <IoSend
-                                              size={18}
-                                              className="flex-shrink-0"
-                                            />
-                                          </button>
-                                        </div>
+                                      <div className="flex items-center gap-x-1">
+                                        <button
+                                          type="submit"
+                                          onClick={handleOnSend}
+                                          className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
+                                        >
+                                          <span>SEND</span>
+                                          <IoSend
+                                            size={18}
+                                            className="flex-shrink-0"
+                                          />
+                                        </button>
                                       </div>
                                     </div>
                                   </div>
-                                  {!upload ? (
-                                    // Render Dropbox only when there are uploaded files
-                                    createFiles.length > 0 && (
-                                      <Dropbox
-                                        createFiles={createFiles}
-                                        setCreateFiles={setCreateFiles}
-                                        handleFileChange={handleFileChange}
-                                      />
-                                    )
-                                  ) : (
-                                    <div></div>
-                                  )}
                                 </div>
+                                {!upload ? (
+                                  // Render Dropbox only when there are uploaded files
+                                  createFiles.length > 0 && (
+                                    <Dropbox
+                                      createFiles={createFiles}
+                                      setCreateFiles={setCreateFiles}
+                                      handleFileChange={handleFileChange}
+                                    />
+                                  )
+                                ) : (
+                                  <div></div>
+                                )}
+                              </div>
                             </div>
                           ) : null}
                         </div>

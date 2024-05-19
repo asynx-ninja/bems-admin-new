@@ -243,27 +243,8 @@ function ViewInquiriesModal({
           },
         });
 
-        // if (result.status === 200) {
-        //   // setTimeout(() => {
-        //   //   setSubmitClicked(false);
-        //   //   setReplyStatus("success");
-        //   //   setTimeout(() => {
-        //   //     window.location.reload();
-        //   //   }, 3000);
-        //   // }, 1000);
-
-        // }
-
-        // setTimeout(() => {
-        //   setSubmitClicked(false);
-        //   setReplyStatus("success");
-        //   setTimeout(() => {
-        //     window.location.reload();
-        //   }, 3000);
-        // }, 1000);
       }
-      socket.emit("send-muni_inquiry", obj);
-
+      socket.emit("send-muni_inquiry", obj)
       setInqsUpdate((prevState) => !prevState);
     } catch (error) {
       console.log(error);
@@ -276,16 +257,10 @@ function ViewInquiriesModal({
   const handleOnStatusChanger = () => {
     setStatusChanger(!statusChanger);
   };
-  const setColor = (status) => {
-    if (status === "Completed") return "green-800";
-    else if (status === "Pending") return "custom-amber";
-    else if (status === "Cancelled") return "gray-700";
-    else if (status === "Processing") return "blue-800";
-    else if (status === "Paid") return "violet-700";
-    else if (status === "Not Responded") return "pink-700";
-    else if (status === "Rejected") return "red-800";
-    else return "black";
-  };
+  useEffect(() => {
+    var container = document.getElementById("scrolltobottom");
+    container.scrollTop = container.scrollHeight;
+  });
   return (
     <div>
       <div className="">
@@ -306,7 +281,7 @@ function ViewInquiriesModal({
                 </h3>
               </div>
 
-              <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]">
+              <div id="scrolltobottom" className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]">
                 <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg mb-4">
                   Inquiry Details
                 </b>
@@ -401,7 +376,7 @@ function ViewInquiriesModal({
 
                 <EditDropbox files={inquiry && files} setFiles={setFiles} />
 
-                <div className="flex flex-col mt-5 w-full">
+                <div  className="flex flex-col mt-5 w-full">
                   <b className="border-solid border-0 w-full border-black/50 border-b-2 my-4 uppercase font-medium text-lg md:text-lg mb-4">
                     Conversation History
                   </b>
@@ -562,8 +537,8 @@ function ViewInquiriesModal({
                             `${userData?.firstName?.toUpperCase() ?? ""} ${
                               userData?.lastName?.toUpperCase() ?? ""
                             } (${userData.type})`
-                              ? "flex flex-col justify-end items-end mb-5 w-full h-auto"
-                              : "flex flex-col justify-start items-start mb-5 w-full h-auto"
+                              ? "flex flex-col justify-end items-end mb-2 w-full h-auto"
+                              : "flex flex-col justify-start items-start mb-2 w-full h-auto"
                           }
                         >
                           <div className="flex flex-col items-end mb-5 h-auto">
@@ -590,7 +565,7 @@ function ViewInquiriesModal({
                               </div>
                             )}
                             <p className="text-xs mt-1 text-black text-right">
-                              {DateFormat(responseItem.date)}
+                            {DateFormat(responseItem.date) || ""}
                             </p>
                           </div>
                           {index === inquiry.response.length - 1 && (

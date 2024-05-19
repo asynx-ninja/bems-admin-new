@@ -29,12 +29,11 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
     setFiles(announcement.length === 0 || !announcement.collections ? [] : announcement.collections.file);
 
     var logoSrc = document.getElementById("edit_logo");
-    logoSrc.src =
-      announcement.length === 0 ? "" : announcement.collections.logo.link;
-
+   
+      logoSrc.src = announcement && announcement.collections && announcement.collections.logo ? announcement && announcement.collections && announcement.collections.logo  && announcement.collections.logo.link : "";
+      
     var bannerSrc = document.getElementById("edit_banner");
-    bannerSrc.src =
-      announcement.length === 0 ? "" : announcement.collections.banner.link;
+      bannerSrc.src = announcement && announcement.collections && announcement.collections.banner ? announcement && announcement.collections && announcement.collections.banner  && announcement.collections.banner.link : "";
   }, [announcement]);
 
   const renameFile = (file, newName) => {
