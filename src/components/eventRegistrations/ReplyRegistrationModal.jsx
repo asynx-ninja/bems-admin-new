@@ -24,6 +24,7 @@ function ReplyRegistrationModal({
   eventupdate,
   socket,
 }) {
+  const [onSend, setOnSend] = useState(false);
   const [errMsg, setErrMsg] = useState(false);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
@@ -42,7 +43,7 @@ function ReplyRegistrationModal({
   const [submitClicked, setSubmitClicked] = useState(false);
   const [replyingStatus, setReplyingStatus] = useState(null);
   const [error, setError] = useState(null);
-  const chatContainerRef = useRef(null);
+  const chatContainerRef = useRef();
   const [event, setEvent] = useState({
     collections: {
       banner: {},
@@ -50,6 +51,11 @@ function ReplyRegistrationModal({
     },
   });
   const [currentPage, setCurrentPage] = useState(0);
+
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    container.scrollTop = container.scrollHeight;
+  });
 
   useEffect(() => {
     setFiles(application.length === 0 ? [] : application.file);
@@ -70,6 +76,7 @@ function ReplyRegistrationModal({
     };
     fetch();
   }, [id]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -200,7 +207,7 @@ function ReplyRegistrationModal({
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
-
+      setOnSend(true);
       // Check if the message is empty before sending
 
       if (newMessage.message.trim() === "" && createFiles.length === 0) {
@@ -223,18 +230,12 @@ function ReplyRegistrationModal({
           application.response.length > 0 ? application.response.length - 1 : 0,
       };
 
-      let fileObjects = []
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
       for (let i = 0; i < createFiles.length; i++) {
-        const url = URL.createObjectURL(createFiles[i]);
-        fileObjects.push({ url: url, name: createFiles[i].name })
-
         formData.append("files", createFiles[i]);
       }
-
-      socket.emit("send-event_appli", { obj, files: fileObjects });
 
       const response = await axios.patch(
         `${API_LINK}/application/?app_id=${application._id}`,
@@ -242,7 +243,6 @@ function ReplyRegistrationModal({
       );
 
       if (response.status === 200) {
-        
         setNewMessage({ message: "" });
         setReplyingStatus(null);
         setReply(false);
@@ -251,33 +251,28 @@ function ReplyRegistrationModal({
           category: "One",
           compose: {
             subject: `APPLICATION - ${application.event_name}`,
-            message: `A municipalit staff has updated your event application form for the event of ${
-              application.event_name
-            }.\n\n
+            message: `A municipalit staff has updated your event application form for the event of ${application.event_name
+              }.\n\n
       
             Application Details:\n
-            - Name: ${
-              application.form && application.form[0]
+            - Name: ${application.form && application.form[0]
                 ? application.form[0].lastName.value
                 : ""
-            }, ${
-              application.form && application.form[0]
+              }, ${application.form && application.form[0]
                 ? application.form[0].firstName.value
                 : ""
-            } ${
-              application.form && application.form[0]
+              } ${application.form && application.form[0]
                 ? application.form[0].middleName.value
                 : ""
-            }
+              }
             - Event Applied: ${application.event_name}\n
             - Application ID: ${application.application_id}\n
             - Date Created: ${moment(application.createdAt).format(
-              "MMM. DD, YYYY h:mm a"
-            )}\n
+                "MMM. DD, YYYY h:mm a"
+              )}\n
             - Status: ${application.status}\n
-            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
-              userData.middleName
-            }\n\n
+            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${userData.middleName
+              }\n\n
             Please update this application as you've seen this notification!\n\n
             Thank you!!,`,
             go_to: "Application",
@@ -298,20 +293,12 @@ function ReplyRegistrationModal({
         });
 
         // Perform additional actions if needed
+        socket.emit("send-event_appli", response.data.response[response.data.response.length - 1]);
+        setOnSend(false)
       }
 
-      // const reader = new FileReader();
-      // reader.readAsArrayBuffer(createFiles[0]);
-      // reader.onload = (e) => {
-      //   const pdfData = e.target.result;
-      //   console.log("pdfData", pdfData)
-      //   // let pdfBlob = new Blob([pdfData], { type: "application/pdf" });
-      //   // console.log("pdf data: " + pdfData)
-      //   // let file = new File([pdfData], filename, { type: contentType, lastModified: Date.now() });
-        
-      // };
-
       setEventUpdate((prevState) => !prevState);
+
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
@@ -342,21 +329,6 @@ function ReplyRegistrationModal({
   //   }
   // }, [application.response]);
 
-  useEffect(() => {
-    const container = chatContainerRef.current;
-    const scroll = document.getElementById("scrolltobottom");
-
-    if (
-      container &&
-      application &&
-      application.response &&
-      application.response.length > 0 &&
-      scroll
-    ) {
-      container.scrollTop = container.scrollHeight;
-      scroll.scrollTop = container.scrollHeight;
-    }
-  }, [application.response]);
   return (
     <div>
       <div
@@ -376,8 +348,8 @@ function ReplyRegistrationModal({
               </h3>
             </div>
             <div
-             ref={chatContainerRef}
               id="scrolltobottom"
+              ref={chatContainerRef}
               className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]"
             >
               <div className="border-solid border-0 border-black/50 border-b-2 flex justify-between items-center mb-4">
@@ -399,9 +371,9 @@ function ReplyRegistrationModal({
                 <div className="flex flex-col p-2">
                   <form>
                     {!application.response ||
-                    application.response.length === 0 ? (
+                      application.response.length === 0 ? (
                       application.status === "Cancelled" ||
-                      application.status === "Rejected" ? (
+                        application.status === "Rejected" ? (
                         <div>
                           <p className="text-center text-[14px]">
                             You are unable to reply to this conversation due to
@@ -511,7 +483,7 @@ function ReplyRegistrationModal({
                                                 statusChanger &&
                                                 (!newMessage.message ||
                                                   newMessage.message.trim() ===
-                                                    "")
+                                                  "")
                                               ) {
                                                 setNewMessage((prev) => ({
                                                   ...prev,
@@ -588,9 +560,8 @@ function ReplyRegistrationModal({
                           key={index}
                           className={
                             responseItem.sender ===
-                            `${userData?.firstName?.toUpperCase() ?? ""} ${
-                              userData?.lastName?.toUpperCase() ?? ""
-                            } (${userData.type})`
+                              `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                              } (${userData.type})`
                               ? "flex flex-col justify-end items-end mb-2 w-full h-auto"
                               : "flex flex-col justify-start items-start mb-2 w-full h-auto"
                           }
@@ -729,7 +700,7 @@ function ReplyRegistrationModal({
                                                     statusChanger &&
                                                     (!newMessage.message ||
                                                       newMessage.message.trim() ===
-                                                        "")
+                                                      "")
                                                   ) {
                                                     setNewMessage((prev) => ({
                                                       ...prev,
@@ -775,12 +746,24 @@ function ReplyRegistrationModal({
                                           onClick={handleOnSend}
                                           className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                         >
-                                          <span>SEND</span>
-                                          <IoSend
-                                            size={18}
-                                            className="flex-shrink-0"
-                                          />
+                                          {
+                                            onSend ?
+                                              <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
+                                                <span class="sr-only">Loading...</span>
+                                              </div> :
+                                              <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700">
+                                                <span>SEND</span>
+                                                <IoSend
+                                                  size={18}
+                                                  className="flex-shrink-0"
+                                                /></div>
+                                          }
+
+
                                         </button>
+                                        {/* <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
+                                          <span class="sr-only">Loading...</span>
+                                        </div> */}
                                       </div>
                                     </div>
                                   </div>

@@ -72,7 +72,7 @@ const EventsRegistrations = () => {
         } else {
           setApplications([]);
         }
-        setEventUpdate((prevState) => !prevState);
+        setEventUpdate(false);
       } catch (err) {
         console.log(err);
       }
@@ -185,19 +185,11 @@ const EventsRegistrations = () => {
 
   useEffect(() => {
     const handleEventAppli = async (event_appli) => {
-      // console.log("received appli", event_appli);
-      let files = []
-      // // let blob = await fetch(event_appli.url).then(r => r.blob());
-      if (event_appli.files){
-        for (const file of event_appli.files){
-          // let fileObject = await fetch(file.url).then(r => r.blob()).then(blobFile => new File([blobFile], file.name, { type: blobFile.type }))
-          files.push({ link: file.url, name: file.name })
-        }
-      }
+      console.log("received appli", event_appli);
 
       setApplication((prevApplication) => ({
         ...prevApplication,
-        response: [...(prevApplication.response || []), {...event_appli.obj, file: files}],
+        response: [...(prevApplication.response || []), event_appli],
       }));
     };
     socket.on("receive-event_appli", handleEventAppli);
@@ -336,9 +328,8 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -511,9 +502,8 @@ const EventsRegistrations = () => {
                 >
                   EVENT TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
