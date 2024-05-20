@@ -102,9 +102,6 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
     fileInputRef.current.click();
   };
 
-  const handleDelete = (idx) => {
-    setViewFiles((prev) => prev.filter((_, index) => index !== idx));
-  };
 
   // const handleFileClick = (file) => {
   //   const url = URL.createObjectURL(file);

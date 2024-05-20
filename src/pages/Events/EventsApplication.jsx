@@ -31,6 +31,7 @@ const EventsRegistrations = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const chatContainerRef = useRef();
 
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
@@ -39,6 +40,7 @@ const EventsRegistrations = () => {
   const [eventFilter, setEventFilter] = useState([]);
   const [selecteEventFilter, setSelectedEventFilter] = useState("all");
   const [officials, setOfficials] = useState([]);
+
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -72,14 +74,17 @@ const EventsRegistrations = () => {
         } else {
           setApplications([]);
         }
-        setEventUpdate((prev) => !prev);
+        const container = chatContainerRef.current;
+        container.scrollTop = container.scrollHeight;
+        console.log(container)
+        // setEventUpdate((prev) => !prev);
       } catch (err) {
         console.log(err);
       }
     };
 
     fetch();
-  }, [brgy, statusFilter, selecteEventFilter, eventupdate]);
+  }, [brgy, statusFilter, selecteEventFilter]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -180,13 +185,13 @@ const EventsRegistrations = () => {
 
   const handleView = (item) => {
     setApplication(item);
-    setEventUpdate((prevState) => !prevState);
+    // setEventUpdate((prevState) => !prevState);
   };
 
   useEffect(() => {
     const handleEventAppli = async (event_appli) => {
       console.log("received appli", event_appli);
-
+    
       setApplication((prevApplication) => ({
         ...prevApplication,
         response: [...(prevApplication.response || []), event_appli],
@@ -197,6 +202,8 @@ const EventsRegistrations = () => {
       socket.off("receive-event_appli", handleEventAppli);
     };
   }, [socket, setApplication]);
+
+  console.log("application", application)
 
   const TimeFormat = (date) => {
     if (!date) return "";
@@ -816,10 +823,11 @@ const EventsRegistrations = () => {
       <ReplyRegistrationModal
         application={application}
         setApplication={setApplication}
+        filteredApplications={filteredApplications}
+        setFilteredApplications={setFilteredApplications}
         brgy={brgy}
-        setEventUpdate={setEventUpdate}
-        eventupdate={eventupdate}
         socket={socket}
+        chatContainerRef={chatContainerRef}
       />
       <ArchiveRegistrationModal selectedItems={selectedItems} />
     </div>

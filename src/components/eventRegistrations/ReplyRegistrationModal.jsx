@@ -20,17 +20,16 @@ function ReplyRegistrationModal({
   application,
   setApplication,
   brgy,
-  setEventUpdate,
-  eventupdate,
+  filteredApplications,
+  setFilteredApplications,
   socket,
+  chatContainerRef,
 }) {
   const [onSend, setOnSend] = useState(false);
   const [errMsg, setErrMsg] = useState(false);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
   const [upload, setUpload] = useState(false);
-  const [expandedIndexes, setExpandedIndexes] = useState([]);
-  const [files, setFiles] = useState([]);
   const [createFiles, setCreateFiles] = useState([]);
   const [viewFiles, setViewFiles] = useState([]);
   const [newMessage, setNewMessage] = useState({
@@ -43,7 +42,7 @@ function ReplyRegistrationModal({
   const [submitClicked, setSubmitClicked] = useState(false);
   const [replyingStatus, setReplyingStatus] = useState(null);
   const [error, setError] = useState(null);
-  const chatContainerRef = useRef();
+
   const [event, setEvent] = useState({
     collections: {
       banner: {},
@@ -51,15 +50,6 @@ function ReplyRegistrationModal({
     },
   });
   const [currentPage, setCurrentPage] = useState(0);
-
-  useEffect(() => {
-    const container = chatContainerRef.current;
-    container.scrollTop = container.scrollHeight;
-  });
-
-  useEffect(() => {
-    setFiles(application.length === 0 ? [] : application.file);
-  }, [application]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -103,40 +93,24 @@ function ReplyRegistrationModal({
     fetchData();
   }, [currentPage, brgy, application.event_id]);
 
-  useEffect(() => {
-    if (application && application.response.length !== 0) {
-      const lastResponse =
-        application.response[application.response.length - 1];
+  // useEffect(() => {
+  //   if (application && application.response.length !== 0) {
+  //     const lastResponse =
+  //       application.response[application.response.length - 1];
 
-      if (lastResponse.file && lastResponse.file.length > 0) {
-        setViewFiles(lastResponse.file);
-      } else {
-        setViewFiles([]);
-      }
-    } else {
-      setViewFiles([]);
-    }
-  }, [application]);
+  //     if (lastResponse.file && lastResponse.file.length > 0) {
+  //       setViewFiles(lastResponse.file);
+  //     } else {
+  //       setViewFiles([]);
+  //     }
+  //   } else {
+  //     setViewFiles([]);
+  //   }
+  // }, [application]);
 
   // Initialize with the last index expanded
-  useEffect(() => {
-    const lastIndex = application.response
-      ? application.response.length - 1
-      : 0;
-    setExpandedIndexes([lastIndex]);
-  }, [application.response]);
 
   const fileInputRef = useRef();
-
-  const handleToggleClick = (index) => {
-    if (expandedIndexes.includes(index)) {
-      // Collapse the clicked div
-      setExpandedIndexes((prev) => prev.filter((i) => i !== index));
-    } else {
-      // Expand the clicked div
-      setExpandedIndexes((prev) => [...prev, index]);
-    }
-  };
 
   const handleChange = (e) => {
     const inputValue = e.target.value;
@@ -212,7 +186,6 @@ function ReplyRegistrationModal({
 
       if (newMessage.message.trim() === "" && createFiles.length === 0) {
         setErrMsg(true);
-
         return;
       }
 
@@ -296,9 +269,17 @@ function ReplyRegistrationModal({
         // Perform additional actions if needed
         socket.emit("send-event_appli", response.data.response[response.data.response.length - 1]);
         setOnSend(false)
+
+        console.log("omsem", application)
+
+        // setApplication(response.data)
+        console.log("Gege")
+        // setFilteredApplications(filteredApplications.map((item) =>
+        //   item._id === application._id ? application : item
+        // ))
       }
 
-      setEventUpdate((prevState) => !prevState);
+      // setEventUpdate((prevState) => !prevState);
 
     } catch (error) {
       console.log(error);
