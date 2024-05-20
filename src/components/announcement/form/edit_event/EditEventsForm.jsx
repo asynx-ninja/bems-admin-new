@@ -11,29 +11,16 @@ import GetBrgy from "../../../GETBrgy/getbrgy";
 const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, socket, eventsForm, setEventsForm }) => {
   const information = GetBrgy(brgy);
 
-  const [details, setDetails] = useState(eventsForm);
+  const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
   const [selectedFormIndex, setSelectedFormIndex] = useState("");
 
-useEffect(() => {
-    const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement_id}`
-        );
-        setDetails(response.data);
-        setEditUpdate((prevState) => !prevState);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-
-    fetch();
-  }, [brgy, announcement_id, editupdate]);
-
+  useEffect(() => {
+    setDetails(eventsForm)
+  }, [eventsForm]);
 
   const handleFormChange = (e, key) => {
     const newState = detail.form[0];
@@ -56,8 +43,7 @@ useEffect(() => {
         if (
           activeFormResponse.data.length === 0 ||
           activeFormResponse.data[0].version === detail.version
-        ) 
-        {
+        ) {
           const response = await axios.patch(
             `${API_LINK}/event_form/`,
             {
@@ -86,7 +72,8 @@ useEffect(() => {
           throw new Error(
             "There's an active form. Please turn it off before updating the form."
           );
-        }  }
+        }
+      }
       // } else {
       //   const response = await axios.patch(
       //     `${API_LINK}/event_form/`,
@@ -119,6 +106,7 @@ useEffect(() => {
   };
 
   const handleSelectChange = (e) => {
+    console.log(e.target.value)
     setDetail(details[e.target.value]);
     setSelectedFormIndex(e.target.value);
   };
@@ -129,13 +117,12 @@ useEffect(() => {
       title: e.target.value,
     }));
   };
+
   const handleResetModal = () => {
     setDetail({});
     setSelectedFormIndex("");
     setDetail({ title: "" });
     document.querySelector('select[name="form"]').value = "";
-  
-    
   };
 
   return (

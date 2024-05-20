@@ -85,22 +85,6 @@ const EventsManagement = () => {
     fetchData();
   }, [brgy]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement.announcement_id}`
-        );
-        setEventsForm(response.data);
-        // setEditUpdate((prevState) => !prevState);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-
-    fetchData();
-  }, [setAnnouncement]);
-
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
     const start = selected * 10;
@@ -157,11 +141,16 @@ const EventsManagement = () => {
     document.title = "Events Management | Barangay E-Services Management";
   }, []);
 
-  const handleView = (item) => {
-    setAnnouncement(item);
-
-
-    // setEditUpdate((prevState) => !prevState);
+  const handleView = async (item) => {
+    try {
+      setAnnouncement(item);
+      const response = await axios.get(
+        `${API_LINK}/event_form/?brgy=${brgy}&event_id=${item.event_id}`
+      );
+      setEventsForm(response.data);
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   useEffect(() => {
@@ -177,9 +166,7 @@ const EventsManagement = () => {
     };
 
     const handleEventForm = (get_events_forms) => {
-      setAnnouncement(get_events_forms)
-
-      setFilteredAnnouncements(curItem => curItem.map((item) =>
+      setEventsForm(curItem => curItem.map((item) =>
         item._id === get_events_forms._id ? get_events_forms : item
       ))
     };
