@@ -138,12 +138,10 @@ const Inquiries = () => {
     };
 
     socket.on("receive-muni_inquiry", handleMuniInq);
-   
+
     return () => {
       socket.off("receive-muni_inquiry", handleMuniInq);
-     
     };
-
   }, [socket, setInquiry]);
 
   const handleStatusFilter = (status) => {
