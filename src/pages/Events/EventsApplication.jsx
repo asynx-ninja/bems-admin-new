@@ -61,6 +61,8 @@ const EventsRegistrations = () => {
     fetch();
   }, [brgy]);
 
+  
+
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -192,10 +194,16 @@ const EventsRegistrations = () => {
     const handleEventAppli = async (event_appli) => {
       console.log("received appli", event_appli);
     
-      setApplication((prevApplication) => ({
-        ...prevApplication,
-        response: [...(prevApplication.response || []), event_appli],
-      }));
+      // setApplication((prevApplication) => ({
+      //   ...prevApplication,
+      //   response: [...(prevApplication.response || []), event_appli],
+      // }));
+
+      setApplication(event_appli)
+
+      setFilteredApplications(curItem => curItem.map((item) =>
+        item._id === event_appli._id ? event_appli : item
+      ))
     };
     socket.on("receive-event_appli", handleEventAppli);
     return () => {

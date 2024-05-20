@@ -52,6 +52,11 @@ function ReplyRegistrationModal({
   const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
+    var container = document.getElementById("scrolltobottom");
+    container.scrollTop = container.scrollHeight;
+  });
+  
+  useEffect(() => {
     const fetch = async () => {
       try {
         const res = await axios.get(`${API_LINK}/users/specific/${id}`);
@@ -267,13 +272,10 @@ function ReplyRegistrationModal({
         });
 
         // Perform additional actions if needed
-        socket.emit("send-event_appli", response.data.response[response.data.response.length - 1]);
+        socket.emit("send-event_appli", response.data);
         setOnSend(false)
 
-        console.log("omsem", application)
-
         // setApplication(response.data)
-        console.log("Gege")
         // setFilteredApplications(filteredApplications.map((item) =>
         //   item._id === application._id ? application : item
         // ))
