@@ -41,7 +41,7 @@ const EventsManagement = () => {
   const [selected, setSelected] = useState("date");
   const [update, setUpdate] = useState(false);
   const [editupdate, setEditUpdate] = useState(false);
-  
+  const [eventsForm, setEventsForm] = useState([])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -91,7 +91,7 @@ const EventsManagement = () => {
         const response = await axios.get(
           `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement.announcement_id}`
         );
-        setEventForm(response.data);
+        setEventsForm(response.data);
         // setEditUpdate((prevState) => !prevState);
       } catch (err) {
         console.log(err.message);
@@ -177,22 +177,21 @@ const EventsManagement = () => {
     };
 
     const handleEventForm = (get_events_forms) => {
-      // setAnnouncement((prevApplication) => ({
-      //   ...prevApplication
-      // }));
-      setAnnouncement(get_events)
+      setAnnouncement(get_events_forms)
 
-      setFilteredAnnouncements((prev) => [get_events, ...prev]);
+      setFilteredAnnouncements(curItem => curItem.map((item) =>
+        item._id === get_events_forms._id ? get_events_forms : item
+      ))
     };
     
     socket.on("receive-get_events", handleEvent);
     socket.on("receive-get_events_forms", handleEventForm);
-    socket.on("receive-edit_events_forms", handleEventAppli);
+
 
     return () => {
-      socket.off("receive-get_events", handleEventAppli);
-      socket.off("receive-get_events_forms", handleEventAppli);
-      socket.off("receive-edit_events_forms", handleEventAppli);
+      socket.off("receive-get_events", handleEvent);
+      socket.off("receive-get_events_forms", handleEventForm);
+
     };
   }, [socket, setAnnouncement]);
 
@@ -724,6 +723,8 @@ const EventsManagement = () => {
           editupdate={editupdate}
           setEditUpdate={setEditUpdate}
           socket={socket}
+          eventsForm={eventsForm}
+          setEventsForm={setEventsForm}
         />
       </div>
     </div>

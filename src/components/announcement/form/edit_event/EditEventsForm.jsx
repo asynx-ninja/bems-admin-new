@@ -8,10 +8,10 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, socket }) => {
+const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, socket, eventsForm, setEventsForm }) => {
   const information = GetBrgy(brgy);
 
-  const [details, setDetails] = useState(eventForms);
+  const [details, setDetails] = useState(eventsForm);
   const [detail, setDetail] = useState({});
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -39,7 +39,7 @@ useEffect(() => {
     const newState = detail.form[0];
     newState[key].checked = e.target.checked;
 
-    setDetail((prev) => ({
+    setDetails((prev) => ({
       ...prev,
       form: [newState, detail.form[1]],
     }));
@@ -56,7 +56,8 @@ useEffect(() => {
         if (
           activeFormResponse.data.length === 0 ||
           activeFormResponse.data[0].version === detail.version
-        ) {
+        ) 
+        {
           const response = await axios.patch(
             `${API_LINK}/event_form/`,
             {
@@ -69,41 +70,46 @@ useEffect(() => {
             }
           );
 
-          setTimeout(() => {
+          if (response.status === 200) {
+            socket.emit("send-get_events_forms", response.data);
+            // clearForm();
             setSubmitClicked(false);
-            setUpdatingStatus("success");
+            setCreationStatus("success");
             setTimeout(() => {
-              window.location.reload();
+              setCreationStatus(null);
+              HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
             }, 3000);
-          }, 1000);
+          }
+
         } else if (activeFormResponse.data[0].version !== detail.version) {
+
           throw new Error(
             "There's an active form. Please turn it off before updating the form."
           );
-        }
-      } else {
-        const response = await axios.patch(
-          `${API_LINK}/event_form/`,
-          {
-            detail: detail,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        }  }
+      // } else {
+      //   const response = await axios.patch(
+      //     `${API_LINK}/event_form/`,
+      //     {
+      //       detail: detail,
+      //     },
+      //     {
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //     }
+      //   );
 
-     
-
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
-      }
+      //   if (response.status === 200) {
+      //     // clearForm();
+      //     setSubmitClicked(false);
+      //     setCreationStatus("success");
+      //     setTimeout(() => {
+      //       setCreationStatus(null);
+      //       HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
+      //     }, 3000);
+      //   }
+      // }
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
