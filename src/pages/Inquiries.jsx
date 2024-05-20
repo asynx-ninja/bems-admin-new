@@ -6,7 +6,7 @@ import { FaArchive } from "react-icons/fa";
 import moment from "moment";
 import ArchiveModal from "../components/inquiries/ArchiveInquiryModal";
 import Status from "../components/inquiries/Status";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import API_LINK from "../config/API";
@@ -44,7 +44,8 @@ const Inquiries = () => {
   const [selected, setSelected] = useState("date");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [allInquiries, setAllInquiries] = useState([]);
-
+  const inqContainerRef = useRef();
+  
   useEffect(() => {
     document.title = "Inquiries | Barangay E-Services Management";
 
@@ -62,11 +63,13 @@ const Inquiries = () => {
         setInquiries([]);
         setFilteredInquiries([]);
       }
-      setInqsUpdate((prevState) => !prevState);
+      const container = inqContainerRef.current;
+      container.scrollTop = container.scrollHeight;
+      // setInqsUpdate((prevState) => !prevState);
     };
 
     fetchInquiries();
-  }, [id, to, statusFilter, inqsupdate]);
+  }, [id, to, statusFilter]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -113,10 +116,6 @@ const Inquiries = () => {
     "actions",
   ];
 
-  const DateFormat = (date) => {
-    const dateFormat = date === undefined ? "" : date.substr(0, 10);
-    return dateFormat;
-  };
   const TimeFormat = (date) => {
     if (!date) return "";
 
@@ -126,19 +125,19 @@ const Inquiries = () => {
 
   const handleView = (item) => {
     setInquiry(item);
-    setInqsUpdate((prevState) => !prevState);
+    // setInqsUpdate((prevState) => !prevState);
   };
 
   useEffect(() => {
     const handleMuniInq = (muni_inquiry) => {
-      setInquiry((prevMuniInq) => ({
-        ...prevMuniInq,
-        response: [...prevMuniInq.response, muni_inquiry],
-      }));
+      setInquiry(muni_inquiry);
+      setFilteredInquiries((curItem) =>
+        curItem.map((item) =>
+          item._id === muni_inquiry._id ? muni_inquiry : item
+        )
+      );
     };
-
     socket.on("receive-muni_inquiry", handleMuniInq);
-
     return () => {
       socket.off("receive-muni_inquiry", handleMuniInq);
     };
@@ -712,9 +711,8 @@ const Inquiries = () => {
           inquiry={inquiry}
           setInquiry={setInquiry}
           brgy={brgy}
-          setInqsUpdate={setInqsUpdate}
-          inqsupdate={inqsupdate}
           socket={socket}
+          inqContainerRef={inqContainerRef}
         />
         <Status status={status} setStatus={setStatus} />
       </div>

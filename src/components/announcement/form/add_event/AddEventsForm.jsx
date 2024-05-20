@@ -169,7 +169,7 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
         form: form,
         section: section,
       };
-      socket.emit("send-get_events_forms", requestData);
+     
 
       if (checked) {
         // Check if there's an active form
@@ -193,13 +193,14 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
             }
           );
           if (response.status === 200) {
+            socket.emit("send-get_events_forms", response.data);
             setSubmitClicked(false);
             setCreationStatus("success");
             setTimeout(() => {
               setCreationStatus(null);
               HSOverlay.close(document.getElementById("hs-create-eventsForm-modal"));
-              setEditUpdate((prevState) => !prevState);
-              console.log("addforms", editupdate)
+              // setEditUpdate((prevState) => !prevState);
+              // console.log("addforms", editupdate)
             }, 3000);
           }
         } 

@@ -20,8 +20,6 @@ function ReplyRegistrationModal({
   application,
   setApplication,
   brgy,
-  filteredApplications,
-  setFilteredApplications,
   socket,
   chatContainerRef,
 }) {
@@ -98,23 +96,6 @@ function ReplyRegistrationModal({
     fetchData();
   }, [currentPage, brgy, application.event_id]);
 
-  // useEffect(() => {
-  //   if (application && application.response.length !== 0) {
-  //     const lastResponse =
-  //       application.response[application.response.length - 1];
-
-  //     if (lastResponse.file && lastResponse.file.length > 0) {
-  //       setViewFiles(lastResponse.file);
-  //     } else {
-  //       setViewFiles([]);
-  //     }
-  //   } else {
-  //     setViewFiles([]);
-  //   }
-  // }, [application]);
-
-  // Initialize with the last index expanded
-
   const fileInputRef = useRef();
 
   const handleChange = (e) => {
@@ -171,9 +152,6 @@ function ReplyRegistrationModal({
     fileInputRef.current.click();
   };
 
-  const handleOnReply = () => {
-    setReply(!reply);
-  };
 
   const handleOnUpload = () => {
     setUpload(!upload);
@@ -270,18 +248,9 @@ function ReplyRegistrationModal({
             "Content-Type": "application/json",
           },
         });
-
-        // Perform additional actions if needed
         socket.emit("send-event_appli", response.data);
         setOnSend(false)
-
-        // setApplication(response.data)
-        // setFilteredApplications(filteredApplications.map((item) =>
-        //   item._id === application._id ? application : item
-        // ))
       }
-
-      // setEventUpdate((prevState) => !prevState);
 
     } catch (error) {
       console.log(error);
@@ -511,11 +480,18 @@ function ReplyRegistrationModal({
                                       onClick={handleOnSend}
                                       className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                     >
-                                      <span>SEND</span>
-                                      <IoSend
-                                        size={18}
-                                        className="flex-shrink-0"
-                                      />
+                                      {
+                                            onSend ?
+                                              <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
+                                                <span class="sr-only">Loading...</span>
+                                              </div> :
+                                              <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700">
+                                                <span>SEND</span>
+                                                <IoSend
+                                                  size={18}
+                                                  className="flex-shrink-0"
+                                                /></div>
+                                          }
                                     </button>
                                   </div>
                                 </div>
@@ -574,7 +550,7 @@ function ReplyRegistrationModal({
                             ) : null}
                             {responseItem.file &&
                               responseItem.file.length > 0 && (
-                                <div className="flex flex-col rounded-xl bg-custom-green-button w-full mt-2 px-2 md:px-4 py-2">
+                                <div className="flex flex-col rounded-xl bg-custom-green-button w-auto mt-2 px-2 md:px-4 py-2">
                                   <ViewDropbox
                                     viewFiles={responseItem.file || []}
                                     setViewFiles={setViewFiles}

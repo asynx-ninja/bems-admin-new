@@ -69,7 +69,7 @@ const EventsManagement = () => {
           });
 
           setPageCount(announcementsResponse.data.pageCount);
-          setUpdate(false);
+          // setUpdate(false);
         } else {
           setAnnouncementWithCounts([]);
         }
@@ -82,7 +82,7 @@ const EventsManagement = () => {
     };
 
     fetchData();
-  }, [brgy, update]);
+  }, [brgy]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -142,15 +142,21 @@ const EventsManagement = () => {
 
   const handleView = (item) => {
     setAnnouncement(item);
-    setEditUpdate((prevState) => !prevState);
+    // setEditUpdate((prevState) => !prevState);
   };
 
   useEffect(() => {
-    const handleEventAppli = () => {
-      setAnnouncement((prevApplication) => ({
-        ...prevApplication
-      }));
+    const handleEventAppli = (get_events) => {
+      // setAnnouncement((prevApplication) => ({
+      //   ...prevApplication
+      // }));
+      console.log("wew", filteredAnnouncements)
+      console.log("wew", get_events)
+      setAnnouncement(get_events)
+
+      setFilteredAnnouncements((prev) => [get_events, ...prev]);
     };
+    
 
     socket.on("receive-get_events", handleEventAppli);
     socket.on("receive-get_events_forms", handleEventAppli);

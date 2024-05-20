@@ -19,10 +19,10 @@ function ViewInquiriesModal({
   inquiry,
   setInquiry,
   brgy,
-  setInqsUpdate,
-  inqsupdate,
   socket,
+  inqContainerRef,
 }) {
+  const [onSend, setOnSend] = useState(false);
   const [errMsg, setErrMsg] = useState(false);
   const [reply, setReply] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -53,29 +53,11 @@ function ViewInquiriesModal({
     name: "inquiries_logo.png",
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
-  useEffect(() => {
-    setFiles(inquiry.length === 0 ? [] : inquiry.compose.file);
-  }, [inquiry]);
 
   useEffect(() => {
-    if (inquiry && inquiry.response.length !== 0) {
-      const lastResponse = inquiry.response[inquiry.response.length - 1];
-
-      if (lastResponse.file && lastResponse.file.length > 0) {
-        setViewFiles(lastResponse.file);
-      } else {
-        setViewFiles([]);
-      }
-    } else {
-      setViewFiles([]);
-    }
-  }, [inquiry]);
-
-  // Initialize with the last index expanded
-  useEffect(() => {
-    const lastIndex = inquiry.response ? inquiry.response.length - 1 : 0;
-    setExpandedIndexes([lastIndex]);
-  }, [inquiry.response]);
+    var container = document.getElementById("scrolltobottoms");
+    container.scrollTop = container.scrollHeight;
+  });
 
   useEffect(() => {
     const fetch = async () => {
@@ -94,15 +76,6 @@ function ViewInquiriesModal({
 
   const fileInputRef = useRef();
 
-  const handleToggleClick = (index) => {
-    if (expandedIndexes.includes(index)) {
-      // Collapse the clicked div
-      setExpandedIndexes((prev) => prev.filter((i) => i !== index));
-    } else {
-      // Expand the clicked div
-      setExpandedIndexes((prev) => [...prev, index]);
-    }
-  };
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -110,22 +83,9 @@ function ViewInquiriesModal({
     fileInputRef.current.click();
   };
 
-  const handleOnReply = () => {
-    setReply(!reply);
-  };
-
   const handleOnUpload = () => {
     setUpload(!upload);
   };
-
-  // const handleChange = (e) => {
-  //   e.preventDefault();
-
-  //   setNewMessage((prev) => ({
-  //     ...prev,
-  //     [e.target.name]: e.target.value,
-  //   }));
-  // };
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -177,7 +137,8 @@ function ViewInquiriesModal({
   };
   const handleOnSend = async (e) => {
     e.preventDefault();
-    // setSubmitClicked(true);
+    setOnSend(true);
+
     if (newMessage.message === "" && createFiles.length === 0) {
       setErrMsg(true);
 
@@ -195,6 +156,7 @@ function ViewInquiriesModal({
 
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
+
       for (let i = 0; i < createFiles.length; i++) {
         formData.append("files", createFiles[i]);
       }
@@ -207,6 +169,7 @@ function ViewInquiriesModal({
       if (response.status === 200) {
         setNewMessage({ message: "" });
         setReply(false);
+        setCreateFiles([]);
         const notify = {
           category: "One",
           compose: {
@@ -242,10 +205,10 @@ function ViewInquiriesModal({
             "Content-Type": "application/json",
           },
         });
-
       }
-      socket.emit("send-muni_inquiry", obj)
-      setInqsUpdate((prevState) => !prevState);
+      console.log("wew", response.data)
+      socket.emit("send-muni_inquiry", response.data);
+      setOnSend(false)
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
@@ -257,10 +220,8 @@ function ViewInquiriesModal({
   const handleOnStatusChanger = () => {
     setStatusChanger(!statusChanger);
   };
-  useEffect(() => {
-    var container = document.getElementById("scrolltobottom");
-    container.scrollTop = container.scrollHeight;
-  });
+
+
   return (
     <div>
       <div className="">
@@ -281,7 +242,11 @@ function ViewInquiriesModal({
                 </h3>
               </div>
 
-              <div id="scrolltobottom" className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]">
+              <div
+                ref={inqContainerRef}
+                id="scrolltobottoms"
+                className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]"
+              >
                 <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg mb-4">
                   Inquiry Details
                 </b>
@@ -376,7 +341,7 @@ function ViewInquiriesModal({
 
                 <EditDropbox files={inquiry && files} setFiles={setFiles} />
 
-                <div  className="flex flex-col mt-5 w-full">
+                <div className="flex flex-col mt-5 w-full">
                   <b className="border-solid border-0 w-full border-black/50 border-b-2 my-4 uppercase font-medium text-lg md:text-lg mb-4">
                     Conversation History
                   </b>
@@ -418,93 +383,90 @@ function ViewInquiriesModal({
                                   <IoIosAttach size={24} />
                                 </button>
                                 <div className="flex flex-col lg:flex-row">
-                                      <div className="w-full">
-                                        <div className="flex flex-row space-x-4">
-                                          {!statusChanger ? (
-                                            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                              <div className="hs-tooltip inline-block">
-                                                <button
-                                                  onClick={(e) => {
-                                                    e.preventDefault();
-                                                    handleOnStatusChanger();
-                                                  }}
-                                                  className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
-                                                >
-                                                  <FaTasks
-                                                    size={24}
-                                                    className="mx-auto"
-                                                  />
-                                                  <span
-                                                    className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                    role="tooltip"
-                                                  >
-                                                    Change inquiry Status
-                                                  </span>
-                                                </button>
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex mr-2">
-                                              <div className="hs-tooltip inline-block">
-                                                <button
-                                                  onClick={(e) => {
-                                                    e.preventDefault();
-                                                    handleOnStatusChanger();
-                                                  }}
-                                                  className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
-                                                >
-                                                  <MdOutlineCancel
-                                                    size={24}
-                                                    className="mx-auto"
-                                                  />
-                                                </button>
-                                                <span
-                                                  className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                  role="tooltip"
-                                                >
-                                                  Change Inquiry Status
-                                                </span>
-                                              </div>
-                                            </div>
-                                          )}
-                                          <select
-                                            id="status"
-                                            name="status"
-                                            onChange={(e) => {
-                                              if (
-                                                statusChanger &&
-                                                (!newMessage.message ||
-                                                  newMessage.message.trim() ===
-                                                    "")
-                                              ) {
-                                                setNewMessage((prev) => ({
-                                                  ...prev,
-                                                  message: `The status of your inquiry is ${e.target.value}`,
-                                                }));
-                                              }
-                                              setInquiry((prev) => ({
-                                                ...prev,
-                                                status: e.target.value,
-                                              }));
-                                            }}
-                                            className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                            value={inquiry.status}
-                                            hidden={!statusChanger}
-                                          >
-                                            <option>- Select a Status -</option>
-                                            <option value="Pending">
-                                              PENDING
-                                            </option>
-                                            <option value="In Progress">
-                                              IN PROGRESS
-                                            </option>
-                                            <option value="Completed">
-                                              COMPLETED
-                                            </option>
-                                          </select>
+                                  <div className="w-full">
+                                    <div className="flex flex-row space-x-4">
+                                      {!statusChanger ? (
+                                        <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                          <div className="hs-tooltip inline-block">
+                                            <button
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                handleOnStatusChanger();
+                                              }}
+                                              className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
+                                            >
+                                              <FaTasks
+                                                size={24}
+                                                className="mx-auto"
+                                              />
+                                              <span
+                                                className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                role="tooltip"
+                                              >
+                                                Change inquiry Status
+                                              </span>
+                                            </button>
+                                          </div>
                                         </div>
-                                      </div>
+                                      ) : (
+                                        <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex mr-2">
+                                          <div className="hs-tooltip inline-block">
+                                            <button
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                handleOnStatusChanger();
+                                              }}
+                                              className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                            >
+                                              <MdOutlineCancel
+                                                size={24}
+                                                className="mx-auto"
+                                              />
+                                            </button>
+                                            <span
+                                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                              role="tooltip"
+                                            >
+                                              Change Inquiry Status
+                                            </span>
+                                          </div>
+                                        </div>
+                                      )}
+                                      <select
+                                        id="status"
+                                        name="status"
+                                        onChange={(e) => {
+                                          if (
+                                            statusChanger &&
+                                            (!newMessage.message ||
+                                              newMessage.message.trim() === "")
+                                          ) {
+                                            setNewMessage((prev) => ({
+                                              ...prev,
+                                              message: `The status of your inquiry is ${e.target.value}`,
+                                            }));
+                                          }
+                                          setInquiry((prev) => ({
+                                            ...prev,
+                                            status: e.target.value,
+                                          }));
+                                        }}
+                                        className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                        value={inquiry.status}
+                                        hidden={!statusChanger}
+                                      >
+                                        <option>- Select a Status -</option>
+                                        <option value="Pending">PENDING</option>
+                                        <option value="In Progress">
+                                          IN PROGRESS
+                                        </option>
+                                        <option value="Completed">
+                                          COMPLETED
+                                        </option>
+                                      </select>
                                     </div>
+                                  </div>
+                                </div>
                               </div>
                               <div className="flex items-center gap-x-1">
                                 <button
@@ -512,8 +474,23 @@ function ViewInquiriesModal({
                                   onClick={handleOnSend}
                                   className="inline-flex justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                 >
-                                  <span>SEND</span>
-                                  <IoSend size={18} className="flex-shrink-0" />
+                                  {onSend ? (
+                                    <div
+                                      class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                                      role="status"
+                                      aria-label="loading"
+                                    >
+                                      <span class="sr-only">Loading...</span>
+                                    </div>
+                                  ) : (
+                                    <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700">
+                                      <span>SEND</span>
+                                      <IoSend
+                                        size={18}
+                                        className="flex-shrink-0"
+                                      />
+                                    </div>
+                                  )}
                                 </button>
                               </div>
                             </div>
@@ -565,7 +542,7 @@ function ViewInquiriesModal({
                               </div>
                             )}
                             <p className="text-xs mt-1 text-black text-right">
-                            {DateFormat(responseItem.date) || ""}
+                              {DateFormat(responseItem.date) || ""}
                             </p>
                           </div>
                           {index === inquiry.response.length - 1 && (
@@ -698,11 +675,18 @@ function ViewInquiriesModal({
                                       onClick={handleOnSend}
                                       className="inline-flex justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                     >
-                                      <span>SEND</span>
-                                      <IoSend
-                                        size={18}
-                                        className="flex-shrink-0"
-                                      />
+                                      {
+                                            onSend ?
+                                              <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
+                                                <span class="sr-only">Loading...</span>
+                                              </div> :
+                                              <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700">
+                                                <span>SEND</span>
+                                                <IoSend
+                                                  size={18}
+                                                  className="flex-shrink-0"
+                                                /></div>
+                                          }
                                     </button>
                                   </div>
                                 </div>

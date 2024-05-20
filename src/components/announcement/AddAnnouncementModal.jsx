@@ -124,7 +124,7 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
         );
 
         if (response.status === 200) {
-        
+          socket.emit("send-get_events", response.data);
           let notify;
 
           const formattedDate = moment(announcement.date).format(
@@ -169,8 +169,8 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
           }
         }
       }
-      socket.emit("send-get_events", obj);
-      setUpdate((prevState) => !prevState);
+  
+      // setUpdate((prevState) => !prevState);
     } catch (err) {
       console.error(err);
       setSubmitClicked(false);

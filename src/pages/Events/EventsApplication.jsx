@@ -219,75 +219,75 @@ const EventsRegistrations = () => {
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
-  // const filters = (choice, selectedDate, applications) => {
-  //   switch (choice) {
-  //     case "date":
-  //       return applications.filter((item) => {
-  //         const itemDate = new Date(item.createdAt);
-  //         return (
-  //           itemDate.getFullYear() === selectedDate.getFullYear() &&
-  //           itemDate.getMonth() === selectedDate.getMonth() &&
-  //           itemDate.getDate() === selectedDate.getDate()
-  //         );
-  //       });
-  //     case "week":
-  //       const startDate = new Date(selectedDate);
-  //       const endDate = new Date(startDate);
-  //       endDate.setDate(startDate.getDate() + 6);
+  const filters = (choice, selectedDate, applications) => {
+    switch (choice) {
+      case "date":
+        return applications.filter((item) => {
+          const itemDate = new Date(item.createdAt);
+          return (
+            itemDate.getFullYear() === selectedDate.getFullYear() &&
+            itemDate.getMonth() === selectedDate.getMonth() &&
+            itemDate.getDate() === selectedDate.getDate()
+          );
+        });
+      case "week":
+        const startDate = new Date(selectedDate);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
 
-  //       return applications.filter((item) => {
-  //         const itemDate = new Date(item.createdAt);
-  //         return itemDate >= startDate && itemDate <= endDate;
-  //       });
-  //     case "month":
-  //       return applications.filter((item) => {
-  //         const itemDate = new Date(item.createdAt);
-  //         return (
-  //           itemDate.getFullYear() === selectedDate.getFullYear() &&
-  //           itemDate.getMonth() === selectedDate.getMonth()
-  //         );
-  //       });
-  //     case "year":
-  //       return applications.filter((item) => {
-  //         const itemDate = new Date(item.createdAt);
-  //         return itemDate.getFullYear() === selectedDate.getFullYear();
-  //       });
-  //     default:
-  //       return applications; // Return all applications if no valid choice is selected
-  //   }
-  // };
+        return applications.filter((item) => {
+          const itemDate = new Date(item.createdAt);
+          return itemDate >= startDate && itemDate <= endDate;
+        });
+      case "month":
+        return applications.filter((item) => {
+          const itemDate = new Date(item.createdAt);
+          return (
+            itemDate.getFullYear() === selectedDate.getFullYear() &&
+            itemDate.getMonth() === selectedDate.getMonth()
+          );
+        });
+      case "year":
+        return applications.filter((item) => {
+          const itemDate = new Date(item.createdAt);
+          return itemDate.getFullYear() === selectedDate.getFullYear();
+        });
+      default:
+        return applications; // Return all applications if no valid choice is selected
+    }
+  };
 
-  // const onSelect = (e) => {
-  //   setSelected(e.target.value);
-  // };
+  const onSelect = (e) => {
+    setSelected(e.target.value);
+  };
 
-  // const onChangeDate = (e) => {
-  //   const date = new Date(e.target.value);
-  //   setSpecifiedDate(date);
-  //   setFilteredApplications(filters(selected, date, applications));
-  // };
+  const onChangeDate = (e) => {
+    const date = new Date(e.target.value);
+    setSpecifiedDate(date);
+    setFilteredApplications(filters(selected, date, applications));
+  };
 
-  // const onChangeWeek = (e) => {
-  //   const date = new Date(e.target.value);
-  //   setSpecifiedDate(date);
-  //   setFilteredApplications(filters(selected, date, applications));
-  // };
+  const onChangeWeek = (e) => {
+    const date = new Date(e.target.value);
+    setSpecifiedDate(date);
+    setFilteredApplications(filters(selected, date, applications));
+  };
 
-  // const onChangeMonth = (e) => {
-  //   const date = new Date(e.target.value);
-  //   setSpecifiedDate(date);
-  //   setFilteredApplications(filters(selected, date, applications));
-  // };
+  const onChangeMonth = (e) => {
+    const date = new Date(e.target.value);
+    setSpecifiedDate(date);
+    setFilteredApplications(filters(selected, date, applications));
+  };
 
-  // const onChangeYear = (e) => {
-  //   if (e.target.value === "") {
-  //     setFilteredApplications(applications);
-  //   } else {
-  //     const date = new Date(e.target.value, 0, 1);
-  //     setSpecifiedDate(date);
-  //     setFilteredApplications(filters(selected, date, applications));
-  //   }
-  // };
+  const onChangeYear = (e) => {
+    if (e.target.value === "") {
+      setFilteredApplications(applications);
+    } else {
+      const date = new Date(e.target.value, 0, 1);
+      setSpecifiedDate(date);
+      setFilteredApplications(filters(selected, date, applications));
+    }
+  };
 
   return (
     <div className="mx-4 ">
@@ -416,7 +416,7 @@ const EventsRegistrations = () => {
                 </ul>
               </div>
 
-              {/* <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
                   type="button"
@@ -508,7 +508,7 @@ const EventsRegistrations = () => {
                     </div>
                   </div>
                 </ul>
-              </div> */}
+              </div>
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
@@ -831,8 +831,6 @@ const EventsRegistrations = () => {
       <ReplyRegistrationModal
         application={application}
         setApplication={setApplication}
-        filteredApplications={filteredApplications}
-        setFilteredApplications={setFilteredApplications}
         brgy={brgy}
         socket={socket}
         chatContainerRef={chatContainerRef}
