@@ -184,10 +184,20 @@ const EventsRegistrations = () => {
   };
 
   useEffect(() => {
-    const handleEventAppli = (event_appli) => {
+    const handleEventAppli = async (event_appli) => {
+      // console.log("received appli", event_appli);
+      let files = []
+      // // let blob = await fetch(event_appli.url).then(r => r.blob());
+      if (event_appli.files){
+        for (const file of event_appli.files){
+          // let fileObject = await fetch(file.url).then(r => r.blob()).then(blobFile => new File([blobFile], file.name, { type: blobFile.type }))
+          files.push({ link: file.url, name: file.name })
+        }
+      }
+
       setApplication((prevApplication) => ({
         ...prevApplication,
-        response: [...(prevApplication.response || []), event_appli],
+        response: [...(prevApplication.response || []), {...event_appli.obj, file: files}],
       }));
     };
     socket.on("receive-event_appli", handleEventAppli);

@@ -7,7 +7,17 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
   const fileInputRef = useRef();
   const navigate = useNavigate();
 
-  console.log(viewFiles);
+  function truncateFileName(fileName) {
+    const maxLength = 20; // Maximum length of the displayed file name
+    if (fileName.length <= maxLength) {
+      return fileName;
+    } else {
+      const truncatedFileName = fileName.substring(0, maxLength / 2) + "..." + fileName.substring(fileName.length - maxLength / 2);
+      return truncatedFileName;
+    }
+  }
+
+  // console.log(viewFiles);
 
   // console.log(viewFiles)
 
@@ -161,14 +171,14 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
                           className="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed"
                         />
                         <section className="flex flex-row relative rounded-md text-xs break-words w-full h-full z-20 top-0 py-2 px-3">
-                          <a
-                            href={file.link}
-                            target="_blank"
-                            className="flex-1 relative group-hover:text-blue-800 line-clamp-1 z-20 flex items-center truncate"
-                          >
-                            <FaRegFileLines className="mr-1" />
-                            {file.name}
-                          </a>
+                            <a
+                              href={file.link}
+                              target="_blank"
+                              className="flex-1 relative group-hover:text-blue-800 truncate line-clamp-1 z-20 flex items-center"
+                            >
+                              <FaRegFileLines className="mr-1" />
+                              {truncateFileName(file.name)}
+                            </a>
 
                           {/* <div className="flex absolute right-0 left-0 top-0 bottom-0 opacity-50 z-[0]">
                               <span className="p-1 text-blue-800 m-auto">

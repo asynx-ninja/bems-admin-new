@@ -223,12 +223,18 @@ function ReplyRegistrationModal({
           application.response.length > 0 ? application.response.length - 1 : 0,
       };
 
+      let fileObjects = []
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
       for (let i = 0; i < createFiles.length; i++) {
+        const url = URL.createObjectURL(createFiles[i]);
+        fileObjects.push({ url: url, name: createFiles[i].name })
+
         formData.append("files", createFiles[i]);
       }
+
+      socket.emit("send-event_appli", { obj, files: fileObjects });
 
       const response = await axios.patch(
         `${API_LINK}/application/?app_id=${application._id}`,
@@ -236,6 +242,7 @@ function ReplyRegistrationModal({
       );
 
       if (response.status === 200) {
+        
         setNewMessage({ message: "" });
         setReplyingStatus(null);
         setReply(false);
@@ -292,7 +299,18 @@ function ReplyRegistrationModal({
 
         // Perform additional actions if needed
       }
-      socket.emit("send-event_appli", obj);
+
+      // const reader = new FileReader();
+      // reader.readAsArrayBuffer(createFiles[0]);
+      // reader.onload = (e) => {
+      //   const pdfData = e.target.result;
+      //   console.log("pdfData", pdfData)
+      //   // let pdfBlob = new Blob([pdfData], { type: "application/pdf" });
+      //   // console.log("pdf data: " + pdfData)
+      //   // let file = new File([pdfData], filename, { type: contentType, lastModified: Date.now() });
+        
+      // };
+
       setEventUpdate((prevState) => !prevState);
     } catch (error) {
       console.log(error);
