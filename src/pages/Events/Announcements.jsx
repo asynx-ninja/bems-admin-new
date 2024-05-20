@@ -41,6 +41,7 @@ const EventsManagement = () => {
   const [selected, setSelected] = useState("date");
   const [update, setUpdate] = useState(false);
   const [editupdate, setEditUpdate] = useState(false);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,6 +84,22 @@ const EventsManagement = () => {
 
     fetchData();
   }, [brgy]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement.announcement_id}`
+        );
+        setEventForm(response.data);
+        // setEditUpdate((prevState) => !prevState);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    fetchData();
+  }, [setAnnouncement]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -142,11 +159,13 @@ const EventsManagement = () => {
 
   const handleView = (item) => {
     setAnnouncement(item);
+
+
     // setEditUpdate((prevState) => !prevState);
   };
 
   useEffect(() => {
-    const handleEventAppli = (get_events) => {
+    const handleEvent = (get_events) => {
       // setAnnouncement((prevApplication) => ({
       //   ...prevApplication
       // }));
@@ -156,10 +175,18 @@ const EventsManagement = () => {
 
       setFilteredAnnouncements((prev) => [get_events, ...prev]);
     };
-    
 
-    socket.on("receive-get_events", handleEventAppli);
-    socket.on("receive-get_events_forms", handleEventAppli);
+    const handleEventForm = (get_events_forms) => {
+      // setAnnouncement((prevApplication) => ({
+      //   ...prevApplication
+      // }));
+      setAnnouncement(get_events)
+
+      setFilteredAnnouncements((prev) => [get_events, ...prev]);
+    };
+    
+    socket.on("receive-get_events", handleEvent);
+    socket.on("receive-get_events_forms", handleEventForm);
     socket.on("receive-edit_events_forms", handleEventAppli);
 
     return () => {

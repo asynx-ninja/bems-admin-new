@@ -11,7 +11,7 @@ import GetBrgy from "../../../GETBrgy/getbrgy";
 const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, socket }) => {
   const information = GetBrgy(brgy);
 
-  const [details, setDetails] = useState([]);
+  const [details, setDetails] = useState(eventForms);
   const [detail, setDetail] = useState({});
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
