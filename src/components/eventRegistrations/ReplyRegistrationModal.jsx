@@ -243,6 +243,7 @@ function ReplyRegistrationModal({
       );
 
       if (response.status === 200) {
+        setCreateFiles([]);
         setNewMessage({ message: "" });
         setReplyingStatus(null);
         setReply(false);
