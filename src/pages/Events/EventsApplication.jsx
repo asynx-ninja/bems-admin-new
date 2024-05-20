@@ -72,7 +72,7 @@ const EventsRegistrations = () => {
         } else {
           setApplications([]);
         }
-        setEventUpdate(false);
+        setEventUpdate((prev) => !prev);
       } catch (err) {
         console.log(err);
       }
