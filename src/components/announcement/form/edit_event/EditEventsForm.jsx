@@ -18,7 +18,7 @@ const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, sock
   const [error, setError] = useState(null);
   const [selectedFormIndex, setSelectedFormIndex] = useState("");
 
-useEffect(() => {
+  useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
@@ -43,7 +43,13 @@ useEffect(() => {
       ...prev,
       form: [newState, detail.form[1]],
     }));
+
+    // Update selectedFormIndex if it's not an empty string
+    if (selectedFormIndex !== "") {
+      setSelectedFormIndex(selectedFormIndex);
+    }
   };
+
 
   const handleSubmit = async (e) => {
     try {
@@ -56,8 +62,7 @@ useEffect(() => {
         if (
           activeFormResponse.data.length === 0 ||
           activeFormResponse.data[0].version === detail.version
-        ) 
-        {
+        ) {
           const response = await axios.patch(
             `${API_LINK}/event_form/`,
             {
@@ -74,9 +79,13 @@ useEffect(() => {
             socket.emit("send-get_events_forms", response.data);
             // clearForm();
             setSubmitClicked(false);
-            setCreationStatus("success");
+            setUpdatingStatus("success");
             setTimeout(() => {
-              setCreationStatus(null);
+              setUpdatingStatus(null);
+              setDetail({});
+              setSelectedFormIndex("");
+              setDetail({ title: "" });
+              document.querySelector('select[name="form"]').value = "";
               HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
             }, 3000);
           }
@@ -86,30 +95,34 @@ useEffect(() => {
           throw new Error(
             "There's an active form. Please turn it off before updating the form."
           );
-        }  }
-      // } else {
-      //   const response = await axios.patch(
-      //     `${API_LINK}/event_form/`,
-      //     {
-      //       detail: detail,
-      //     },
-      //     {
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //       },
-      //     }
-      //   );
+        }
+      } else {
+        const response = await axios.patch(
+          `${API_LINK}/event_form/`,
+          {
+            detail: detail,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      //   if (response.status === 200) {
-      //     // clearForm();
-      //     setSubmitClicked(false);
-      //     setCreationStatus("success");
-      //     setTimeout(() => {
-      //       setCreationStatus(null);
-      //       HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
-      //     }, 3000);
-      //   }
-      // }
+        if (response.status === 200) {
+          // clearForm();
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            setDetail({});
+            setSelectedFormIndex("");
+            setDetail({ title: "" });
+            document.querySelector('select[name="form"]').value = "";
+            HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
+          }, 3000);
+        }
+      }
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
@@ -134,8 +147,8 @@ useEffect(() => {
     setSelectedFormIndex("");
     setDetail({ title: "" });
     document.querySelector('select[name="form"]').value = "";
-  
-    
+
+
   };
 
   return (
@@ -170,12 +183,12 @@ useEffect(() => {
                   name="form"
                   className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 border p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   onChange={handleSelectChange}
-                  defaultValue={""}
+                  value={selectedFormIndex} // Set the selected value explicitly
                 >
                   <option value="" disabled>
                     Select Form
                   </option>
-                  {details &&
+                  {Array.isArray(details) &&
                     details.map((item, idx) => (
                       <option key={idx} value={idx}>
                         {item.title}
