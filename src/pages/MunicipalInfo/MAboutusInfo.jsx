@@ -16,7 +16,10 @@ import ArchiveAboutusModal from "../../components/maboutusnfo/archivedAboutusMod
 import ManageAboutusModal from "../../components/maboutusnfo/manageAboutusModal";
 import AddAboutusModal from "../../components/maboutusnfo/addAboutusModal";
 import noData from "../../assets/image/no-data.png";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
 
+const socket = io(Socket_link);
 const MHomepageInfo = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [aboutus, setAboutus] = useState([]);

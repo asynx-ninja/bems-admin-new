@@ -7,7 +7,6 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
   const fileInputRef = useRef();
   const navigate = useNavigate();
 
-  console.log(viewFiles);
 
   // console.log(viewFiles)
 
@@ -39,6 +38,16 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
   //   }
   //   checkImage()
   // }, [viewFiles])
+  function truncateFileName(fileName) {
+    const maxLength = 20; // Maximum length of the displayed file name
+    if (fileName.length <= maxLength) {
+      return fileName;
+    } else {
+      const truncatedFileName = fileName.substring(0, maxLength / 2) + "..." + fileName.substring(fileName.length - maxLength / 2);
+      return truncatedFileName;
+    }
+  }
+
 
   const checkExtension = (item) => {
     const fileExtension = item.split(".").pop().toLowerCase();
@@ -139,18 +148,19 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
                     // onClick={() => handleFileClick(file)}
                   >
                     {checkImage(file) === true ? (
-                      <article
-                        tabIndex={0}
-                        className="group sm:w-[150px] sm:h-[40px]  object-cover rounded-md focus:outline-none focus:shadow-outline elative bg-gray-100 cursor-pointer relative shadow-sm"
-                      >
-                        <a href={file.link}>
-                          <img
-                            className="sm:w-[80px] sm:h-[80px] lg:w-[150px] lg:h-[150px] object-cover rounded-md"
-                            src={file.link}
-                            alt=""
-                          />
-                        </a>
-                      </article>
+                    <article
+                    tabIndex={0}
+                    className="group sm:w-[150px] sm:h-[150px] lg:w-[150px] lg:h-[150px] rounded-md focus:outline-none focus:shadow-outline relative bg-gray-100 cursor-pointer shadow-sm"
+                  >
+                    <a href={file.link}>
+                      <img
+                        className="w-full h-full object-contain rounded-md"
+                        src={file.link}
+                        alt=""
+                      />
+                    </a>
+                  </article>
+                  
                     ) : (
                       <article
                         tabIndex={0}
@@ -167,7 +177,7 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
                             className="flex-1 relative group-hover:text-blue-800 line-clamp-1 z-20 flex items-center truncate"
                           >
                             <FaRegFileLines className="mr-1" />
-                            {file.name}
+                             {truncateFileName(file.name)}
                           </a>
 
                           {/* <div className="flex absolute right-0 left-0 top-0 bottom-0 opacity-50 z-[0]">

@@ -155,7 +155,6 @@ function ReplyRegistrationModal({
     fileInputRef.current.click();
   };
 
-
   const handleOnUpload = () => {
     setUpload(!upload);
   };
@@ -165,7 +164,6 @@ function ReplyRegistrationModal({
   };
 
   const handleOnSend = async (e) => {
-
     e.preventDefault();
 
     // Check if the message is empty before sending
@@ -212,28 +210,33 @@ function ReplyRegistrationModal({
           category: "One",
           compose: {
             subject: `APPLICATION - ${application.event_name}`,
-            message: `A municipalit staff has updated your event application form for the event of ${application.event_name
-              }.\n\n
+            message: `A municipalit staff has updated your event application form for the event of ${
+              application.event_name
+            }.\n\n
       
             Application Details:\n
-            - Name: ${application.form && application.form[0]
+            - Name: ${
+              application.form && application.form[0]
                 ? application.form[0].lastName.value
                 : ""
-              }, ${application.form && application.form[0]
+            }, ${
+              application.form && application.form[0]
                 ? application.form[0].firstName.value
                 : ""
-              } ${application.form && application.form[0]
+            } ${
+              application.form && application.form[0]
                 ? application.form[0].middleName.value
                 : ""
-              }
+            }
             - Event Applied: ${application.event_name}\n
             - Application ID: ${application.application_id}\n
             - Date Created: ${moment(application.createdAt).format(
-                "MMM. DD, YYYY h:mm a"
-              )}\n
+              "MMM. DD, YYYY h:mm a"
+            )}\n
             - Status: ${application.status}\n
-            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${userData.middleName
-              }\n\n
+            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
+              userData.middleName
+            }\n\n
             Please update this application as you've seen this notification!\n\n
             Thank you!!,`,
             go_to: "Application",
@@ -252,10 +255,10 @@ function ReplyRegistrationModal({
             "Content-Type": "application/json",
           },
         });
-        socket.emit("send-reply-event-appli", response.data);
-        setOnSend(false)
       }
-
+      socket.emit("send-reply-event-appli", response.data);
+      setOnSend(false);
+      setErrMsg(false);
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
@@ -335,9 +338,9 @@ function ReplyRegistrationModal({
                 <div className="flex flex-col p-2">
                   <form>
                     {!application.response ||
-                      application.response.length === 0 ? (
+                    application.response.length === 0 ? (
                       application.status === "Cancelled" ||
-                        application.status === "Rejected" ? (
+                      application.status === "Rejected" ? (
                         <div>
                           <p className="text-center text-[14px]">
                             You are unable to reply to this conversation due to
@@ -389,7 +392,10 @@ function ReplyRegistrationModal({
                                       onClick={handleAdd || handleOnUpload}
                                       className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
                                     >
-                                      <IoIosAttach size={24} className="text-[#2d6a4f]" />
+                                      <IoIosAttach
+                                        size={24}
+                                        className="text-[#2d6a4f]"
+                                      />
                                     </button>
                                     <div className="flex flex-col lg:flex-row">
                                       <div className="w-full">
@@ -402,7 +408,7 @@ function ReplyRegistrationModal({
                                                 statusChanger &&
                                                 (!newMessage.message ||
                                                   newMessage.message.trim() ===
-                                                  "")
+                                                    "")
                                               ) {
                                                 setNewMessage((prev) => ({
                                                   ...prev,
@@ -421,9 +427,7 @@ function ReplyRegistrationModal({
                                             <option value="Pending">
                                               PENDING
                                             </option>
-                                            <option value="Paid">
-                                              PAID
-                                            </option>
+                                            <option value="Paid">PAID</option>
                                             <option value="Processing">
                                               PROCESSING
                                             </option>
@@ -455,14 +459,12 @@ function ReplyRegistrationModal({
                                                     className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                                     role="tooltip"
                                                   >
-                                                    Change Application
-                                                    Status
+                                                    Change Application Status
                                                   </span>
                                                 </button>
                                               </div>
                                             </div>
                                           ) : (
-
                                             <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
                                               <div className="hs-tooltip inline-block">
                                                 <button
@@ -486,7 +488,6 @@ function ReplyRegistrationModal({
                                               </div>
                                             </div>
                                           )}
-
                                         </div>
                                       </div>
                                     </div>
@@ -500,18 +501,24 @@ function ReplyRegistrationModal({
                                       className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
                                     >
                                       {
-                                        onSend ?
-                                          <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
-                                            <span class="sr-only">Loading...</span>
-                                          </div> : <IoSend
+                                        onSend ? (
+                                          <div
+                                            class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                                            role="status"
+                                            aria-label="loading"
+                                          >
+                                            <span class="sr-only">
+                                              Loading...
+                                            </span>
+                                          </div>
+                                        ) : (
+                                          <IoSend
                                             size={24}
                                             className="flex-shrink-0 "
                                           />
-                                        // <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-gray-500 py-1 px-6 gap-2 ">
-                                        //   </div>
+                                        )
+
                                       }
-
-
                                     </button>
                                     {/* <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
                                           <span class="sr-only">Loading...</span>
@@ -543,31 +550,36 @@ function ReplyRegistrationModal({
                           key={index}
                           className={
                             responseItem.sender ===
-                              `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                              } (${userData.type})`
+                            `${userData?.firstName?.toUpperCase() ?? ""} ${
+                              userData?.lastName?.toUpperCase() ?? ""
+                            } (${userData.type})`
                               ? "flex flex-col justify-end items-end mb-2 w-full h-auto"
                               : "flex flex-col justify-start items-start mb-2 w-full h-auto"
                           }
                         >
-
-                          <div className={
-                            responseItem.sender ===
-                              `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                              } (${userData.type})`
-                              ? "flex flex-col items-end h-auto max-w-[80%]"
-                              : "flex flex-col items-start h-auto max-w-[80%]"
-                          }>
-                            <div className={
+                          <div
+                            className={
                               responseItem.sender ===
-                                `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                              `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                userData?.lastName?.toUpperCase() ?? ""
+                              } (${userData.type})`
+                                ? "flex flex-col items-end h-auto max-w-[80%]"
+                                : "flex flex-col items-start h-auto max-w-[80%]"
+                            }
+                          >
+                            <div
+                              className={
+                                responseItem.sender ===
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                  userData?.lastName?.toUpperCase() ?? ""
                                 } (${userData.type})`
-                                ? "hidden"
-                                : "flex flex-row w-full justify-between"
-                            }>
+                                  ? "hidden"
+                                  : "flex flex-row w-full justify-between"
+                              }
+                            >
                               <div className="flex flex-col md:flex-row md:items-center">
                                 <p className="text-[14px] text-black md:text-sm font-medium uppercase ">
                                   {responseItem.sender?.toLowerCase()}
-
                                 </p>
                               </div>
                             </div>
@@ -575,8 +587,11 @@ function ReplyRegistrationModal({
                               <div
                                 className={
                                   responseItem.sender ===
-                                    `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                                    } (${userData.type})`
+                                  `${
+                                    userData?.firstName?.toUpperCase() ?? ""
+                                  } ${
+                                    userData?.lastName?.toUpperCase() ?? ""
+                                  } (${userData.type})`
                                     ? "flex flex-col rounded-xl bg-[#52b788] border border-[#2d6a4f] mb-1 text-white px-2 md:px-4 py-2 cursor-pointer"
                                     : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
                                 }
@@ -649,7 +664,10 @@ function ReplyRegistrationModal({
                                           onClick={handleAdd || handleOnUpload}
                                           className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
                                         >
-                                          <IoIosAttach size={24} className="text-[#2d6a4f]" />
+                                          <IoIosAttach
+                                            size={24}
+                                            className="text-[#2d6a4f]"
+                                          />
                                         </button>
                                         <div className="flex flex-col lg:flex-row">
                                           <div className="w-full">
@@ -662,7 +680,7 @@ function ReplyRegistrationModal({
                                                     statusChanger &&
                                                     (!newMessage.message ||
                                                       newMessage.message.trim() ===
-                                                      "")
+                                                        "")
                                                   ) {
                                                     setNewMessage((prev) => ({
                                                       ...prev,
@@ -722,7 +740,6 @@ function ReplyRegistrationModal({
                                                   </div>
                                                 </div>
                                               ) : (
-
                                                 <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
                                                   <div className="hs-tooltip inline-block">
                                                     <button
@@ -746,7 +763,6 @@ function ReplyRegistrationModal({
                                                   </div>
                                                 </div>
                                               )}
-
                                             </div>
                                           </div>
                                         </div>
@@ -760,18 +776,25 @@ function ReplyRegistrationModal({
                                           className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
                                         >
                                           {
-                                            onSend ?
-                                              <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
-                                                <span class="sr-only">Loading...</span>
-                                              </div> : <IoSend
+                                            onSend ? (
+                                              <div
+                                                class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                                                role="status"
+                                                aria-label="loading"
+                                              >
+                                                <span class="sr-only">
+                                                  Loading...
+                                                </span>
+                                              </div>
+                                            ) : (
+                                              <IoSend
                                                 size={24}
                                                 className="flex-shrink-0 "
                                               />
+                                            )
                                             // <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-gray-500 py-1 px-6 gap-2 ">
                                             //   </div>
                                           }
-
-
                                         </button>
                                         {/* <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
                                           <span class="sr-only">Loading...</span>

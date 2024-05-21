@@ -40,8 +40,8 @@ const EventsManagement = () => {
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [selected, setSelected] = useState("date");
   const [update, setUpdate] = useState(false);
-  const [editupdate, setEditUpdate] = useState(false);
-  const [eventsForm, setEventsForm] = useState([])
+
+  const [eventsForm, setEventsForm] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -158,27 +158,33 @@ const EventsManagement = () => {
       // setAnnouncement((prevApplication) => ({
       //   ...prevApplication
       // }));
-      console.log("wew", filteredAnnouncements)
-      console.log("wew", obj)
-      setAnnouncement(obj)
+      console.log("wew", filteredAnnouncements);
+      console.log("wew", obj);
+      setAnnouncement(obj);
 
       setFilteredAnnouncements((prev) => [obj, ...prev]);
     };
 
     const handleEventForm = (obj) => {
-      setEventsForm(curItem => curItem.map((item) =>
-        item._id === obj._id ? obj : item
-      ))
+      setEventsForm((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
     };
-    
+
+    const handleEventUpdate = (obj) => {
+      setFilteredAnnouncements((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
     socket.on("receive-get-event", handleEvent);
     socket.on("receive-edit-event-form", handleEventForm);
-
+    socket.on("receive-update-event", handleEventUpdate);
 
     return () => {
       socket.off("receive-get-event", handleEvent);
       socket.off("receive-edit-event-form", handleEventForm);
-
+      socket.off("receive-update-event", handleEventUpdate);
     };
   }, [socket, setAnnouncement]);
 
@@ -610,7 +616,7 @@ const EventsManagement = () => {
                             type="button"
                             data-hs-overlay="#hs-create-eventsForm-modal"
                             onClick={() => {
-                              handleView({ ...item }); 
+                              handleView({ ...item });
                             }}
                             className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
@@ -687,28 +693,22 @@ const EventsManagement = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddModal brgy={brgy} setUpdate={setUpdate} socket={socket}/>
+        <AddModal brgy={brgy} setUpdate={setUpdate} socket={socket} />
         <ArchiveModal selectedItems={selectedItems} />
         <ManageAnnouncementModal
           announcement={announcement}
           setAnnouncement={setAnnouncement}
           brgy={brgy}
-          setUpdate={setUpdate}
           socket={socket}
         />
         <AddEventsForm
           announcement_id={announcement.event_id}
           brgy={brgy}
-          setUpdate={setUpdate}
-          editupdate={editupdate}
-          setEditUpdate={setEditUpdate}
           socket={socket}
         />
         <EditEventsForm
           announcement_id={announcement.event_id}
           brgy={brgy}
-          editupdate={editupdate}
-          setEditUpdate={setEditUpdate}
           socket={socket}
           eventsForm={eventsForm}
           setEventsForm={setEventsForm}

@@ -15,6 +15,10 @@ import ArchiveTouristSpotModal from "../../components/mtouristspot/archiveTouris
 import ManageTouristSpotModal from "../../components/mtouristspot/manageTouristSpotModal";
 import AddAboutusModal from "../../components/mtouristspot/addTouristSpotModal";
 import noData from "../../assets/image/no-data.png";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+
+const socket = io(Socket_link);
 const MTouristSpot = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();

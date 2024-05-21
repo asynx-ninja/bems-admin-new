@@ -24,7 +24,7 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
   const [empty, setEmpty] = useState(false);
-
+  const [onSend, setOnSend] = useState(false);
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
 
@@ -95,7 +95,7 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
         return; // Prevent further execution of handleSubmit
       }
       setSubmitClicked(true);
-
+      setOnSend(true);
       const formData = new FormData();
       const newFiles = [banner, logo, ...files].filter((file) => file);
 
@@ -169,7 +169,7 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
           }
         }
       }
-  
+      setOnSend(false);
       // setUpdate((prevState) => !prevState);
     } catch (err) {
       console.error(err);
@@ -437,8 +437,20 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
                   type="submit"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   onClick={handleSubmit}
+                  disabled={onSend}
                 >
-                  CREATE
+                   {onSend ? (
+                        <div
+                          class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                          role="status"
+                          aria-label="loading"
+                        >
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      ) : (
+                        "CREATE"
+                      )}
+                  
                 </button>
                 <button
                   type="button"

@@ -65,11 +65,12 @@ const Initialize={
     value: "",
   },
 }
-const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUpdate, socket }) => {
+const AddEventsForm = ({ announcement_id, brgy,  socket }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [onSend, setOnSend] = useState(false);
   const [form, setForm] = useState({
     user_id: { display: "user id", checked: true, type: "text", value: "" },
     firstName: {
@@ -169,8 +170,8 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
         form: form,
         section: section,
       };
-     
-
+      setOnSend(true);
+      setOnSend(false);
       if (checked) {
         // Check if there's an active form
         const activeFormResponse = await axios.get(
@@ -194,12 +195,14 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
             }
           );
           if (response.status === 200) {
+
             socket.emit("send-edit-event-form", response.data);
             setSubmitClicked(false);
             setCreationStatus("success");
             setTimeout(() => {
               setCreationStatus(null);
               setForm(Initialize)
+              setTitleName("");
               HSOverlay.close(document.getElementById("hs-create-eventsForm-modal"));
             }, 3000);
           }
@@ -224,11 +227,12 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
           setTimeout(() => {
             setCreationStatus(null);
             setForm(Initialize)
+            setTitleName("");
             HSOverlay.close(document.getElementById("hs-create-eventsForm-modal"));
           }, 3000);
         }
       }
-      setUpdate(true);
+      setOnSend(false);
     
     } catch (err) {
       console.error(err.message);
@@ -345,8 +349,19 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   onClick={handleSubmit}
+                  disabled={onSend}
                 >
-                  CREATE
+                    {onSend ? (
+                        <div
+                          class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                          role="status"
+                          aria-label="loading"
+                        >
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      ) : (
+                        "CREATE"
+                      )}
                 </button>
                 <button
                   type="button"

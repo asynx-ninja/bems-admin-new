@@ -8,7 +8,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, socket, eventsForm, setEventsForm }) => {
+const EditEventsForm = ({ announcement_id, brgy, socket, eventsForm, setEventsForm }) => {
   const information = GetBrgy(brgy);
 
   const [details, setDetails] = useState([]);
@@ -17,44 +17,44 @@ const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, sock
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
   const [selectedFormIndex, setSelectedFormIndex] = useState("");
+  const [editupdate, setEditUpdate] = useState(false);
+  const [onSend, setOnSend] = useState(false);
+  useEffect(() => {
+    setDetails(eventsForm)
+  }, [eventsForm]);
 
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement_id}`
-        );
-        setDetails(response.data);
-        setEditUpdate((prevState) => !prevState);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-
-    fetch();
-  }, [brgy, announcement_id, editupdate]);
-
+    if (selectedFormIndex !== "") {
+      setDetail(details[selectedFormIndex] || {});
+    }
+  }, [selectedFormIndex, details]);
 
   const handleFormChange = (e, key) => {
-    const newState = detail.form[0];
-    newState[key].checked = e.target.checked;
-
-    setDetails((prev) => ({
-      ...prev,
-      form: [newState, detail.form[1]],
-    }));
-
-    // Update selectedFormIndex if it's not an empty string
-    if (selectedFormIndex !== "") {
-      setSelectedFormIndex(selectedFormIndex);
-    }
+    const newDetails = [...details];
+    newDetails[selectedFormIndex].form[0][key].checked = e.target.checked;
+    setDetails(newDetails);
   };
+
+  // const handleFormChange = (e, key) => {
+  //   const newState = detail.form[0];
+  //   newState[key].checked = e.target.checked;
+
+  //   setDetails((prev) => ({
+  //     ...prev,
+  //     form: [newState, detail.form[1]],
+  //   }));
+
+  //   // Update selectedFormIndex if it's not an empty string
+  //   if (selectedFormIndex !== "") {
+  //     setSelectedFormIndex(selectedFormIndex);
+  //   }
+  // };
 
 
   const handleSubmit = async (e) => {
     try {
       setSubmitClicked(true);
-
+      setOnSend(true);
       if (detail.isActive) {
         const activeFormResponse = await axios.get(
           `${API_LINK}/event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
@@ -123,6 +123,7 @@ const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, sock
           }, 3000);
         }
       }
+      setOnSend(false);
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
@@ -284,8 +285,19 @@ const EditEventsForm = ({ announcement_id, brgy, setEditUpdate, editupdate, sock
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   onClick={handleSubmit}
+                  disabled={onSend}
                 >
-                  SAVE
+                    {onSend ? (
+                        <div
+                          class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                          role="status"
+                          aria-label="loading"
+                        >
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      ) : (
+                        "SAVE"
+                      )}
                 </button>
                 <button
                   type="button"

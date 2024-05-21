@@ -12,6 +12,7 @@ import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
+import { FaTimes } from "react-icons/fa";
 // import { io } from "socket.io-client";
 // import Socket_link from "../../config/Socket";
 // const socket = io(Socket_link);
@@ -80,7 +81,6 @@ function ViewInquiriesModal({
 
   const fileInputRef = useRef();
 
-
   const handleAdd = (e) => {
     e.preventDefault();
 
@@ -141,7 +141,6 @@ function ViewInquiriesModal({
   };
   const handleOnSend = async (e) => {
     e.preventDefault();
-    
 
     if (newMessage.message === "" && createFiles.length === 0) {
       setErrMsg(true);
@@ -190,8 +189,9 @@ function ViewInquiriesModal({
               "MMM. DD, YYYY h:mm a"
             )}\n
             - Status: ${inquiry.isApproved}\n
-            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${userData.middleName
-              }\n\n
+            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
+              userData.middleName
+            }\n\n
             `,
             go_to: "Inquiries",
           },
@@ -210,9 +210,10 @@ function ViewInquiriesModal({
           },
         });
       }
-      console.log("wew", response.data)
+      console.log("wew", response.data);
       socket.emit("send-reply-muni-inquiry", response.data);
-      setOnSend(false)
+      setOnSend(false);
+      setErrMsg(false);
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
@@ -252,10 +253,11 @@ function ViewInquiriesModal({
                 </h3>
               </div>
 
-   <div 
-   id="scrolltobottoms"
-   ref={inqContainerRef}
-   className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]">
+              <div
+                id="scrolltobottoms"
+                ref={inqContainerRef}
+                className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]"
+              >
                 <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg mb-4">
                   Inquiry Details
                 </b>

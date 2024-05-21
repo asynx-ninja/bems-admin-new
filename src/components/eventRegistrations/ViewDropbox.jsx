@@ -142,18 +142,19 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
                     // onClick={() => handleFileClick(file)}
                   >
                     {checkImage(file) === true ? (
-                      <article
-                        tabIndex={0}
-                        className="group sm:w-[80px] sm:h-[80px] lg:w-[150px] lg:h-[150px] object-contain rounded-xl focus:outline-none focus:shadow-outline bg-gray-100 cursor-pointer relative shadow-sm"
-                      >
-                        <a href={file.link}>
-                          <img
-                            className="sm:w-[80px] sm:h-[80px] lg:w-[150px] lg:h-[150px] object-cover rounded-xl"
-                            src={file.link}
-                            alt=""
-                          />
-                        </a>
-                      </article>
+                    <article
+                    tabIndex={0}
+                    className="group sm:w-[150px] sm:h-[150px] lg:w-[150px] lg:h-[150px] rounded-md focus:outline-none focus:shadow-outline relative bg-gray-100 cursor-pointer shadow-sm"
+                  >
+                    <a href={file.link}>
+                      <img
+                        className="w-full h-full object-contain rounded-md"
+                        src={file.link}
+                        alt=""
+                      />
+                    </a>
+                  </article>
+                  
                     ) : (
                       <article
                         tabIndex={0}

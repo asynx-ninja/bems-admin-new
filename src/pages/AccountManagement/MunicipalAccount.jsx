@@ -16,7 +16,10 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 
 import noData from "../../assets/image/no-data.png";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
 
+const socket = io(Socket_link);
 const AccountManagement = () => {
   useEffect(() => {
     document.title = "Municipal Account Management | Barangay E-Services Management";

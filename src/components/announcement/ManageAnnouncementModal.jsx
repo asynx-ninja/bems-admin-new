@@ -6,7 +6,12 @@ import EditDropbox from "./EditDropbox";
 import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
 import moment from "moment";
-function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
+function ManageAnnouncementModal({
+  announcement,
+  setAnnouncement,
+  brgy,
+  socket,
+}) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
@@ -15,7 +20,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
+  const [onSend, setOnSend] = useState(false);
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 10);
     return eventdate;
@@ -26,14 +31,32 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
   };
 
   useEffect(() => {
-    setFiles(announcement.length === 0 || !announcement.collections ? [] : announcement.collections.file);
+    setFiles(
+      announcement.length === 0 || !announcement.collections
+        ? []
+        : announcement.collections.file
+    );
 
     var logoSrc = document.getElementById("edit_logo");
-   
-      logoSrc.src = announcement && announcement.collections && announcement.collections.logo ? announcement && announcement.collections && announcement.collections.logo  && announcement.collections.logo.link : "";
-      
+
+    logoSrc.src =
+      announcement && announcement.collections && announcement.collections.logo
+        ? announcement &&
+          announcement.collections &&
+          announcement.collections.logo &&
+          announcement.collections.logo.link
+        : "";
+
     var bannerSrc = document.getElementById("edit_banner");
-      bannerSrc.src = announcement && announcement.collections && announcement.collections.banner ? announcement && announcement.collections && announcement.collections.banner  && announcement.collections.banner.link : "";
+    bannerSrc.src =
+      announcement &&
+      announcement.collections &&
+      announcement.collections.banner
+        ? announcement &&
+          announcement.collections &&
+          announcement.collections.banner &&
+          announcement.collections.banner.link
+        : "";
   }, [announcement]);
 
   const renameFile = (file, newName) => {
@@ -68,7 +91,6 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
   };
 
   const handleChange = (e) => {
-   
     setAnnouncement((prev) => ({
       ...prev,
       [e.target.name]:
@@ -123,16 +145,17 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
           formData.append("files", newFiles[f]);
         }
 
-      
       formData.append("announcement", JSON.stringify(announcement));
-
+      setOnSend(true);
       const response = await axios.patch(
         `${API_LINK}/announcement/${announcement._id}`,
         formData
       );
- 
+
       if (response.status === 200) {
-        const formattedDate = moment(announcement.date).format('MMMM Do YYYY, h:mm:ss a');
+        const formattedDate = moment(announcement.date).format(
+          "MMMM Do YYYY, h:mm:ss a"
+        );
         var logoSrc = document.getElementById("logo");
         logoSrc.src =
           "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
@@ -140,14 +163,13 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
         var bannerSrc = document.getElementById("banner");
         bannerSrc.src =
           "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-          let notify;
+        let notify;
 
-
-            notify = {
-              category: "All",
-              compose: {
-                subject: `EVENT - ${announcement.title}`,
-                message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
+        notify = {
+          category: "All",
+          compose: {
+            subject: `EVENT - ${announcement.title}`,
+            message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
                 
                 Event Details:\n 
                 ${announcement.details}\n\n
@@ -155,35 +177,38 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                 Event Date:
                 ${formattedDate}\n\n
                 `,
-                go_to: "Events",
-              },
-              target: {
-                user_id: null,
-                area: null,
-              },
-              type: getType(brgy),
-              banner: response.data.collections.banner,
-              logo: response.data.collections.logo,
-            };
-          
-  
-      
-  
-          const result = await axios.post(`${API_LINK}/notification/`, notify, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+            go_to: "Events",
+          },
+          target: {
+            user_id: null,
+            area: null,
+          },
+          type: getType(brgy),
+          banner: response.data.collections.banner,
+          logo: response.data.collections.logo,
+        };
 
-        setTimeout(() => {
-          // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
+        const result = await axios.post(`${API_LINK}/notification/`, notify, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.status === 200) {
+          setEdit(!edit);
+          socket.emit("send-update-event", response.data);
+          console.log("ito", response.data)
           setSubmitClicked(false);
           setUpdatingStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            setUpdatingStatus(null);
+            HSOverlay.close(
+              document.getElementById("hs-modal-editAnnouncement")
+            );
           }, 3000);
-        }, 1000);
+        }
       }
+     
+      setOnSend(false);
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
@@ -213,32 +238,32 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
               </div>
 
               <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
-              {error && (
-                <div
-                  className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
-                  role="alert"
-                >
-                  <div className="flex p-4">
-                    <div className="flex-shrink-0">
-                      <svg
-                        className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width={16}
-                        height={16}
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                      </svg>
-                    </div>
-                    <div className="ms-3">
-                      <p className="text-sm text-gray-700 font-medium ">
-                        {error}
-                      </p>
+                {error && (
+                  <div
+                    className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
+                    role="alert"
+                  >
+                    <div className="flex p-4">
+                      <div className="flex-shrink-0">
+                        <svg
+                          className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width={16}
+                          height={16}
+                          fill="currentColor"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                        </svg>
+                      </div>
+                      <div className="ms-3">
+                        <p className="text-sm text-gray-700 font-medium ">
+                          {error}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
                 <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                   <div className="w-full">
                     <label
@@ -325,7 +350,9 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                   <input
                     id="title"
                     className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                      error && !announcement.title ? "border-red-500" : "border-gray-300"
+                      error && !announcement.title
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                     type="text"
                     name="title"
@@ -333,11 +360,11 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                     disabled={!edit}
                     onChange={handleChange}
                   />
-                   {error && !announcement.title && (
-                  <p className="text-red-500 text-xs italic">
-                    Please enter a title.
-                  </p>
-                )}
+                  {error && !announcement.title && (
+                    <p className="text-red-500 text-xs italic">
+                      Please enter a title.
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label
@@ -351,18 +378,20 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                     rows={4}
                     name="details"
                     className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                      error && !announcement.details ? "border-red-500" : "border-gray-300"
+                      error && !announcement.details
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                     placeholder="Enter announcement details..."
                     value={announcement && announcement.details}
                     disabled={!edit}
                     onChange={handleChange}
                   />
-                   {error && !announcement.details && (
-                  <p className="text-red-500 text-xs italic">
-                    Please enter a details.
-                  </p>
-                )}
+                  {error && !announcement.details && (
+                    <p className="text-red-500 text-xs italic">
+                      Please enter a details.
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label
@@ -372,8 +401,10 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                     Date
                   </label>
                   <input
-                     className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                      error && !announcement.date ? "border-red-500" : "border-gray-300"
+                    className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                      error && !announcement.date
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                     id="date"
                     type="date"
@@ -382,11 +413,11 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                     disabled={!edit}
                     onChange={handleChange}
                   />
-                   {error && !announcement.date && (
-                  <p className="text-red-500 text-xs italic">
-                    Please enter a date.
-                  </p>
-                )}
+                  {error && !announcement.date && (
+                    <p className="text-red-500 text-xs italic">
+                      Please enter a date.
+                    </p>
+                  )}
                 </div>
 
                 <EditDropbox
@@ -422,9 +453,21 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                     <button
                       type="submit"
                       onClick={handleSubmit}
+                      disabled={onSend}
                       className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                     >
-                      SAVE CHANGES
+                   
+                      {onSend ? (
+                        <div
+                          class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                          role="status"
+                          aria-label="loading"
+                        >
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      ) : (
+                        "SAVE CHANGES"
+                      )}
                     </button>
                     <button
                       type="button"
@@ -438,12 +481,11 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
               </div>
             </div>
           </div>
-         
-        </div> 
+        </div>
         {submitClicked && <EditLoader updatingStatus="updating" />}
-          {updatingStatus && (
-            <EditLoader updatingStatus={updatingStatus} error={error} />
-          )}
+        {updatingStatus && (
+          <EditLoader updatingStatus={updatingStatus} error={error} />
+        )}
       </div>
     </div>
   );
