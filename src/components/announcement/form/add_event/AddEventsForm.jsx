@@ -228,11 +228,12 @@ const AddEventsForm = ({ announcement_id, brgy,  socket }) => {
             setCreationStatus(null);
             setForm(Initialize)
             setTitleName("");
+            setOnSend(false);
             HSOverlay.close(document.getElementById("hs-create-eventsForm-modal"));
           }, 3000);
         }
       }
-      setOnSend(false);
+      
     
     } catch (err) {
       console.error(err.message);

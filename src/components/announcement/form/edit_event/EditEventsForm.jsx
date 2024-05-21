@@ -8,7 +8,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditEventsForm = ({ announcement_id, brgy, socket, eventsForm, setEventsForm }) => {
+const EditEventsForm = ({ announcement_id, brgy, eventsForm }) => {
   const information = GetBrgy(brgy);
 
   const [details, setDetails] = useState([]);
@@ -17,7 +17,6 @@ const EditEventsForm = ({ announcement_id, brgy, socket, eventsForm, setEventsFo
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
   const [selectedFormIndex, setSelectedFormIndex] = useState("");
-  const [editupdate, setEditUpdate] = useState(false);
   const [onSend, setOnSend] = useState(false);
   useEffect(() => {
     setDetails(eventsForm)
@@ -113,17 +112,20 @@ const EditEventsForm = ({ announcement_id, brgy, socket, eventsForm, setEventsFo
           // clearForm();
           setSubmitClicked(false);
           setUpdatingStatus("success");
+     
           setTimeout(() => {
             setUpdatingStatus(null);
+            setOnSend(false);
             setDetail({});
             setSelectedFormIndex("");
             setDetail({ title: "" });
+            
             document.querySelector('select[name="form"]').value = "";
             HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
           }, 3000);
         }
       }
-      setOnSend(false);
+     
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
