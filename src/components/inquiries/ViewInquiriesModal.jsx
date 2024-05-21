@@ -141,7 +141,7 @@ function ViewInquiriesModal({
   };
   const handleOnSend = async (e) => {
     e.preventDefault();
-    setOnSend(true);
+    
 
     if (newMessage.message === "" && createFiles.length === 0) {
       setErrMsg(true);
@@ -149,6 +149,7 @@ function ViewInquiriesModal({
       return;
     }
     try {
+      setOnSend(true);
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
         type: newMessage.type,

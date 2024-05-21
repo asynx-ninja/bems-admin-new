@@ -165,16 +165,17 @@ function ReplyRegistrationModal({
   };
 
   const handleOnSend = async (e) => {
+
+    e.preventDefault();
+
+    // Check if the message is empty before sending
+
+    if (newMessage.message.trim() === "" && createFiles.length === 0) {
+      setErrMsg(true);
+      return;
+    }
     try {
-      e.preventDefault();
       setOnSend(true);
-      // Check if the message is empty before sending
-
-      if (newMessage.message.trim() === "" && createFiles.length === 0) {
-        setErrMsg(true);
-        return;
-      }
-
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
         message: newMessage.message,
@@ -360,165 +361,165 @@ function ReplyRegistrationModal({
                             </div>
                           ) : null}
                           <div className="relative w-full mt-4 mx-2">
-                               <div className="relative w-full ">
-                                  <textarea
-                                    id="message"
-                                    name="message"
-                                    multiple
-                                    rows="7"
-                                    onChange={handleChange}
-                                    className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
-                                    placeholder="Input response..."
-                                  ></textarea>
+                            <div className="relative w-full ">
+                              <textarea
+                                id="message"
+                                name="message"
+                                multiple
+                                rows="7"
+                                onChange={handleChange}
+                                className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
+                                placeholder="Input response..."
+                              ></textarea>
 
-                                  <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
-                                    <div className="flex justify-between items-center">
-                                      <div className="flex items-center">
-                                        <input
-                                          type="file"
-                                          name="file"
-                                          onChange={(e) => handleFileChange(e)}
-                                          ref={fileInputRef}
-                                          accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
-                                          multiple="multiple"
-                                          className="hidden"
-                                        />
-                                        <button
-                                          id="button"
-                                          onClick={handleAdd || handleOnUpload}
-                                          className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                        >
-                                          <IoIosAttach size={24} className="text-[#2d6a4f]" />
-                                        </button>
-                                        <div className="flex flex-col lg:flex-row">
-                                          <div className="w-full">
-                                            <div className="flex flex-row ">
-                                              <select
-                                                id="status"
-                                                name="status"
-                                                onChange={(e) => {
-                                                  if (
-                                                    statusChanger &&
-                                                    (!newMessage.message ||
-                                                      newMessage.message.trim() ===
-                                                      "")
-                                                  ) {
-                                                    setNewMessage((prev) => ({
-                                                      ...prev,
-                                                      message: `The status of your event application is ${e.target.value}`,
-                                                    }));
-                                                  }
-                                                  setApplication((prev) => ({
-                                                    ...prev,
-                                                    status: e.target.value,
-                                                  }));
-                                                }}
-                                                className=" pl-2 pr-4 text-sm text-black rounded-lg focus:outline-none hover:bg-white "
-                                                value={application.status}
-                                                hidden={!statusChanger}
-                                              >
-                                                <option value="Pending">
-                                                  PENDING
-                                                </option>
-                                                <option value="Paid">
-                                                  PAID
-                                                </option>
-                                                <option value="Processing">
-                                                  PROCESSING
-                                                </option>
-                                                <option value="Cancelled">
-                                                  CANCELLED
-                                                </option>
-                                                <option value="Application Completed">
-                                                  APPLICATION COMPLETED
-                                                </option>
-                                                <option value="Rejected">
-                                                  REJECTED
-                                                </option>
-                                              </select>
-                                              {!statusChanger ? (
-                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                  <div className="hs-tooltip inline-block">
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleOnStatusChanger();
-                                                      }}
-                                                      className="hs-tooltip-toggle rounded-xl p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                                    >
-                                                      <FaTasks
-                                                        size={24}
-                                                        className="text-[#2d6a4f]"
-                                                      />
-                                                      <span
-                                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                        role="tooltip"
-                                                      >
-                                                        Change Application
-                                                        Status
-                                                      </span>
-                                                    </button>
-                                                  </div>
-                                                </div>
-                                              ) : (
-
-                                                <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                  <div className="hs-tooltip inline-block">
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleOnStatusChanger();
-                                                      }}
-                                                      className="hs-tooltip-toggle rounded-xl p-2 text-[#2d6a4f] hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                                    >
-                                                      <MdOutlineCancel
-                                                        size={24}
-                                                        className=""
-                                                      />
-                                                    </button>
-                                                    <span
-                                                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                      role="tooltip"
-                                                    >
-                                                      Change Application Status
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              )}
-
+                              <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
+                                <div className="flex justify-between items-center">
+                                  <div className="flex items-center">
+                                    <input
+                                      type="file"
+                                      name="file"
+                                      onChange={(e) => handleFileChange(e)}
+                                      ref={fileInputRef}
+                                      accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
+                                      multiple="multiple"
+                                      className="hidden"
+                                    />
+                                    <button
+                                      id="button"
+                                      onClick={handleAdd || handleOnUpload}
+                                      className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                    >
+                                      <IoIosAttach size={24} className="text-[#2d6a4f]" />
+                                    </button>
+                                    <div className="flex flex-col lg:flex-row">
+                                      <div className="w-full">
+                                        <div className="flex flex-row ">
+                                          <select
+                                            id="status"
+                                            name="status"
+                                            onChange={(e) => {
+                                              if (
+                                                statusChanger &&
+                                                (!newMessage.message ||
+                                                  newMessage.message.trim() ===
+                                                  "")
+                                              ) {
+                                                setNewMessage((prev) => ({
+                                                  ...prev,
+                                                  message: `The status of your event application is ${e.target.value}`,
+                                                }));
+                                              }
+                                              setApplication((prev) => ({
+                                                ...prev,
+                                                status: e.target.value,
+                                              }));
+                                            }}
+                                            className=" pl-2 pr-4 text-sm text-black rounded-lg focus:outline-none hover:bg-white "
+                                            value={application.status}
+                                            hidden={!statusChanger}
+                                          >
+                                            <option value="Pending">
+                                              PENDING
+                                            </option>
+                                            <option value="Paid">
+                                              PAID
+                                            </option>
+                                            <option value="Processing">
+                                              PROCESSING
+                                            </option>
+                                            <option value="Cancelled">
+                                              CANCELLED
+                                            </option>
+                                            <option value="Application Completed">
+                                              APPLICATION COMPLETED
+                                            </option>
+                                            <option value="Rejected">
+                                              REJECTED
+                                            </option>
+                                          </select>
+                                          {!statusChanger ? (
+                                            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                              <div className="hs-tooltip inline-block">
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleOnStatusChanger();
+                                                  }}
+                                                  className="hs-tooltip-toggle rounded-xl p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                                >
+                                                  <FaTasks
+                                                    size={24}
+                                                    className="text-[#2d6a4f]"
+                                                  />
+                                                  <span
+                                                    className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                    role="tooltip"
+                                                  >
+                                                    Change Application
+                                                    Status
+                                                  </span>
+                                                </button>
+                                              </div>
                                             </div>
-                                          </div>
+                                          ) : (
+
+                                            <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                              <div className="hs-tooltip inline-block">
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleOnStatusChanger();
+                                                  }}
+                                                  className="hs-tooltip-toggle rounded-xl p-2 text-[#2d6a4f] hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                                >
+                                                  <MdOutlineCancel
+                                                    size={24}
+                                                    className=""
+                                                  />
+                                                </button>
+                                                <span
+                                                  className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                  role="tooltip"
+                                                >
+                                                  Change Application Status
+                                                </span>
+                                              </div>
+                                            </div>
+                                          )}
+
                                         </div>
-                                      </div>
-
-                                      <div className="flex items-center gap-x-1">
-                                        <button
-                                          type="submit"
-                                          onClick={handleOnSend}
-                                          disabled={onSend}
-                                          className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
-                                        >
-                                          {
-                                            onSend ?
-                                              <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
-                                                <span class="sr-only">Loading...</span>
-                                              </div> : <IoSend
-                                                size={24}
-                                                className="flex-shrink-0 "
-                                              />
-                                            // <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-gray-500 py-1 px-6 gap-2 ">
-                                            //   </div>
-                                          }
-
-
-                                        </button>
-                                        {/* <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
-                                          <span class="sr-only">Loading...</span>
-                                        </div> */}
                                       </div>
                                     </div>
                                   </div>
+
+                                  <div className="flex items-center gap-x-1">
+                                    <button
+                                      type="submit"
+                                      onClick={handleOnSend}
+                                      disabled={onSend}
+                                      className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
+                                    >
+                                      {
+                                        onSend ?
+                                          <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
+                                            <span class="sr-only">Loading...</span>
+                                          </div> : <IoSend
+                                            size={24}
+                                            className="flex-shrink-0 "
+                                          />
+                                        // <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-gray-500 py-1 px-6 gap-2 ">
+                                        //   </div>
+                                      }
+
+
+                                    </button>
+                                    {/* <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
+                                          <span class="sr-only">Loading...</span>
+                                        </div> */}
+                                  </div>
                                 </div>
+                              </div>
+                            </div>
                             {!upload ? (
                               // Render Dropbox only when there are uploaded files
                               createFiles.length > 0 && (
