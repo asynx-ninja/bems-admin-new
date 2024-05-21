@@ -178,6 +178,7 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
         );
 
         if (activeFormResponse.data.length > 0) {
+          setCreationStatus(null);
           throw new Error(
             "There's an active form. Please turn it off before updating the new form."
           );
@@ -193,14 +194,13 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
             }
           );
           if (response.status === 200) {
-            socket.emit("send-get_events_forms", response.data);
+            socket.emit("send-edit-event-form", response.data);
             setSubmitClicked(false);
             setCreationStatus("success");
             setTimeout(() => {
               setCreationStatus(null);
+              setForm(Initialize)
               HSOverlay.close(document.getElementById("hs-create-eventsForm-modal"));
-              // setEditUpdate((prevState) => !prevState);
-              // console.log("addforms", editupdate)
             }, 3000);
           }
         } 
@@ -218,14 +218,13 @@ const AddEventsForm = ({ announcement_id, brgy, setUpdate, editupdate, setEditUp
           }
         );
         if (response.status === 200) {
-          setForm(Initialize)
+          socket.emit("send-get_events_forms", response.data);
           setSubmitClicked(false);
           setCreationStatus("success");
           setTimeout(() => {
             setCreationStatus(null);
+            setForm(Initialize)
             HSOverlay.close(document.getElementById("hs-create-eventsForm-modal"));
-            console.log("addforms", editupdate)
-            setEditUpdate((prevState) => !prevState);
           }, 3000);
         }
       }

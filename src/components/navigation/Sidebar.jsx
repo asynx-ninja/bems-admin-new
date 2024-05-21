@@ -696,6 +696,7 @@ const Sidebar = () => {
                   <Link
                     to="/"
                     replace
+                     
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
@@ -703,7 +704,8 @@ const Sidebar = () => {
                               "[data-hs-overlay-backdrop-template]"
                             )
                             .remove()
-                        : null;
+                        : null ;
+                        socket.emit("disconnect");
                     }}
                     className={`${
                       currentPath === "/"

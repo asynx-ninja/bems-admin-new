@@ -154,30 +154,30 @@ const EventsManagement = () => {
   };
 
   useEffect(() => {
-    const handleEvent = (get_events) => {
+    const handleEvent = (obj) => {
       // setAnnouncement((prevApplication) => ({
       //   ...prevApplication
       // }));
       console.log("wew", filteredAnnouncements)
-      console.log("wew", get_events)
-      setAnnouncement(get_events)
+      console.log("wew", obj)
+      setAnnouncement(obj)
 
-      setFilteredAnnouncements((prev) => [get_events, ...prev]);
+      setFilteredAnnouncements((prev) => [obj, ...prev]);
     };
 
-    const handleEventForm = (get_events_forms) => {
+    const handleEventForm = (obj) => {
       setEventsForm(curItem => curItem.map((item) =>
-        item._id === get_events_forms._id ? get_events_forms : item
+        item._id === obj._id ? obj : item
       ))
     };
     
-    socket.on("receive-get_events", handleEvent);
-    socket.on("receive-get_events_forms", handleEventForm);
+    socket.on("receive-get-event", handleEvent);
+    socket.on("receive-edit-event-form", handleEventForm);
 
 
     return () => {
-      socket.off("receive-get_events", handleEvent);
-      socket.off("receive-get_events_forms", handleEventForm);
+      socket.off("receive-get-event", handleEvent);
+      socket.off("receive-edit-event-form", handleEventForm);
 
     };
   }, [socket, setAnnouncement]);

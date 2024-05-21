@@ -191,23 +191,23 @@ const EventsRegistrations = () => {
   };
 
   useEffect(() => {
-    const handleEventAppli = async (event_appli) => {
-      console.log("received appli", event_appli);
+    const handleEventAppli = async (obj) => {
+      console.log("received appli", obj);
     
       // setApplication((prevApplication) => ({
       //   ...prevApplication,
       //   response: [...(prevApplication.response || []), event_appli],
       // }));
 
-      setApplication(event_appli)
+      setApplication(obj)
 
       setFilteredApplications(curItem => curItem.map((item) =>
-        item._id === event_appli._id ? event_appli : item
+        item._id === obj._id ? obj : item
       ))
     };
-    socket.on("receive-event_appli", handleEventAppli);
+    socket.on("receive-event-appli", handleEventAppli);
     return () => {
-      socket.off("receive-event_appli", handleEventAppli);
+      socket.off("receive-event-appli", handleEventAppli);
     };
   }, [socket, setApplication]);
 

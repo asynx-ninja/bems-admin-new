@@ -124,7 +124,7 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
         );
 
         if (response.status === 200) {
-          socket.emit("send-get_events", response.data);
+          socket.emit("send-get-event", response.data);
           let notify;
 
           const formattedDate = moment(announcement.date).format(

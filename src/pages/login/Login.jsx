@@ -5,6 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import axios from "axios";
 import API_LINK from "../../config/API";
+import io from "socket.io-client";
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link);
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [timerId, setTimerId] = useState(null);
@@ -36,6 +39,7 @@ const Login = () => {
       if (res.status === 200) {
         if (res.data[0].type === "Head Admin" || res.data[0].type === "Admin") {
           const id = res.data[0]._id;
+          socket.emit("login", id);
           setTimeout(() => {
             navigate(`/dashboard/?id=${res.data[0]._id}`);
           }, 2000);

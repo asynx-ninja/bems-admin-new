@@ -129,17 +129,28 @@ const Inquiries = () => {
   };
 
   useEffect(() => {
-    const handleMuniInq = (muni_inquiry) => {
-      setInquiry(muni_inquiry);
+    const handleMuniInq = (obj) => {
+      setInquiry(obj);
       setFilteredInquiries((curItem) =>
         curItem.map((item) =>
-          item._id === muni_inquiry._id ? muni_inquiry : item
+          item._id === obj._id ? obj : item
         )
       );
     };
-    socket.on("receive-muni_inquiry", handleMuniInq);
+
+     const handleReMuniInq = (obj) => {
+      setInquiry(obj);
+      setFilteredInquiries((curItem) =>
+        curItem.map((item) =>
+          item._id === obj._id ? obj : item
+        )
+      );
+    };
+    socket.on("receive-reply-muni-inquiry", handleMuniInq);
+    socket.on("receive-muni-inquiry", handleReMuniInq);
     return () => {
-      socket.off("receive-muni_inquiry", handleMuniInq);
+      socket.off("receive-reply-muni-inquiry", handleMuniInq);
+      socket.off("receive-muni-inquiry", handleReMuniInq);
     };
   }, [socket, setInquiry]);
 
