@@ -53,7 +53,7 @@ function ReplyRegistrationModal({
     var container = document.getElementById("scrolltobottom");
     container.scrollTop = container.scrollHeight;
   });
-  
+
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -374,7 +374,7 @@ function ReplyRegistrationModal({
                                     <button
                                       id="button"
                                       onClick={handleAdd || handleOnUpload}
-                                      className="mt-2 rounded-xl px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
+                                      className="mt-2 rounded-xl px-3 py-1  hover:bg-gray-300 focus:shadow-outline focus:outline-none"
                                     >
                                       <IoIosAttach size={24} />
                                     </button>
@@ -448,7 +448,7 @@ function ReplyRegistrationModal({
                                                 status: e.target.value,
                                               }));
                                             }}
-                                            className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                            className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                                             value={application.status}
                                             hidden={!statusChanger}
                                           >
@@ -481,17 +481,17 @@ function ReplyRegistrationModal({
                                       className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                     >
                                       {
-                                            onSend ?
-                                              <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
-                                                <span class="sr-only">Loading...</span>
-                                              </div> :
-                                              <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700">
-                                                <span>SEND</span>
-                                                <IoSend
-                                                  size={18}
-                                                  className="flex-shrink-0"
-                                                /></div>
-                                          }
+                                        onSend ?
+                                          <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
+                                            <span class="sr-only">Loading...</span>
+                                          </div> :
+                                          <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700">
+                                            <span>SEND</span>
+                                            <IoSend
+                                              size={18}
+                                              className="flex-shrink-0"
+                                            /></div>
+                                      }
                                     </button>
                                   </div>
                                 </div>
@@ -536,7 +536,7 @@ function ReplyRegistrationModal({
                             </div>
                             {responseItem.message !== "" ? (
                               <div
-                                className="flex flex-col rounded-xl bg-custom-green-button w-full px-2 md:px-4 py-2"
+                                className="flex flex-col rounded-xl bg-[#52b788] border border-[#2d6a4f] max-w-full px-2 md:px-4 py-2"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <div className="w-full h-full">
@@ -572,17 +572,18 @@ function ReplyRegistrationModal({
                                     </p>
                                   </div>
                                 ) : null}
-                                <div className="relative w-full">
+                                <div className="relative w-full ">
                                   <textarea
                                     id="message"
                                     name="message"
                                     multiple
+                                    rows="7"
                                     onChange={handleChange}
-                                    className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                                    className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
                                     placeholder="Input response..."
                                   ></textarea>
 
-                                  <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
+                                  <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
                                     <div className="flex justify-between items-center">
                                       <div className="flex items-center">
                                         <input
@@ -597,61 +598,13 @@ function ReplyRegistrationModal({
                                         <button
                                           id="button"
                                           onClick={handleAdd || handleOnUpload}
-                                          className="mt-2 rounded-xl px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
+                                          className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
                                         >
-                                          <IoIosAttach size={24} />
+                                          <IoIosAttach size={24} className="text-[#2d6a4f]" />
                                         </button>
                                         <div className="flex flex-col lg:flex-row">
                                           <div className="w-full">
-                                            <div className="flex flex-row space-x-4">
-                                              {!statusChanger ? (
-                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                  <div className="hs-tooltip inline-block">
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleOnStatusChanger();
-                                                      }}
-                                                      className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
-                                                    >
-                                                      <FaTasks
-                                                        size={24}
-                                                        className="mx-auto"
-                                                      />
-                                                      <span
-                                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                        role="tooltip"
-                                                      >
-                                                        Change Application
-                                                        Status
-                                                      </span>
-                                                    </button>
-                                                  </div>
-                                                </div>
-                                              ) : (
-                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                  <div className="hs-tooltip inline-block">
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleOnStatusChanger();
-                                                      }}
-                                                      className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
-                                                    >
-                                                      <MdOutlineCancel
-                                                        size={24}
-                                                        className="mx-auto"
-                                                      />
-                                                    </button>
-                                                    <span
-                                                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                      role="tooltip"
-                                                    >
-                                                      Change Application Status
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              )}
+                                            <div className="flex flex-row ">
                                               <select
                                                 id="status"
                                                 name="status"
@@ -672,7 +625,7 @@ function ReplyRegistrationModal({
                                                     status: e.target.value,
                                                   }));
                                                 }}
-                                                className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                                className=" pl-2 pr-4 text-sm text-black rounded-lg focus:outline-none hover:bg-white "
                                                 value={application.status}
                                                 hidden={!statusChanger}
                                               >
@@ -695,6 +648,56 @@ function ReplyRegistrationModal({
                                                   REJECTED
                                                 </option>
                                               </select>
+                                              {!statusChanger ? (
+                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                  <div className="hs-tooltip inline-block">
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleOnStatusChanger();
+                                                      }}
+                                                      className="hs-tooltip-toggle rounded-xl p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                                    >
+                                                      <FaTasks
+                                                        size={24}
+                                                        className="text-[#2d6a4f]"
+                                                      />
+                                                      <span
+                                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                        role="tooltip"
+                                                      >
+                                                        Change Application
+                                                        Status
+                                                      </span>
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                
+                                                <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                  <div className="hs-tooltip inline-block">
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleOnStatusChanger();
+                                                      }}
+                                                        className="hs-tooltip-toggle rounded-xl p-2 text-[#2d6a4f] hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                                    >
+                                                      <MdOutlineCancel
+                                                        size={24}
+                                                          className=""
+                                                      />
+                                                    </button>
+                                                    <span
+                                                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                      role="tooltip"
+                                                    >
+                                                      Change Application Status
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                              )}
+                                              
                                             </div>
                                           </div>
                                         </div>
@@ -704,19 +707,18 @@ function ReplyRegistrationModal({
                                         <button
                                           type="submit"
                                           onClick={handleOnSend}
-                                          className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
+                                          className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
                                         >
                                           {
                                             onSend ?
                                               <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
                                                 <span class="sr-only">Loading...</span>
-                                              </div> :
-                                              <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700">
-                                                <span>SEND</span>
-                                                <IoSend
-                                                  size={18}
-                                                  className="flex-shrink-0"
-                                                /></div>
+                                              </div> : <IoSend
+                                                size={24}
+                                                className="flex-shrink-0 "
+                                              />
+                                            // <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-gray-500 py-1 px-6 gap-2 ">
+                                            //   </div>
                                           }
 
 
