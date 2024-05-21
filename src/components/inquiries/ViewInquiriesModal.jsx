@@ -356,7 +356,7 @@ function ViewInquiriesModal({
                   </b>
                   <form>
                     {!inquiry.response || inquiry.response.length === 0 ? (
-                   <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center">
                         {errMsg ? (
                           <div className="w-[100%] bg-red-500 rounded-md mb-[10px] flex justify-between">
                             <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
@@ -403,97 +403,97 @@ function ViewInquiriesModal({
                                     className="text-[#2d6a4f]"
                                   />
                                 </button>
-                               <div className="flex flex-col lg:flex-row">
-                                          <div className="w-full">
-                                            <div className="flex flex-row ">
-                                              <select
-                                                id="status"
-                                                name="status"
-                                                onChange={(e) => {
-                                                  if (
-                                                    statusChanger &&
-                                                    (!newMessage.message ||
-                                                      newMessage.message.trim() ===
-                                                      "")
-                                                  ) {
-                                                    setNewMessage((prev) => ({
-                                                      ...prev,
-                                                      message: `The status of your event application is ${e.target.value}`,
-                                                    }));
-                                                  }
-                                                  setInquiry((prev) => ({
-                                                    ...prev,
-                                                    status: e.target.value,
-                                                  }));
-                                                }}
-                                                className=" pl-2 pr-4 text-sm text-black rounded-lg focus:outline-none hover:bg-white "
-                                                value={inquiry.status}
-                                                hidden={!statusChanger}
+                                <div className="flex flex-col lg:flex-row">
+                                  <div className="w-full">
+                                    <div className="flex flex-row ">
+                                      <select
+                                        id="status"
+                                        name="status"
+                                        onChange={(e) => {
+                                          if (
+                                            statusChanger &&
+                                            (!newMessage.message ||
+                                              newMessage.message.trim() ===
+                                              "")
+                                          ) {
+                                            setNewMessage((prev) => ({
+                                              ...prev,
+                                              message: `The status of your event application is ${e.target.value}`,
+                                            }));
+                                          }
+                                          setInquiry((prev) => ({
+                                            ...prev,
+                                            status: e.target.value,
+                                          }));
+                                        }}
+                                        className=" pl-2 pr-4 text-sm text-black rounded-lg focus:outline-none hover:bg-white "
+                                        value={inquiry.status}
+                                        hidden={!statusChanger}
+                                      >
+                                        <option>- Select a Status -</option>
+                                        <option value="Pending">
+                                          PENDING
+                                        </option>
+                                        <option value="In Progress">
+                                          IN PROGRESS
+                                        </option>
+                                        <option value="Completed">
+                                          COMPLETED
+                                        </option>
+                                      </select>
+                                      {!statusChanger ? (
+                                        <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                          <div className="hs-tooltip inline-block">
+                                            <button
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                handleOnStatusChanger();
+                                              }}
+                                              className="hs-tooltip-toggle rounded-xl p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                            >
+                                              <FaTasks
+                                                size={24}
+                                                className="text-[#2d6a4f]"
+                                              />
+                                              <span
+                                                className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                role="tooltip"
                                               >
-                                                <option>- Select a Status -</option>
-                                            <option value="Pending">
-                                              PENDING
-                                            </option>
-                                            <option value="In Progress">
-                                              IN PROGRESS
-                                            </option>
-                                            <option value="Completed">
-                                              COMPLETED
-                                            </option>
-                                              </select>
-                                              {!statusChanger ? (
-                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                  <div className="hs-tooltip inline-block">
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleOnStatusChanger();
-                                                      }}
-                                                      className="hs-tooltip-toggle rounded-xl p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                                    >
-                                                      <FaTasks
-                                                        size={24}
-                                                        className="text-[#2d6a4f]"
-                                                      />
-                                                      <span
-                                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                        role="tooltip"
-                                                      >
-                                                        Change Application
-                                                        Status
-                                                      </span>
-                                                    </button>
-                                                  </div>
-                                                </div>
-                                              ) : (
-
-                                                <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                  <div className="hs-tooltip inline-block">
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleOnStatusChanger();
-                                                      }}
-                                                      className="hs-tooltip-toggle rounded-xl p-2 text-[#2d6a4f] hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                                    >
-                                                      <MdOutlineCancel
-                                                        size={24}
-                                                        className=""
-                                                      />
-                                                    </button>
-                                                    <span
-                                                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                      role="tooltip"
-                                                    >
-                                                      Change Application Status
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              )}
-
-                                            </div>
+                                                Change Application
+                                                Status
+                                              </span>
+                                            </button>
                                           </div>
                                         </div>
+                                      ) : (
+
+                                        <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                          <div className="hs-tooltip inline-block">
+                                            <button
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                handleOnStatusChanger();
+                                              }}
+                                              className="hs-tooltip-toggle rounded-xl p-2 text-[#2d6a4f] hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                            >
+                                              <MdOutlineCancel
+                                                size={24}
+                                                className=""
+                                              />
+                                            </button>
+                                            <span
+                                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                              role="tooltip"
+                                            >
+                                              Change Application Status
+                                            </span>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
 
                               <div className="flex items-center gap-x-1">
@@ -538,7 +538,8 @@ function ViewInquiriesModal({
                         </div>
                       </div>
                     ) : null}
-                    {inquiry.response &&
+                    {inquiry &&
+                      inquiry.response &&
                       inquiry.response.map((responseItem, index) => (
                         <div
                           key={index}
@@ -550,28 +551,31 @@ function ViewInquiriesModal({
                               : "flex flex-col justify-start items-start mb-2 w-full h-auto"
                           }
                         >
-                          <div className={
-                            responseItem.sender ===
-                              `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                              } (${userData.type})`
-                              ? "flex flex-col items-end h-auto max-w-[80%]"
-                              : "flex flex-col items-start h-auto max-w-[80%]"
-                          }>
-                            <div className={
+                          <div
+                            className={
                               responseItem.sender ===
                                 `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
                                 } (${userData.type})`
-                                ? "hidden"
-                                : "flex flex-row w-full justify-between"
-                            }>
+                                ? "flex flex-col items-end h-auto max-w-[80%]"
+                                : "flex flex-col items-start h-auto max-w-[80%]"
+                            }
+                          >
+                            <div
+                              className={
+                                responseItem.sender ===
+                                  `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                                  } (${userData.type})`
+                                  ? "hidden"
+                                  : "flex flex-row w-full justify-between"
+                              }
+                            >
                               <div className="flex flex-col md:flex-row md:items-center">
-                                <p className="text-[14px] text-black md:text-sm font-medium uppercase ">
+                                <p className="text-[14px] text-black md:text-sm font-medium capitalize text-wrap">
                                   {responseItem.sender?.toLowerCase()}
-
                                 </p>
                               </div>
                             </div>
-                            {responseItem.message && (
+                            {responseItem.message !== "" ? (
                               <div
                                 className={
                                   responseItem.sender ===
@@ -584,22 +588,21 @@ function ViewInquiriesModal({
                               >
                                 <div className="w-full h-full">
                                   <div className="w-full h-full rounded-xl p-1">
-                                    <p className="text-[10px] md:text-xs">
+                                    <p className="text-[12px] md:text-xs">
                                       {responseItem.message}
                                     </p>
                                   </div>
                                 </div>
                               </div>
-                            )}
-                            {responseItem.file && (
+                            ) : null}
+                            {!responseItem.file ? null : (
                               <div className="flex flex-col rounded-xl">
                                 <ViewDropbox
-                                  viewFiles={responseItem.file}
-                                  setViewFiles={setViewFiles}
+                                  viewFiles={responseItem.file || []}
                                 />
                               </div>
                             )}
-                              <p
+                            <p
                               className={
                                 !viewTime.state && viewTime.timeKey === index
                                   ? "text-[10px] md:text-xs mt-[5px] text-black text-right text-xs"
@@ -609,9 +612,9 @@ function ViewInquiriesModal({
                               {DateFormat(responseItem.date) || ""}
                             </p>
                           </div>
-                          {index === inquiry.response.length - 1 && (
-                           <div className="relative w-full mt-5">
-                           {errMsg ? (
+                          {index === inquiry.response.length - 1 ? (
+                            <div className="relative w-full mt-5">
+                              {errMsg ? (
                                 <div className="w-[100%] bg-red-500 rounded-md mb-[10px] flex justify-between">
                                   <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
                                     Please enter a message or insert a file!
@@ -622,68 +625,69 @@ function ViewInquiriesModal({
                                   >
                                     <FaTimes />
                                   </button>
+
                                 </div>
                               ) : null}
-                          <textarea
-                            id="message"
-                            name="message"
-                            multiple
-                            rows="7"
-                            onChange={handleChange}
-                            className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
-                            placeholder="Input response..."
-                          ></textarea>
+                              <textarea
+                                id="message"
+                                name="message"
+                                multiple
+                                rows="7"
+                                onChange={handleChange}
+                                className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
+                                placeholder="Input response..."
+                              ></textarea>
 
-                          <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center">
-                                <input
-                                  type="file"
-                                  name="file"
-                                  onChange={(e) => handleFileChange(e)}
-                                  ref={fileInputRef}
-                                  accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
-                                  multiple="multiple"
-                                  className="hidden"
-                                />
-                                <button
-                                  id="button"
-                                  onClick={handleAdd || handleOnUpload}
-                                  className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                >
-                                  <IoIosAttach
-                                    size={24}
-                                    className="text-[#2d6a4f]"
-                                  />
-                                </button>
-                               <div className="flex flex-col lg:flex-row">
-                                          <div className="w-full">
-                                            <div className="flex flex-row ">
-                                              <select
-                                                id="status"
-                                                name="status"
-                                                onChange={(e) => {
-                                                  if (
-                                                    statusChanger &&
-                                                    (!newMessage.message ||
-                                                      newMessage.message.trim() ===
-                                                      "")
-                                                  ) {
-                                                    setNewMessage((prev) => ({
-                                                      ...prev,
-                                                      message: `The status of your event application is ${e.target.value}`,
-                                                    }));
-                                                  }
-                                                  setInquiry((prev) => ({
-                                                    ...prev,
-                                                    status: e.target.value,
-                                                  }));
-                                                }}
-                                                className=" pl-2 pr-4 text-sm text-black rounded-lg focus:outline-none hover:bg-white "
-                                                value={inquiry.status}
-                                                hidden={!statusChanger}
-                                              >
-                                                <option>- Select a Status -</option>
+                              <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
+                                <div className="flex justify-between items-center">
+                                  <div className="flex items-center">
+                                    <input
+                                      type="file"
+                                      name="file"
+                                      onChange={(e) => handleFileChange(e)}
+                                      ref={fileInputRef}
+                                      accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
+                                      multiple="multiple"
+                                      className="hidden"
+                                    />
+                                    <button
+                                      id="button"
+                                      onClick={handleAdd || handleOnUpload}
+                                      className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                    >
+                                      <IoIosAttach
+                                        size={24}
+                                        className="text-[#2d6a4f]"
+                                      />
+                                    </button>
+                                    <div className="flex flex-col lg:flex-row">
+                                      <div className="w-full">
+                                        <div className="flex flex-row ">
+                                          <select
+                                            id="status"
+                                            name="status"
+                                            onChange={(e) => {
+                                              if (
+                                                statusChanger &&
+                                                (!newMessage.message ||
+                                                  newMessage.message.trim() ===
+                                                  "")
+                                              ) {
+                                                setNewMessage((prev) => ({
+                                                  ...prev,
+                                                  message: `The status of your event application is ${e.target.value}`,
+                                                }));
+                                              }
+                                              setInquiry((prev) => ({
+                                                ...prev,
+                                                status: e.target.value,
+                                              }));
+                                            }}
+                                            className=" pl-2 pr-4 text-sm text-black rounded-lg focus:outline-none hover:bg-white "
+                                            value={inquiry.status}
+                                            hidden={!statusChanger}
+                                          >
+                                            <option>- Select a Status -</option>
                                             <option value="Pending">
                                               PENDING
                                             </option>
@@ -693,89 +697,106 @@ function ViewInquiriesModal({
                                             <option value="Completed">
                                               COMPLETED
                                             </option>
-                                              </select>
-                                              {!statusChanger ? (
-                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                  <div className="hs-tooltip inline-block">
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleOnStatusChanger();
-                                                      }}
-                                                      className="hs-tooltip-toggle rounded-xl p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                                    >
-                                                      <FaTasks
-                                                        size={24}
-                                                        className="text-[#2d6a4f]"
-                                                      />
-                                                      <span
-                                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                        role="tooltip"
-                                                      >
-                                                        Change Application
-                                                        Status
-                                                      </span>
-                                                    </button>
-                                                  </div>
-                                                </div>
-                                              ) : (
-
-                                                <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                  <div className="hs-tooltip inline-block">
-                                                    <button
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleOnStatusChanger();
-                                                      }}
-                                                      className="hs-tooltip-toggle rounded-xl p-2 text-[#2d6a4f] hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                                    >
-                                                      <MdOutlineCancel
-                                                        size={24}
-                                                        className=""
-                                                      />
-                                                    </button>
-                                                    <span
-                                                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                      role="tooltip"
-                                                    >
-                                                      Change Application Status
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              )}
-
+                                          </select>
+                                          {!statusChanger ? (
+                                            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                              <div className="hs-tooltip inline-block">
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleOnStatusChanger();
+                                                  }}
+                                                  className="hs-tooltip-toggle rounded-xl p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                                >
+                                                  <FaTasks
+                                                    size={24}
+                                                    className="text-[#2d6a4f]"
+                                                  />
+                                                  <span
+                                                    className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                    role="tooltip"
+                                                  >
+                                                    Change Application
+                                                    Status
+                                                  </span>
+                                                </button>
+                                              </div>
                                             </div>
-                                          </div>
-                                        </div>
-                              </div>
+                                          ) : (
 
-                              <div className="flex items-center gap-x-1">
-                                <button
-                                  type="submit"
-                                  onClick={handleOnSend}
-                                  disabled={onSend}
-                                  className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
-                                >
-                                  {onSend ? (
-                                    <div
-                                      class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
-                                      role="status"
-                                      aria-label="loading"
-                                    >
-                                      <span class="sr-only">Loading...</span>
+                                            <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                              <div className="hs-tooltip inline-block">
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleOnStatusChanger();
+                                                  }}
+                                                  className="hs-tooltip-toggle rounded-xl p-2 text-[#2d6a4f] hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                                >
+                                                  <MdOutlineCancel
+                                                    size={24}
+                                                    className=""
+                                                  />
+                                                </button>
+                                                <span
+                                                  className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                  role="tooltip"
+                                                >
+                                                  Change Application Status
+                                                </span>
+                                              </div>
+                                            </div>
+                                          )}
+
+                                        </div>
+                                      </div>
                                     </div>
-                                  ) : (
-                                    <IoSend
-                                      size={24}
-                                      className="flex-shrink-0 "
-                                    />
-                                  )}
-                                </button>
+                                  </div>
+
+                                  <div className="flex items-center gap-x-1">
+                                    <button
+                                      type="submit"
+                                      onClick={handleOnSend}
+                                      disabled={onSend}
+                                      className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
+                                    >
+                                      {
+                                        onSend ? (
+                                          <div
+                                            class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                                            role="status"
+                                            aria-label="loading"
+                                          >
+                                            <span class="sr-only">
+                                              Loading...
+                                            </span>
+                                          </div>
+                                        ) : (
+                                          <IoSend
+                                            size={24}
+                                            className="flex-shrink-0 "
+                                          />
+                                        )
+                                      }
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
+                          ) : null}
+                          <div className="w-full">
+                            {!upload ? (
+                              createFiles.length > 0 && (
+                                <Dropbox
+                                  createFiles={createFiles}
+                                  setCreateFiles={setCreateFiles}
+                                  handleFileChange={handleFileChange}
+                                />
+                              )
+                            ) : (
+                              <div></div>
+                            )}
                           </div>
-                        </div>
-                          )}
                         </div>
                       ))}
                   </form>

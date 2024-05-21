@@ -251,7 +251,7 @@ function ReplyRegistrationModal({
             "Content-Type": "application/json",
           },
         });
-        socket.emit("send-event-appli", response.data);
+        socket.emit("send-reply-event-appli", response.data);
         setOnSend(false)
       }
 
@@ -519,7 +519,7 @@ function ReplyRegistrationModal({
                                     </div>
                                   </div>
                                 </div>
-                            {upload ? (
+                            {!upload ? (
                               // Render Dropbox only when there are uploaded files
                               createFiles.length > 0 && (
                                 <Dropbox

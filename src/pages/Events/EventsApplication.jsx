@@ -61,7 +61,7 @@ const EventsRegistrations = () => {
     fetch();
   }, [brgy]);
 
-  
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -193,11 +193,6 @@ const EventsRegistrations = () => {
   useEffect(() => {
     const handleEventAppli = async (obj) => {
       console.log("received appli", obj);
-    
-      // setApplication((prevApplication) => ({
-      //   ...prevApplication,
-      //   response: [...(prevApplication.response || []), event_appli],
-      // }));
 
       setApplication(obj)
 
@@ -205,20 +200,24 @@ const EventsRegistrations = () => {
         item._id === obj._id ? obj : item
       ))
     };
-    socket.on("receive-event-appli", handleEventAppli);
+
+    const handleEvent = (obj) => {
+
+      setApplication(obj)
+
+      setFilteredApplications((prev) => [obj, ...prev]);
+    };
+
+    socket.on("receive-reply-event-appli", handleEventAppli);
+    socket.on("send-event-appli", handleEvent);
+
     return () => {
-      socket.off("receive-event-appli", handleEventAppli);
+      socket.off("receive-reply-event-appli", handleEventAppli);
+      socket.off("send-event-appli", handleEvent);
     };
   }, [socket, setApplication]);
 
-  console.log("application", application)
 
-  const TimeFormat = (date) => {
-    if (!date) return "";
-
-    const formattedTime = moment(date).format("hh:mm A");
-    return formattedTime;
-  };
   const filters = (choice, selectedDate, applications) => {
     switch (choice) {
       case "date":
