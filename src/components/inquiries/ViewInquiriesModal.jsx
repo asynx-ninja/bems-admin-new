@@ -59,10 +59,10 @@ function ViewInquiriesModal({
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
 
-  useEffect(() => {
-    var container = document.getElementById("scrolltobottoms");
-    container.scrollTop = container.scrollHeight;
-  });
+  // useEffect(() => {
+  //   var container = document.getElementById("scrolltobottoms");
+  //   container.scrollTop = container.scrollHeight;
+  // });
 
   useEffect(() => {
     const fetch = async () => {
@@ -254,7 +254,7 @@ function ViewInquiriesModal({
               </div>
 
               <div
-                id="scrolltobottoms"
+                // id="scrolltobottoms"
                 ref={inqContainerRef}
                 className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]"
               >
