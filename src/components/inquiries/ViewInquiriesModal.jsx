@@ -252,11 +252,10 @@ function ViewInquiriesModal({
                 </h3>
               </div>
 
-              <div
-                ref={inqContainerRef}
-                id="scrolltobottoms"
-                className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]"
-              >
+   <div 
+   id="scrolltobottoms"
+   ref={inqContainerRef}
+   className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]">
                 <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg mb-4">
                   Inquiry Details
                 </b>
@@ -351,7 +350,8 @@ function ViewInquiriesModal({
 
                 <EditDropbox files={inquiry && files} setFiles={setFiles} />
 
-                <div className="flex flex-col mt-5 w-full">
+                {/* <div className="flex flex-col mt-5 w-full"> */}
+                <div className="flex flex-col w-full">
                   <b className="border-solid border-0 w-full border-black/50 border-b-2 my-4 uppercase font-medium text-lg md:text-lg mb-4">
                     Conversation History
                   </b>
@@ -371,16 +371,23 @@ function ViewInquiriesModal({
                             </button>
                           </div>
                         ) : null}
+                        {/* <div className="relative w-full mt-4 mx-2"> */}
                         <div className="relative w-full mt-5">
                           <textarea
                             id="message"
                             name="message"
-                            multiple
-                            rows="7"
                             onChange={handleChange}
+                            rows={7}
+                            value={
+                              newMessage.message
+                                ? newMessage.message
+                                : statusChanger && inquiry.status
+                                ? `The status of your inquiry is ${inquiry.status}`
+                                : ""
+                            }
                             className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
                             placeholder="Input response..."
-                          ></textarea>
+                          />
 
                           <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
                             <div className="flex justify-between items-center">
@@ -404,44 +411,10 @@ function ViewInquiriesModal({
                                     className="text-[#2d6a4f]"
                                   />
                                 </button>
+
                                 <div className="flex flex-col lg:flex-row">
                                   <div className="w-full">
-                                    <div className="flex flex-row ">
-                                      <select
-                                        id="status"
-                                        name="status"
-                                        onChange={(e) => {
-                                          if (
-                                            statusChanger &&
-                                            (!newMessage.message ||
-                                              newMessage.message.trim() ===
-                                              "")
-                                          ) {
-                                            setNewMessage((prev) => ({
-                                              ...prev,
-                                              message: `The status of your event application is ${e.target.value}`,
-                                            }));
-                                          }
-                                          setInquiry((prev) => ({
-                                            ...prev,
-                                            status: e.target.value,
-                                          }));
-                                        }}
-                                        className=" pl-2 pr-4 text-sm text-black rounded-lg focus:outline-none hover:bg-white "
-                                        value={inquiry.status}
-                                        hidden={!statusChanger}
-                                      >
-                                        <option>- Select a Status -</option>
-                                        <option value="Pending">
-                                          PENDING
-                                        </option>
-                                        <option value="In Progress">
-                                          IN PROGRESS
-                                        </option>
-                                        <option value="Completed">
-                                          COMPLETED
-                                        </option>
-                                      </select>
+                                    <div className="flex flex-row space-x-1.5">
                                       {!statusChanger ? (
                                         <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
                                           <div className="hs-tooltip inline-block">
@@ -450,48 +423,95 @@ function ViewInquiriesModal({
                                                 e.preventDefault();
                                                 handleOnStatusChanger();
                                               }}
-                                              className="hs-tooltip-toggle rounded-xl p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                              className="hs-tooltip-toggle rounded-full p-2.5 text-[#2d6a4f] hover:bg-white focus:shadow-outline focus:outline-none"
                                             >
                                               <FaTasks
                                                 size={24}
-                                                className="text-[#2d6a4f]"
+                                                className="mx-auto"
                                               />
                                               <span
                                                 className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                                 role="tooltip"
                                               >
-                                                Change Application
-                                                Status
+                                                Change inquiry Status
                                               </span>
                                             </button>
                                           </div>
                                         </div>
                                       ) : (
-
-                                        <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                        <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex mr-2">
                                           <div className="hs-tooltip inline-block">
                                             <button
                                               onClick={(e) => {
                                                 e.preventDefault();
                                                 handleOnStatusChanger();
                                               }}
-                                              className="hs-tooltip-toggle rounded-xl p-2 text-[#2d6a4f] hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                              className="hs-tooltip-toggle rounded-full p-2 bg-white text-[#2d6a4f] hover:bg-white focus:shadow-outline focus:outline-none"
                                             >
                                               <MdOutlineCancel
-                                                size={24}
-                                                className=""
+                                                size={28}
+                                                className="mx-auto"
                                               />
                                             </button>
                                             <span
                                               className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                               role="tooltip"
                                             >
-                                              Change Application Status
+                                              Change Inquiry Status
                                             </span>
                                           </div>
                                         </div>
                                       )}
+                                      <select
+                                        id="status"
+                                        name="status"
+                                        onChange={(e) => {
+                                          const newStatus = e.target.value;
+                                          const statusRegex =
+                                            /The status of your inquiry is [\w\s]+/;
+                                          let updatedMessage =
+                                            newMessage.message;
 
+                                          if (
+                                            statusRegex.test(updatedMessage)
+                                          ) {
+                                            updatedMessage =
+                                              updatedMessage.replace(
+                                                statusRegex,
+                                                `The status of your inquiry is ${newStatus}`
+                                              );
+                                          } else if (!updatedMessage.trim()) {
+                                            updatedMessage = `The status of your inquiry is ${newStatus}`;
+                                          }
+
+                                          if (statusChanger) {
+                                            setNewMessage((prev) => ({
+                                              ...prev,
+                                              message: updatedMessage,
+                                            }));
+                                          }
+
+                                          setInquiry((prev) => ({
+                                            ...prev,
+                                            status: newStatus,
+                                          }));
+                                        }}
+                                        className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                        value={inquiry.status}
+                                        hidden={!statusChanger}
+                                      >
+                                        <option disabled>
+                                          {" "}
+                                          -- Select Status --{" "}
+                                        </option>
+                                        <option value="Pending">PENDING</option>
+                                        <option value="In Progress">
+                                          IN PROGRESS
+                                        </option>
+                                        <option value="Completed">
+                                          COMPLETED
+                                        </option>
+                                      </select>
                                     </div>
                                   </div>
                                 </div>
@@ -546,8 +566,9 @@ function ViewInquiriesModal({
                           key={index}
                           className={
                             responseItem.sender ===
-                              `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                              } (${userData.type})`
+                            `${userData?.firstName?.toUpperCase() ?? ""} ${
+                              userData?.lastName?.toUpperCase() ?? ""
+                            } (${userData.type})`
                               ? "flex flex-col justify-end items-end mb-2 w-full h-auto"
                               : "flex flex-col justify-start items-start mb-2 w-full h-auto"
                           }
@@ -555,8 +576,9 @@ function ViewInquiriesModal({
                           <div
                             className={
                               responseItem.sender ===
-                                `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                                } (${userData.type})`
+                              `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                userData?.lastName?.toUpperCase() ?? ""
+                              } (${userData.type})`
                                 ? "flex flex-col items-end h-auto max-w-[80%]"
                                 : "flex flex-col items-start h-auto max-w-[80%]"
                             }
@@ -564,24 +586,29 @@ function ViewInquiriesModal({
                             <div
                               className={
                                 responseItem.sender ===
-                                  `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                                  } (${userData.type})`
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                  userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})`
                                   ? "hidden"
                                   : "flex flex-row w-full justify-between"
                               }
                             >
                               <div className="flex flex-col md:flex-row md:items-center">
-                                <p className="text-[14px] text-black md:text-sm font-medium capitalize text-wrap">
+                                <p className="text-[14px] text-black md:text-sm font-medium uppercase ">
                                   {responseItem.sender?.toLowerCase()}
                                 </p>
                               </div>
                             </div>
-                            {responseItem.message !== "" ? (
+
+                            {responseItem.message && (
                               <div
                                 className={
                                   responseItem.sender ===
-                                    `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                                    } (${userData.type})`
+                                  `${
+                                    userData?.firstName?.toUpperCase() ?? ""
+                                  } ${
+                                    userData?.lastName?.toUpperCase() ?? ""
+                                  } (${userData.type})`
                                     ? "flex flex-col rounded-xl bg-[#52b788] border border-[#2d6a4f] mb-1 text-white px-2 md:px-4 py-2 cursor-pointer"
                                     : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
                                 }
@@ -589,20 +616,23 @@ function ViewInquiriesModal({
                               >
                                 <div className="w-full h-full">
                                   <div className="w-full h-full rounded-xl p-1">
-                                    <p className="text-[12px] md:text-xs">
+                                    <p className="text-[10px] md:text-xs">
                                       {responseItem.message}
                                     </p>
                                   </div>
                                 </div>
                               </div>
-                            ) : null}
-                            {!responseItem.file ? null : (
+                            )}
+
+                            {responseItem.file && (
                               <div className="flex flex-col rounded-xl">
                                 <ViewDropbox
-                                  viewFiles={responseItem.file || []}
+                                  viewFiles={responseItem.file}
+                                  setViewFiles={setViewFiles}
                                 />
                               </div>
                             )}
+
                             <p
                               className={
                                 !viewTime.state && viewTime.timeKey === index
@@ -613,156 +643,182 @@ function ViewInquiriesModal({
                               {DateFormat(responseItem.date) || ""}
                             </p>
                           </div>
-                          {index === inquiry.response.length - 1 ? (
-                            <div className="relative w-full mt-5">
-                              {errMsg ? (
-                                <div className="w-[100%] bg-red-500 rounded-md mb-[10px] flex justify-between">
-                                  <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
-                                    Please enter a message or insert a file!
-                                  </p>
-                                  <button
-                                    className="px-[10px] text-white"
-                                    onClick={() => setErrMsg(!errMsg)}
-                                  >
-                                    <FaTimes />
-                                  </button>
 
-                                </div>
-                              ) : null}
-                              <textarea
-                                id="message"
-                                name="message"
-                                multiple
-                                rows="7"
-                                onChange={handleChange}
-                                className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
-                                placeholder="Input response..."
-                              ></textarea>
-
-                              <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
-                                <div className="flex justify-between items-center">
-                                  <div className="flex items-center">
-                                    <input
-                                      type="file"
-                                      name="file"
-                                      onChange={(e) => handleFileChange(e)}
-                                      ref={fileInputRef}
-                                      accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
-                                      multiple="multiple"
-                                      className="hidden"
-                                    />
+                          {index === inquiry.response.length - 1 && (
+                            <div className="relative w-full">
+                              <div className="relative w-full mt-5">
+                                {errMsg ? (
+                                  <div className="w-[100%] bg-red-500 rounded-md mb-[10px] flex justify-between">
+                                    <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
+                                      Please enter a message or insert a file!
+                                    </p>
                                     <button
-                                      id="button"
-                                      onClick={handleAdd || handleOnUpload}
-                                      className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                      className="px-[10px] text-white"
+                                      onClick={() => setErrMsg(!errMsg)}
                                     >
-                                      <IoIosAttach
-                                        size={24}
-                                        className="text-[#2d6a4f]"
-                                      />
+                                      <FaTimes />
                                     </button>
-                                    <div className="flex flex-col lg:flex-row">
-                                      <div className="w-full">
-                                        <div className="flex flex-row ">
-                                          <select
-                                            id="status"
-                                            name="status"
-                                            onChange={(e) => {
-                                              if (
-                                                statusChanger &&
-                                                (!newMessage.message ||
-                                                  newMessage.message.trim() ===
-                                                  "")
-                                              ) {
-                                                setNewMessage((prev) => ({
-                                                  ...prev,
-                                                  message: `The status of your event application is ${e.target.value}`,
-                                                }));
-                                              }
-                                              setInquiry((prev) => ({
-                                                ...prev,
-                                                status: e.target.value,
-                                              }));
-                                            }}
-                                            className=" pl-2 pr-4 text-sm text-black rounded-lg focus:outline-none hover:bg-white "
-                                            value={inquiry.status}
-                                            hidden={!statusChanger}
-                                          >
-                                            <option>- Select a Status -</option>
-                                            <option value="Pending">
-                                              PENDING
-                                            </option>
-                                            <option value="In Progress">
-                                              IN PROGRESS
-                                            </option>
-                                            <option value="Completed">
-                                              COMPLETED
-                                            </option>
-                                          </select>
-                                          {!statusChanger ? (
-                                            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                              <div className="hs-tooltip inline-block">
-                                                <button
-                                                  onClick={(e) => {
-                                                    e.preventDefault();
-                                                    handleOnStatusChanger();
-                                                  }}
-                                                  className="hs-tooltip-toggle rounded-xl p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                                >
-                                                  <FaTasks
-                                                    size={24}
-                                                    className="text-[#2d6a4f]"
-                                                  />
+                                  </div>
+                                ) : null}
+                                <textarea
+                                  id="message"
+                                  name="message"
+                                  onChange={handleChange}
+                                  rows={7}
+                                  value={
+                                    newMessage.message
+                                      ? newMessage.message
+                                      : statusChanger && inquiry.status
+                                      ? `The status of your inquiry is ${inquiry.status}`
+                                      : ""
+                                  }
+                                  className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
+                                  placeholder="Input response..."
+                                />
+
+                                <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
+                                  <div className="flex justify-between items-center">
+                                    <div className="flex items-center">
+                                      <input
+                                        type="file"
+                                        name="file"
+                                        onChange={(e) => handleFileChange(e)}
+                                        ref={fileInputRef}
+                                        accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
+                                        multiple="multiple"
+                                        className="hidden"
+                                      />
+                                      <button
+                                        id="button"
+                                        onClick={handleAdd || handleOnUpload}
+                                        className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                      >
+                                        <IoIosAttach
+                                          size={24}
+                                          className="text-[#2d6a4f]"
+                                        />
+                                      </button>
+
+                                      <div className="flex flex-col lg:flex-row">
+                                        <div className="w-full">
+                                          <div className="flex flex-row space-x-1.5">
+                                            {!statusChanger ? (
+                                              <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                <div className="hs-tooltip inline-block">
+                                                  <button
+                                                    onClick={(e) => {
+                                                      e.preventDefault();
+                                                      handleOnStatusChanger();
+                                                    }}
+                                                    className="hs-tooltip-toggle rounded-full p-2.5 text-[#2d6a4f] hover:bg-white focus:shadow-outline focus:outline-none"
+                                                  >
+                                                    <FaTasks
+                                                      size={24}
+                                                      className="mx-auto"
+                                                    />
+                                                    <span
+                                                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                      role="tooltip"
+                                                    >
+                                                      Change inquiry Status
+                                                    </span>
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            ) : (
+                                              <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex mr-2">
+                                                <div className="hs-tooltip inline-block">
+                                                  <button
+                                                    onClick={(e) => {
+                                                      e.preventDefault();
+                                                      handleOnStatusChanger();
+                                                    }}
+                                                    className="hs-tooltip-toggle rounded-full p-2 bg-white text-[#2d6a4f] hover:bg-white focus:shadow-outline focus:outline-none"
+                                                  >
+                                                    <MdOutlineCancel
+                                                      size={28}
+                                                      className="mx-auto"
+                                                    />
+                                                  </button>
                                                   <span
                                                     className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                                     role="tooltip"
                                                   >
-                                                    Change Application
-                                                    Status
+                                                    Change Inquiry Status
                                                   </span>
-                                                </button>
+                                                </div>
                                               </div>
-                                            </div>
-                                          ) : (
+                                            )}
+                                            <select
+                                              id="status"
+                                              name="status"
+                                              onChange={(e) => {
+                                                const newStatus =
+                                                  e.target.value;
+                                                const statusRegex =
+                                                  /The status of your inquiry is [\w\s]+/;
+                                                let updatedMessage =
+                                                  newMessage.message;
 
-                                            <div className="sm:space-x-0 md:space-x-2 ml-1 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                              <div className="hs-tooltip inline-block">
-                                                <button
-                                                  onClick={(e) => {
-                                                    e.preventDefault();
-                                                    handleOnStatusChanger();
-                                                  }}
-                                                  className="hs-tooltip-toggle rounded-xl p-2 text-[#2d6a4f] hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
-                                                >
-                                                  <MdOutlineCancel
-                                                    size={24}
-                                                    className=""
-                                                  />
-                                                </button>
-                                                <span
-                                                  className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                  role="tooltip"
-                                                >
-                                                  Change Application Status
-                                                </span>
-                                              </div>
-                                            </div>
-                                          )}
+                                                if (
+                                                  statusRegex.test(
+                                                    updatedMessage
+                                                  )
+                                                ) {
+                                                  updatedMessage =
+                                                    updatedMessage.replace(
+                                                      statusRegex,
+                                                      `The status of your inquiry is ${newStatus}`
+                                                    );
+                                                } else if (
+                                                  !updatedMessage.trim()
+                                                ) {
+                                                  updatedMessage = `The status of your inquiry is ${newStatus}`;
+                                                }
 
+                                                if (statusChanger) {
+                                                  setNewMessage((prev) => ({
+                                                    ...prev,
+                                                    message: updatedMessage,
+                                                  }));
+                                                }
+
+                                                setInquiry((prev) => ({
+                                                  ...prev,
+                                                  status: newStatus,
+                                                }));
+                                              }}
+                                              className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                              value={inquiry.status}
+                                              hidden={!statusChanger}
+                                            >
+                                              <option disabled>
+                                                {" "}
+                                                -- Select Status --{" "}
+                                              </option>
+                                              <option value="Pending">
+                                                PENDING
+                                              </option>
+                                              <option value="In Progress">
+                                                IN PROGRESS
+                                              </option>
+                                              <option value="Completed">
+                                                COMPLETED
+                                              </option>
+                                            </select>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
 
-                                  <div className="flex items-center gap-x-1">
-                                    <button
-                                      type="submit"
-                                      onClick={handleOnSend}
-                                      disabled={onSend}
-                                      className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
-                                    >
-                                      {
-                                        onSend ? (
+                                    <div className="flex items-center gap-x-1">
+                                      <button
+                                        type="submit"
+                                        onClick={handleOnSend}
+                                        disabled={onSend}
+                                        className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
+                                      >
+                                        {onSend ? (
                                           <div
                                             class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
                                             role="status"
@@ -777,31 +833,34 @@ function ViewInquiriesModal({
                                             size={24}
                                             className="flex-shrink-0 "
                                           />
-                                        )
-                                      }
-                                    </button>
+                                        )}
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
+
+                              <div className="w-full">
+                                {!upload ? (
+                                  // Render Dropbox only when there are uploaded files
+                                  createFiles.length > 0 && (
+                                    <Dropbox
+                                      createFiles={createFiles}
+                                      setCreateFiles={setCreateFiles}
+                                      handleFileChange={handleFileChange}
+                                    />
+                                  )
+                                ) : (
+                                  <div></div>
+                                )}
+                              </div>
                             </div>
-                          ) : null}
-                          <div className="w-full">
-                            {!upload ? (
-                              createFiles.length > 0 && (
-                                <Dropbox
-                                  createFiles={createFiles}
-                                  setCreateFiles={setCreateFiles}
-                                  handleFileChange={handleFileChange}
-                                />
-                              )
-                            ) : (
-                              <div></div>
-                            )}
-                          </div>
+                          )}
                         </div>
                       ))}
                   </form>
                 </div>
+                {/* </div> */}
               </div>
               {/* Buttons */}
               <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
