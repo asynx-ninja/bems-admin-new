@@ -76,7 +76,6 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm }) => {
 
           if (response.status === 200) {
             socket.emit("send-get_events_forms", response.data);
-            clearForm();
             setSubmitClicked(false);
             setUpdatingStatus("success");
             setTimeout(() => {

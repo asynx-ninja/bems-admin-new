@@ -53,6 +53,7 @@ const MHomepageInfo = () => {
   const Aboutus = aboutus.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
     const start = selected * 10;
@@ -106,10 +107,19 @@ const MHomepageInfo = () => {
     setAboutusinfo(item);
   };
 
-  const dateFormat = (date) => {
-    const eventdate = date === undefined ? "" : date.substr(0, 10);
-    return eventdate;
-  };
+  useEffect(() => {
+    const handleAbousUpt = (obj) => {
+      setFilteredAboutUs((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
+    socket.on("receive-upt-muni-about", handleAbousUpt);
+    return () => {
+      socket.off("receive-upt-muni-about", handleAbousUpt);
+    };
+  }, [socket, setAboutusinfo]);
+
   const TimeFormat = (date) => {
     if (!date) return "";
 
@@ -541,38 +551,23 @@ const MHomepageInfo = () => {
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing {currentPage + 1} out of {pageCount} pages
           </span>
-          <ReactPaginate
+         <ReactPaginate
             breakLabel="..."
-            nextLabel={
-              pageCount > currentPage + 1 ? (
-                <span className="text-white">&gt;&gt;</span>
-              ) : (
-                <span className="text-gray-300 cursor-not-allowed">
-                  &gt;&gt;
-                </span>
-              )
-            }
+            nextLabel=">>"
             onPageChange={handlePageChange}
             pageRangeDisplayed={3}
             pageCount={pageCount}
-            previousLabel={
-              currentPage > 0 ? (
-                <span className="text-white"> &lt;&lt;</span>
-              ) : (
-                <span className="text-gray-300 cursor-not-allowed">
-                  &lt;&lt;
-                </span>
-              )
-            }
+            previousLabel="<<"
             className="flex space-x-3 text-white font-bold"
             activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
+            disabledLinkClassName="text-gray-400"
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddAboutusModal brgy={brgy} />
+        <AddAboutusModal brgy={brgy} socket={socket} />
         <ArchiveAboutusModal selectedItems={selectedItems} />
         <ManageAboutusModal
+          socket={socket}
           brgy={brgy}
           aboutusInfo={aboutusInfo}
           setAboutusinfo={setAboutusinfo}

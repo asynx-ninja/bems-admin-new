@@ -5,7 +5,7 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import EditLoader from "./loaders/EditLoader";
-function ManageAboutus({ brgy, aboutusInfo, setAboutusinfo }) {
+function ManageAboutus({ brgy, aboutusInfo, setAboutusinfo, socket }) {
   const [banner, setBanner] = useState();
   const [edit, setEdit] = useState(false);
   const editBannerRef = useRef(null);
@@ -57,14 +57,16 @@ function ManageAboutus({ brgy, aboutusInfo, setAboutusinfo }) {
         formData
       );
       if (result.status === 200) {
-        // Handle success
+        socket.emit("send-upt-muni-about", result.data);
+        setEdit(!edit);
+        setSubmitClicked(false);
+        setUpdatingStatus("success");
         setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
+          setUpdatingStatus(null);
+          HSOverlay.close(
+            document.getElementById("hs-modal-manageaboutus")
+          );
+        }, 3000);
       }
    }
     } catch (err) {

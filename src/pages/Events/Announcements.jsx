@@ -155,11 +155,6 @@ const EventsManagement = () => {
 
   useEffect(() => {
     const handleEvent = (obj) => {
-      // setAnnouncement((prevApplication) => ({
-      //   ...prevApplication
-      // }));
-      console.log("wew", filteredAnnouncements);
-      console.log("wew", obj);
       setAnnouncement(obj);
 
       setFilteredAnnouncements((prev) => [obj, ...prev]);

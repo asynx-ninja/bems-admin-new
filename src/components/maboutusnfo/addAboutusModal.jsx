@@ -5,7 +5,7 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
-function AddAboutus({ brgy }) {
+function AddAboutus({ brgy, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
