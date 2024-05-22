@@ -762,7 +762,7 @@ const EventsRegistrations = () => {
                         <div className="hs-tooltip inline-block">
                           <button
                             type="button"
-                            data-hs-overlay="#hs-reply-modal"
+                            data-hs-overlay="#hs-viewRequest-modal"
                             onClick={() => {
                               handleView({ ...item });
                             }}
