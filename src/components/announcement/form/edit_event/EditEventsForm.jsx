@@ -75,8 +75,8 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm }) => {
           );
 
           if (response.status === 200) {
-            // socket.emit("send-get_events_forms", response.data);
-            // clearForm();
+            socket.emit("send-get_events_forms", response.data);
+            clearForm();
             setSubmitClicked(false);
             setUpdatingStatus("success");
             setTimeout(() => {
@@ -112,20 +112,19 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm }) => {
           // clearForm();
           setSubmitClicked(false);
           setUpdatingStatus("success");
-     
+          setOnSend(false);
           setTimeout(() => {
             setUpdatingStatus(null);
-            setOnSend(false);
+
             setDetail({});
             setSelectedFormIndex("");
             setDetail({ title: "" });
-            
             document.querySelector('select[name="form"]').value = "";
             HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
           }, 3000);
         }
       }
-     
+
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
@@ -289,17 +288,17 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm }) => {
                   onClick={handleSubmit}
                   disabled={onSend}
                 >
-                    {onSend ? (
-                        <div
-                          class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
-                          role="status"
-                          aria-label="loading"
-                        >
-                          <span class="sr-only">Loading...</span>
-                        </div>
-                      ) : (
-                        "SAVE"
-                      )}
+                  {onSend ? (
+                    <div
+                      class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                      role="status"
+                      aria-label="loading"
+                    >
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  ) : (
+                    "SAVE"
+                  )}
                 </button>
                 <button
                   type="button"

@@ -209,11 +209,11 @@ const EventsRegistrations = () => {
     };
 
     socket.on("receive-reply-event-appli", handleEventAppli);
-    socket.on("send-event-appli", handleEvent);
+    socket.on("receive-event-appli", handleEvent);
 
     return () => {
       socket.off("receive-reply-event-appli", handleEventAppli);
-      socket.off("send-event-appli", handleEvent);
+      socket.off("receive-event-appli", handleEvent);
     };
   }, [socket, setApplication]);
 

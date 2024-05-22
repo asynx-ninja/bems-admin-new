@@ -110,7 +110,7 @@ const Inquiries = () => {
   const tableHeader = [
     "inq id",
     "name",
-    "message",
+    "subject",
     "date",
     "status",
     "actions",
@@ -131,11 +131,8 @@ const Inquiries = () => {
   useEffect(() => {
     const handleMuniInq = (obj) => {
       setInquiry(obj);
-      setFilteredInquiries((curItem) =>
-        curItem.map((item) =>
-          item._id === obj._id ? obj : item
-        )
-      );
+
+      setFilteredInquiries((prev) => [obj, ...prev]);
     };
 
      const handleReMuniInq = (obj) => {
@@ -146,11 +143,12 @@ const Inquiries = () => {
         )
       );
     };
-    socket.on("receive-reply-muni-inquiry", handleMuniInq);
-    socket.on("receive-muni-inquiry", handleReMuniInq);
+
+    socket.on("receive-reply-muni-inquiry", handleReMuniInq);
+    socket.on("receive-muni-inquiry", handleMuniInq);
     return () => {
-      socket.off("receive-reply-muni-inquiry", handleMuniInq);
-      socket.off("receive-muni-inquiry", handleReMuniInq);
+      socket.off("receive-reply-muni-inquiry", handleReMuniInq);
+      socket.off("receive-muni-inquiry", handleMuniInq);
     };
   }, [socket, setInquiry]);
 
@@ -576,7 +574,7 @@ const Inquiries = () => {
                     </td>
                     <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-1 w-[100px] ">
-                        {item.compose.message}
+                        {item.compose.subject}
                       </span>
                     </td>
                     <td className="px-6 py-3 xxl:w-3/12">
