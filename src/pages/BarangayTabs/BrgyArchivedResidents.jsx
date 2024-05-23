@@ -31,15 +31,41 @@ const Residents = () => {
       if (response.status === 200) {
         setPageCount(response.data.pageCount);
         setUsers(response.data.result);
-        setFilteredResidents(response.data.result);
+        setFilteredResidents(response.data.result.slice(0, 10));
       } else setUsers([]);
     };
 
     fetch();
   }, [currentPage, statusFilter]);
+  useEffect(() => {
+    const filteredData = users.filter((item) => {
+      const fullName = item.lastName.toLowerCase() +
+        ", " +
+        item.firstName.toLowerCase() +
+        (item.middleName !== undefined ? " " + item.middleName.toLowerCase() : "");
+
+      return (
+        item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredResidents(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [users, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
+
 
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
@@ -192,20 +218,7 @@ const Residents = () => {
                     className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
                     placeholder="Search for items"
                     value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      const Residents = users.filter(
-                        (item) =>
-                          item.firstName
-                            .toLowerCase()
-                            .includes(e.target.value.toLowerCase()) ||
-                          item.lastName
-                            .toLowerCase()
-                            .includes(e.target.value.toLowerCase())
-                      );
-
-                      setFilteredResidents(Residents);
-                    }}
+                    onChange={handleSearchChange}
                   />
                 </div>
               </div>

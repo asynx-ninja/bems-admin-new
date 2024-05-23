@@ -5,7 +5,7 @@ import StatusLoader from "./loaders/StatusLoader";
 import { useState } from "react";
 import GetBrgy from "../../GETBrgy/getbrgy";
 
-function StatusResident({ user, setUser, brgy, status, setStatus }) {
+function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -22,8 +22,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
 
-
-console.log("ewew", status)
+  console.log("ewew", status);
   const getType = (type) => {
     switch (type) {
       case "MUNISIPYO":
@@ -65,7 +64,6 @@ console.log("ewew", status)
             logo: logo,
           };
 
-
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
@@ -73,23 +71,25 @@ console.log("ewew", status)
           });
 
           if (result.status === 200) {
-            setTimeout(() => {
-              setSubmitClicked(false);
-              setUpdatingStatus("success");
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            }, 1000);
-          }
-        } else {
-          // Status is not "Registered", proceed without sending notification
-          setTimeout(() => {
+            socket.emit("send-update-status-resident", response.data);
             setSubmitClicked(false);
             setUpdatingStatus("success");
             setTimeout(() => {
-              window.location.reload();
+              setSubmitClicked(null);
+              setUpdatingStatus(null);
+              HSOverlay.close(
+                document.getElementById("hs-modal-statusResident")
+              );
             }, 3000);
-          }, 1000);
+          }
+        } else {
+          socket.emit("send-update-status-resident", response.data);
+          socket.emit("send-resident-notif", response.data);
+          setSubmitClicked(null);
+          setUpdatingStatus(null);
+          setTimeout(() => {
+            HSOverlay.close(document.getElementById("hs-modal-statusResident"));
+          }, 3000);
         }
       } else {
         // Handle other status codes if needed
@@ -157,7 +157,6 @@ console.log("ewew", status)
                           <option value="Registered">REGISTERED</option>
                           <option value="Pending">PENDING</option>
                           <option value="Denied">DENIED</option>
-                          
                         </select>
                       </div>
                     </div>

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
-import { FaArchive} from "react-icons/fa";
+import { FaArchive } from "react-icons/fa";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import ViewArchivedAnnouncementModal from "../../components/barangaytabs/brgyAnnouncements/ViewArchivedAnnouncement";
@@ -27,6 +27,15 @@ const BrgyAnnouncement = () => {
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [selected, setSelected] = useState("date");
   const information = GetBrgy(brgy);
+
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  const [newEvents, setNewEvents] = useState([]);
+
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
+  const [eventsForm, setEventsForm] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,7 +61,8 @@ const BrgyAnnouncement = () => {
 
           Promise.all(announcementsData).then((announcementsWithCounts) => {
             setAnnouncementWithCounts(announcementsWithCounts);
-            setFilteredAnnouncements(announcementsWithCounts);
+            setFilteredAnnouncements(announcementsWithCounts.slice(0, 10));
+            setNewEvents(announcementsWithCounts)
           });
 
           setPageCount(announcementsResponse.data.pageCount);
@@ -70,10 +80,26 @@ const BrgyAnnouncement = () => {
     fetchData();
   }, [currentPage, brgy]);
 
+  useEffect(() => {
+    const filteredData = newEvents.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredAnnouncements(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newEvents, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
   const tableHeader = [
     "Event id",
     "title",
@@ -198,7 +224,7 @@ const BrgyAnnouncement = () => {
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
           >
-             <h1
+            <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
@@ -240,8 +266,6 @@ const BrgyAnnouncement = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-
-
               {/* Date Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left] shadow-sm">
                 <button
@@ -370,15 +394,7 @@ const BrgyAnnouncement = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Announcements = announcements.filter((item) =>
-                      item.title
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-                    setFilteredAnnouncements(Announcements);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
             </div>
@@ -421,7 +437,7 @@ const BrgyAnnouncement = () => {
               ) : (
                 filteredAnnouncements.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
-                       <td className="px-1 xl:px-3 py-3">
+                    <td className="px-1 xl:px-3 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.event_id}
@@ -445,7 +461,7 @@ const BrgyAnnouncement = () => {
                     <td className="px-2 py-3 w-2/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
                           {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
@@ -453,7 +469,7 @@ const BrgyAnnouncement = () => {
                     <td className="px-6 py-3 w-2/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {moment(item.date).format("MMMM DD, YYYY")} -{" "}
+                          {moment(item.date).format("MMMM DD, YYYY")} -{" "}
                           {TimeFormat(item.date) || ""}
                         </span>
                       </div>

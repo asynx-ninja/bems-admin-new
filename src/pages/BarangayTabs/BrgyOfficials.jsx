@@ -13,9 +13,14 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import noData from "../../assets/image/no-data.png";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link);
+
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [officials, setOfficials] = useState([]);
+  const[newOfficial, setNewOfficials] = useState([])
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
@@ -25,6 +30,7 @@ const Officials = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [positionFilter, setPositionFilter] = useState("all");
+  const [filterOfficials, setfilterOfficials] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
   const returnLogo = () => {
@@ -66,28 +72,29 @@ const Officials = () => {
 
 
 
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
+  useEffect(() => {
+    const handleOfficial = (get_official) => {
+      setOfficials(get_official);
+      setfilterOfficials((prev) => [get_official, ...prev]);
+    };
 
-    const sortedData = officials.slice().sort((a, b) => {
-      if (sortBy === "lastName") {
-        return newSortOrder === "asc"
-          ? a.lastName.localeCompare(b.lastName)
-          : b.lastName.localeCompare(a.lastName);
-      } else if (sortBy === "rendered_service") {
-        const dateA = new Date(a.fromYear);
-        const dateB = new Date(b.fromYear);
+    const handleOfficialUpdate = (get_updated_official) => {
+      setOfficials(get_updated_official);
+      setfilterOfficials((curItem) =>
+        curItem.map((item) =>
+          item._id === get_updated_official._id ? get_updated_official : item
+        )
+      );
+    };
 
-        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
-      }
+    socket.on("receive-create-official", handleOfficial);
+    socket.on("receive-update-official", handleOfficialUpdate);
 
-      return 0;
-    });
-
-    setOfficials(sortedData);
-  };
+    return () => {
+      socket.off("receive-create-official", handleOfficial);
+      socket.off("receive-update-official", handleOfficialUpdate);
+    };
+  }, [socket, setOfficials]);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -133,6 +140,8 @@ const Officials = () => {
           if (officialsData.length > 0) {
             setPageCount(response.data.pageCount);
             setOfficials(officialsData);
+            setNewOfficials(officialsData)
+            setfilterOfficials(response.data.result.slice(0, 10))
           } else {
             setOfficials([]);
           }
@@ -153,9 +162,6 @@ const Officials = () => {
     setPositionFilter(selectedPosition);
   };
 
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
 
   const Officials = officials.filter((item) => {
     const fullName =
@@ -197,6 +203,34 @@ const Officials = () => {
 
   const handleResetFilter = () => {
     setPositionFilter("all");
+  };
+
+  useEffect(() => {
+    const filteredData = newOfficial.filter((item) => {
+      const fullName = item.lastName.toLowerCase() +
+        ", " +
+        item.firstName.toLowerCase() +
+        (item.middleName !== undefined ? " " + item.middleName.toLowerCase() : "");
+
+      return (
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setfilterOfficials(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newOfficial, searchQuery, currentPage]);
+
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   return (
@@ -410,7 +444,7 @@ const Officials = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
@@ -595,12 +629,13 @@ const Officials = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <CreateOfficialModal brgy={brgy} />
-      <ArchiveOfficialModal selectedItems={selectedItems} />
+      <CreateOfficialModal brgy={brgy}  socket={socket}/>
+      <ArchiveOfficialModal selectedItems={selectedItems}  socket={socket}/>
       <EditOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}
         brgy={brgy}
+        socket={socket}
       />
     </div>
   );

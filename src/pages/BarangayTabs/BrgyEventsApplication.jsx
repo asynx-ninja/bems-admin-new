@@ -79,7 +79,7 @@ const EventsRegistrations = () => {
         if (response.status === 200) {
           setApplications(response.data.result);
           setPageCount(response.data.pageCount);
-          setFilteredApplications(response.data.result);
+          setFilteredApplications(response.data.result.slice(0, 10));
         } else setApplications([]);
       } catch (err) {
         console.log(err);
@@ -117,8 +117,36 @@ const EventsRegistrations = () => {
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
 
+  useEffect(() => {
+    const filteredData = applications.filter((item) => {
+      const fullName = item.form[0].lastName.value.toLowerCase() +
+        ", " +
+        item.form[0].firstName.value.toLowerCase() +
+        " " +
+        item.form[0].middleName.value.toLowerCase();
+  
+      return (
+        item.event_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.application_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+  
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredApplications(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [applications, searchQuery, currentPage]);
+  
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+  
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const handleStatusFilter = (selectedStatus) => {
@@ -578,16 +606,7 @@ const EventsRegistrations = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Application = applications.filter((item) =>
-                      item.event_name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-
-                    setFilteredApplications(Application);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
             

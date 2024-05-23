@@ -26,6 +26,7 @@ const BrgyArchivedAnnouncement = () => {
   const [announcementWithCounts, setAnnouncementWithCounts] = useState([]);
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [selected, setSelected] = useState("date");
+  const [newEvents, setNewEvents] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,7 +52,8 @@ const BrgyArchivedAnnouncement = () => {
 
           Promise.all(announcementsData).then((announcementsWithCounts) => {
             setAnnouncementWithCounts(announcementsWithCounts);
-            setFilteredAnnouncements(announcementsWithCounts);
+            setFilteredAnnouncements(announcementsWithCounts.slice(0, 10));
+            setNewEvents(announcementsWithCounts)
           });
 
           setPageCount(announcementsResponse.data.pageCount);
@@ -69,8 +71,25 @@ const BrgyArchivedAnnouncement = () => {
     fetchData();
   }, [currentPage, brgy]);
 
+  useEffect(() => {
+    const filteredData = newEvents.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredAnnouncements(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newEvents, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
 
@@ -339,14 +358,7 @@ const BrgyArchivedAnnouncement = () => {
                     className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
                     placeholder="Search for items"
                     value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value)
-                      const Announcements = announcements.filter(
-                        (item) =>
-                          item.title.toLowerCase().includes(e.target.value.toLowerCase())
-                      );
-                      setFilteredAnnouncements(Announcements)
-                    }}
+                    onChange={handleSearchChange}
                   />
                 </div>
               </div>

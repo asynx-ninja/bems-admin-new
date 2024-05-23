@@ -7,7 +7,7 @@ import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../../GETBrgy/getbrgy";
 
-function CreateOfficialModal({ brgy }) {
+function CreateOfficialModal({ brgy, socket }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -90,11 +90,13 @@ function CreateOfficialModal({ brgy }) {
             toYear: "",
             brgy: "",
           });
+          socket.emit('send-create-official', result.data);
           setPfp(null);
           setSubmitClicked(false);
-          setCreationStatus("success");
+          setCreationStatus('success');
           setTimeout(() => {
-            window.location.reload();
+            setCreationStatus(null);
+            HSOverlay.close(document.getElementById('hs-create-official-modal'));
           }, 3000);
         }
       }

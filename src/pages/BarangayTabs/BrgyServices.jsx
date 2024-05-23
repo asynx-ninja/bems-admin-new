@@ -27,6 +27,22 @@ function Services() {
   const [serviceFilter, setServiceFilter] = useState("all");
   const [filteredServices, setFilteredServices] = useState([]);
   const information = GetBrgy(brgy);
+
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  const [newServices, setNewServices] = useState([]);
+
+  const [service, setService] = useState([]);
+
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
+
+  const [officials, setOfficials] = useState([]);
+  const [serviceForm, setServiceForm] = useState([]);
+  const [documentForm, setDocumentForm] = useState([]);
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
+
   const handleView = (service) => {
     setSelectedService(service);
   };
@@ -55,17 +71,16 @@ function Services() {
       );
       if (response.status === 200) {
         setServices(response.data.result);
+        setFilteredServices(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
-        setFilteredServices(response.data.result);
+        setNewServices(response.data.result)
       } else setServices([]);
     };
 
     fetch();
   }, [brgy, statusFilter, serviceFilter, currentPage]);
 
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
+
 
   useEffect(() => {
     const handleServiceUpt = (obj) => {
@@ -80,7 +95,6 @@ function Services() {
       setFilteredServices((prev) => [obj, ...prev]);
     };
 
-
     socket.on("receive-updated-service", handleServiceUpt);
     socket.on("receive-get-service", handleService);
     return () => {
@@ -88,7 +102,7 @@ function Services() {
       socket.off("receive-get-service", handleService);
     };
   }, [socket, setServices]);
-  
+
   const Services = services.filter(
     (item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -101,7 +115,27 @@ function Services() {
   const handleServiceFilter = (selectedStatus) => {
     setServiceFilter(selectedStatus);
   };
+  useEffect(() => {
+    const filteredData = newServices.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredServices(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newServices, searchQuery, currentPage]);
 
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
   const handleResetFilter = () => {
     setStatusFilter("all");
     setServiceFilter("all");
@@ -252,16 +286,7 @@ function Services() {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Service = services.filter((item) =>
-                      item.name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-
-                    setFilteredServices(Service);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
             </div>
@@ -421,29 +446,17 @@ function Services() {
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
         <ReactPaginate
-          breakLabel="..."
-          nextLabel={
-            pageCount > currentPage + 1 ? (
-              <span className="text-white">&gt;&gt;</span>
-            ) : (
-              <span className="text-gray-300 cursor-not-allowed">&gt;&gt;</span>
-            )
-          }
-          onPageChange={handlePageChange}
-          pageRangeDisplayed={3}
-          pageCount={pageCount}
-          previousLabel={
-            currentPage > 0 ? (
-              <span className="text-white"> &lt;&lt;</span>
-            ) : (
-              <span className="text-gray-300 cursor-not-allowed">&lt;&lt;</span>
-            )
-          }
-          className="flex space-x-3 text-white font-bold"
-          activeClassName="text-yellow-500"
-          disabledLinkClassName="text-gray-300"
-          renderOnZeroPageCount={null}
-        />
+            breakLabel="..."
+            nextLabel=">>"
+            onPageChange={handlePageChange}
+            pageRangeDisplayed={3}
+            pageCount={pageCount}
+            previousLabel="<<"
+            className="flex space-x-3 text-white font-bold"
+            activeClassName="text-yellow-500"
+            disabledLinkClassName="text-gray-400"
+            renderOnZeroPageCount={null}
+          />
       </div>
       <ViewArchivedServiceModal
         selectedService={selectedService}

@@ -6,8 +6,12 @@ import { useState } from "react";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../../GETBrgy/getbrgy";
 
-function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
-
+function ManageOfficialModal({
+  selectedOfficial,
+  setSelectedOfficial,
+  brgy,
+  socket,
+}) {
   const information = GetBrgy(brgy);
 
   const [edit, setEdit] = useState(false);
@@ -60,8 +64,6 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-
-
       if (res_folder.status === 200) {
         const result = await axios.patch(
           `${API_LINK}/brgyofficial/?brgy=${brgy}&doc_id=${selectedOfficial._id}&folder_id=${res_folder.data[0].official}`,
@@ -69,13 +71,13 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
         );
 
         if (result.status === 200) {
+          socket.emit("send-update-official", result.data);
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
           setTimeout(() => {
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }, 1000);
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-edit-official-modal"));
+          }, 3000);
         }
       }
     } catch (error) {
@@ -244,7 +246,9 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                       </option>
                       <option value="Barangay Kagawad">Barangay Kagawad</option>
                       <option value="Secretary">Secretary</option>
-                      <option value="Assistant Secretary">Assistant Secretary</option>
+                      <option value="Assistant Secretary">
+                        Assistant Secretary
+                      </option>
                       <option value="Treasurer">Treasurer</option>
                       <option value="SK Chairman">SK Chairman</option>
                       <option value="SK Kagawad">SK Kagawad</option>

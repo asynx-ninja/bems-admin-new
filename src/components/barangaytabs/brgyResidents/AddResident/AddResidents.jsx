@@ -1278,7 +1278,7 @@ const AddResidents = () => {
                   ADD
                 </button>
                 <Link
-                  to={`/residents/?id=${id}&brgy=${brgy}`}
+                  to={`/barangayinformation/?id=${id}&brgy=${brgy}`}
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm flex items-center justify-center"
                 >

@@ -4,23 +4,30 @@ import { BsCamera } from "react-icons/bs";
 import { FaUserCircle } from "react-icons/fa";
 import defaultPFP from "../../assets/sample-image/default-pfp.png";
 import { MdOutlineFileUpload } from "react-icons/md";
-import {
-  useSearchParams,
-} from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import axios from "axios";
+import EditLoader from "../../components/barangaytabs/brgyInformation/loaders/EditLoader";
 import API_LINK from "../../config/API";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link);
 
 const Information = () => {
   const [information, setInformation] = useState({});
+  const [initialInformation, setInitialInformation] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const [isEditingMode, setisEditingMode] = useState(false);
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
   const renameFile = (file, newName) => {
     const newFile = new File([file], newName, { type: file.type });
     return newFile;
   };
+
 
   useEffect(() => {
     document.title = "Barangay Information | Barangay E-Services Management";
@@ -32,6 +39,7 @@ const Information = () => {
         );
         if (response.status === 200) {
           setInformation(response.data[0]);
+          setInitialInformation(response.data[0]);
           var logoSrc = document.getElementById("edit_logo");
           logoSrc.src =
             response.data[0].logo.link !== "" ? (
@@ -59,6 +67,7 @@ const Information = () => {
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
+    setUpdatingStatus("success");
     try {
       const response = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
@@ -75,8 +84,14 @@ const Information = () => {
           `${API_LINK}/brgyinfo/${brgy}/?folder_id=${response.data[0].info}`,
           formData
         );
-        window.location.reload();
-        // setBrgyInformation({});
+        socket.emit("send-update-brgy-info", result.data);
+        setSubmitClicked(false);
+
+        // After a short delay, update the status and editing mode
+        setTimeout(() => {
+          setUpdatingStatus(null);
+          setisEditingMode(false);
+        }, 1000); // 500ms delay before showing the edit button again
       } else {
         console.error("No Data Found");
       }
@@ -126,7 +141,22 @@ const Information = () => {
       },
     }));
   };
+  useEffect(() => {
+    const handleInfo = (obj) => {
+      setInformation((prev) => ({ ...prev, ...obj }));
+    };
 
+    socket.on("receive-update-brgy-info", handleInfo);
+    return () => {
+      socket.off("receive-update-brgy-info", handleInfo);
+    };
+  }, [socket, setInformation]);
+  const handleCancelChanges = () => {
+    setInformation(initialInformation);
+    // setLogo(null);
+    // setBanner(null);
+    setisEditingMode(false);
+};
   useEffect(() => {
     document.title = "Barangay Information | Barangay E-Services Management";
   }, []);
@@ -177,7 +207,8 @@ const Information = () => {
               className={`w-full md:w-96 h-full lg:my-0 lg:mx-5 relative rounded-[28px] mx-auto bg-white shadow-2xl md:w-full flex flex-col `}
             >
               <div className="h-auto rounded-lg">
-                <div className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
+                <div
+                  className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
                   style={{
                     background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                     borderRadius: "28px 28px 0 0",
@@ -279,7 +310,8 @@ const Information = () => {
                           className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
                           role="tooltip"
                         >
-                           This secondary color must be lighter <br></br>than the primary color 
+                          This secondary color must be lighter <br></br>than the
+                          primary color
                         </span>
                       </div>
                       <input
@@ -310,7 +342,8 @@ const Information = () => {
                           className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
                           role="tooltip"
                         >
-                           This gradient 1 color will be serve<br></br> as the start color of gradient
+                          This gradient 1 color will be serve<br></br> as the
+                          start color of gradient
                         </span>
                       </div>
                       <input
@@ -341,7 +374,8 @@ const Information = () => {
                           className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
                           role="tooltip"
                         >
-                         This gradient 1 color will be serve<br></br> as the end color of gradient
+                          This gradient 1 color will be serve<br></br> as the
+                          end color of gradient
                         </span>
                       </div>
                       <input
@@ -372,7 +406,8 @@ const Information = () => {
                           className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
                           role="tooltip"
                         >
-                          This hover color will serve as the <br></br> color of your text
+                          This hover color will serve as the <br></br> color of
+                          your text
                         </span>
                       </div>
                       <input
@@ -387,10 +422,15 @@ const Information = () => {
                   </div>
                 )}
                 <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                  <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px] bg-gradient-to-r from-[#295141] to-[#408D51]" style={{ background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,}}>
+                  <div
+                    className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px] bg-gradient-to-r from-[#295141] to-[#408D51]"
+                    style={{
+                      background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                    }}
+                  >
                     <h1
                       className="text-center text-white text-2xl font-bold"
-                      style={{ letterSpacing: "0.2em", }}
+                      style={{ letterSpacing: "0.2em" }}
                     >
                       STORY
                     </h1>
@@ -408,7 +448,12 @@ const Information = () => {
                 </div>
 
                 <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                  <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px] bg-gradient-to-r from-[#295141] to-[#408D51]" style={{ background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,}}>
+                  <div
+                    className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px] bg-gradient-to-r from-[#295141] to-[#408D51]"
+                    style={{
+                      background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                    }}
+                  >
                     <h1
                       className="text-center text-white text-2xl font-bold"
                       style={{ letterSpacing: "0.2em" }}
@@ -429,7 +474,12 @@ const Information = () => {
                 </div>
 
                 <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                  <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px] bg-gradient-to-r from-[#295141] to-[#408D51]" style={{ background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,}}>
+                  <div
+                    className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px] bg-gradient-to-r from-[#295141] to-[#408D51]"
+                    style={{
+                      background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                    }}
+                  >
                     <h1
                       className="text-center text-white text-2xl font-bold"
                       style={{ letterSpacing: "0.2em" }}
@@ -449,7 +499,7 @@ const Information = () => {
                   </div>
                 </div>
                 <div className=" flex justify-center px-4 gap-4 py-6 text-white">
-                {isEditingMode ? (
+                  {isEditingMode ? (
                     <>
                       <button
                         onClick={handleSaveChanges}
@@ -459,7 +509,7 @@ const Information = () => {
                       </button>
                       <button
                         className="bg-pink-700 w-full xxl:w-1/2 px-7 py-2 rounded-xl"
-                        onClick={() => setisEditingMode(false)}
+                        onClick={handleCancelChanges}
                       >
                         CANCEL
                       </button>
@@ -477,6 +527,11 @@ const Information = () => {
             </div>
           </div>
         </div>
+
+        {submitClicked && <EditLoader updatingStatus="updating" />}
+        {updatingStatus && (
+          <EditLoader updatingStatus={updatingStatus} error={error} />
+        )}
       </div>
     </>
   );

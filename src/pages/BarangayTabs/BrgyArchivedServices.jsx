@@ -22,6 +22,8 @@ function ArchiveServices() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [serviceFilter, setServiceFilter] = useState("all");
+  const [newServices, setNewServices] = useState([]);
+
   const information = GetBrgy(brgy);
   const handleView = (item) => {
     setSelectedService(item);
@@ -34,15 +36,34 @@ function ArchiveServices() {
       );
       if (response.status === 200) {
         setServices(response.data.result);
+        setFilteredServices(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
-        setFilteredServices(response.data.result);
+        setNewServices(response.data.result)
       } else setServices([]);
     };
 
     fetch();
   }, [brgy, statusFilter, serviceFilter, currentPage]);
+  useEffect(() => {
+    const filteredData = newServices.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredServices(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newServices, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const tableHeader = [
@@ -209,16 +230,7 @@ function ArchiveServices() {
                     className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
                     placeholder="Search for items"
                     value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      const Service = services.filter((item) =>
-                        item.name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase())
-                      );
-
-                      setFilteredServices(Service);
-                    }}
+                    onChange={handleSearchChange}
                   />
                 </div>
               </div>

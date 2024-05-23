@@ -65,7 +65,7 @@ const Inquiries = () => {
 
       if (response.status === 200) {
         setInquiries(response.data.result);
-        setFilteredInquiries(response.data.result);
+        setFilteredInquiries(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
       } else {
         setInquiries([]);
@@ -75,8 +75,25 @@ const Inquiries = () => {
     fetchInquiries();
   }, [id, brgy, statusFilter, currentPage]);
 
+  useEffect(() => {
+    const filteredData = inquiries.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredInquiries(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [inquiries, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const tableHeader = [
@@ -429,20 +446,7 @@ const Inquiries = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Inquiries = inquiries.filter(
-                      (item) =>
-                        item.name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.inq_id
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase())
-                    );
-
-                    setFilteredInquiries(Inquiries);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
             </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { FaArchive, FaPlus, FaUserCircle } from "react-icons/fa";
-import { AiOutlineEye} from "react-icons/ai";
+import { AiOutlineEye } from "react-icons/ai";
 import { FiEdit, FiMail } from "react-icons/fi";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
@@ -14,101 +14,134 @@ import StatusResident from "../../components/barangaytabs/brgyResidents/StatusRe
 import ManageResidentModal from "../../components/barangaytabs/brgyResidents/ManageResidentsModal";
 import MessageResidentModal from "../../components/barangaytabs/brgyResidents/messageResident";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link);
 const Residents = () => {
+  const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
-  const type = "Resident";
   const [user, setUser] = useState({});
   const [status, setStatus] = useState({});
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [sortBy, setSortBy] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [filteredResidents, setFilteredResidents] = useState([])
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-  const [filteredResident, setFilteredResidents] = useState([]);
   const information = GetBrgy(brgy);
-  const sortedAndFilteredUsers = useMemo(() => {
-    let filteredUsers = [...users];
+  const [newUsers, setNewUsers] = useState([])
 
-    // Filter by status
-    if (statusFilter !== "all") {
-      filteredUsers = filteredUsers.filter(
-        (user) => user.isApproved === statusFilter
-      );
-    }
+   
 
-    // Filter by search query
-    if (searchQuery.trim() !== "") {
-      const searchLowerCase = searchQuery.toLowerCase();
-      filteredUsers = filteredUsers.filter((user) =>
-        `${user.firstName} ${user.middleName} ${user.lastName}`
-          .toLowerCase()
-          .includes(searchLowerCase)
-      );
-    }
 
-    // Sort
-    filteredUsers.sort((a, b) => {
-      const nameA =
-        `${a.firstName} ${a.middleName} ${a.lastName}`.toUpperCase();
-      const nameB =
-        `${b.firstName} ${b.middleName} ${b.lastName}`.toUpperCase();
+  useEffect(() => {
+    const handleResident = (get_resident) => {
+      setUsers(get_resident)
+      setFilteredResidents(curItem => curItem.map((item) =>
+        item._id === get_resident._id ? get_resident : item
+      ))
+    };
 
-      if (sortOrder === "asc") {
-        return nameA.localeCompare(nameB);
-      } else {
-        return nameB.localeCompare(nameA);
-      }
-    });
+    socket.on("receive-update-status-resident", handleResident);
 
-    return filteredUsers;
-  }, [users, sortOrder, statusFilter, searchQuery]);
-
-  const handleSort = (sortByValue) => {
-    setSortBy(sortByValue);
-    // If you want to reset the status filter when sorting, uncomment the line below
-    setStatusFilter("all");
-  };
-
-  const handleStatusFilter = (selectedStatus) => {
-    setStatusFilter(selectedStatus);
-  };
-
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-  };
+    return () => {
+      socket.off("receive-update-status-resident", handleResident);
+    };
+  }, [socket, setUsers]);
 
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/users/?brgy=${brgy}&type=Resident&status=${statusFilter}&page=${currentPage}`
+        `${API_LINK}/users/?brgy=${brgy}&type=Resident&status=${statusFilter}`
       );
       if (response.status === 200) {
         setUsers(response.data.result);
+        setFilteredResidents(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
+        setNewUsers(response.data.result)
       } else {
         setUsers([]);
       }
     };
 
     fetch();
-  }, [brgy, statusFilter, currentPage]);
-  
+  }, [brgy, statusFilter]);
+
+  useEffect(() => {
+    const filteredData = newUsers.filter((item) => {
+      const fullName = item.lastName.toLowerCase() +
+        ", " +
+        item.firstName.toLowerCase() +
+        (item.middleName !== undefined ? " " + item.middleName.toLowerCase() : "");
+
+      return (
+        item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredResidents(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newUsers, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
 
-  const tableHeader = [
-    "PROFILE",
-    "NAME",
-    "AGE",
-    "GENDER",
-    "ACCOUNT STATUS",
-    "ACTIONS",
-  ];
+  // const Users = users.filter((item) => {
+  //   const fullName =
+  //     `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
+  //   const userIdMatches = item.user_id
+  //     .toLowerCase()
+  //     .includes(searchQuery.toLowerCase());
+  //   const nameMatches = fullName.includes(searchQuery.toLowerCase());
+
+  //   return userIdMatches || nameMatches;
+  // });
+
+  const checkboxHandler = (e) => {
+    let isSelected = e.target.checked;
+    let value = e.target.value;
+
+    if (isSelected) {
+      setSelectedItems([...selectedItems, value]);
+    } else {
+      setSelectedItems((prevData) => {
+        return prevData.filter((id) => {
+          return id !== value;
+        });
+      });
+    }
+  };
+
+  const checkAllHandler = () => {
+    const usersToCheck = Users.length > 0 ? Users : users;
+
+    if (usersToCheck.length === selectedItems.length) {
+      setSelectedItems([]);
+    } else {
+      const postIds = usersToCheck.map((item) => {
+        return item._id;
+      });
+
+      setSelectedItems(postIds);
+    }
+  };
+
+  const tableHeader = ["NAME", "EMAIL", "AGE", "CONTACT", "STATUS", "ACTIONS"];
 
   useEffect(() => {
     document.title = "Residents | Barangay E-Services Management";
@@ -117,13 +150,17 @@ const Residents = () => {
   const handleView = (item) => {
     setUser(item);
   };
+
   const handleStatus = (status) => {
     setStatus(status);
   };
+
   const handleResetFilter = () => {
     setStatusFilter("all");
+    setDateFilter(null);
     setSearchQuery("");
   };
+
   const handleCombinedActions = (item) => {
     handleView({ ...item });
     handleStatus({
@@ -305,26 +342,7 @@ const Residents = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-
-                    if (e.target.value.trim() === "") {
-                      // If the search input is empty, fetch all data
-                      setUsers(users);
-                    } else {
-                      // If the search input is not empty, filter the data
-                      const User = users.filter(
-                        (item) =>
-                          item.firstName
-                            .toLowerCase()
-                            .includes(e.target.value.toLowerCase()) ||
-                          item.lastName
-                            .toLowerCase()
-                            .includes(e.target.value.toLowerCase())
-                      );
-                      setFilteredResidents(User);
-                    }
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
             </div>
@@ -333,12 +351,22 @@ const Residents = () => {
 
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
-          <table className="relative table-auto w-full">
+        <table className="relative table-auto w-full">
             <thead
-              className=" sticky top-0 bg-[#295141]"
+              className="bg-teal-700 sticky top-0"
               style={{ backgroundColor: information?.theme?.primary }}
             >
               <tr className="">
+                <th scope="col" className="px-6 py-4">
+                  <div className="flex justify-center items-center">
+                    <input
+                      type="checkbox"
+                      name=""
+                      onClick={checkAllHandler}
+                      id=""
+                    />
+                  </div>
+                </th>
                 {tableHeader.map((item, idx) => (
                   <th
                     scope="col"
@@ -351,72 +379,50 @@ const Residents = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {sortedAndFilteredUsers.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={tableHeader.length + 1}
-                    className="text-center  overflow-y-hidden h-[calc(100vh_-_400px)] xxxl:h-[calc(100vh_-_326px)]"
-                  >
-                    <img
-                      src={noData}
-                      alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
-                    />
-                    <strong className="text-[#535353]">NO DATA FOUND</strong>
-                  </td>
-                </tr>
-              ) : (
-                sortedAndFilteredUsers.map((item, index) => (
+              {filteredResidents.length > 0 ? (
+                filteredResidents.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                        <div className="px-2 sm:px-6 py-2">
-                          {item.profile && item.profile.link ? (
-                            <img
-                              src={item.profile.link}
-                              alt="Profile"
-                              className="lg:w-20 lg:h-20 w-16 h-16 object-cover border border-4  rounded-full mx-auto border-[#295141]"
-                              style={{
-                                borderColor: information?.theme?.primary,
-                              }}
-                            />
-                          ) : (
-                            <FaUserCircle
-                              className="lg:w-20 lg:h-20 w-16 h-16 object-cover border border-4  rounded-full text-gray-500 mx-auto border-[#295141]"
-                              style={{
-                                borderColor: information?.theme?.primary,
-                              }}
-                            />
-                          )}
-                        </div>
-                      </span>
-                    </td>
-
-                    <td className="px-6 py-3 w-2/12">
-                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2 truncate ">
-                        {item.lastName +
-                          " " +
-                          item.firstName +
-                          "," +
-                          item.middleName}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-2 ">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
+                          id=""
+                        />
+                      </div>
+                    </td>
+                    <td className="py-3 w-1/5">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                        {item.lastName +
+                          ", " +
+                          item.firstName +
+                          (item.middleName !== undefined
+                            ? " " + item.middleName
+                            : "")}
+                      </span>
+                    </td>
+                    <td className="py-3">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2 ">
+                        {item.email}
+                      </span>
+                    </td>
+                    <td className="xl:px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.age}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="py-3">
                       <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                          {item.sex}
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.contact}
                         </span>
                       </div>
                     </td>
-
-                    <td className="px-6 py-3">
+                    <td className="py-3">
                       {item.isApproved === "Verified" && (
                         <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
@@ -424,7 +430,7 @@ const Residents = () => {
                           </span>
                         </div>
                       )}
-                     {item.isApproved === "For Review" && (
+                      {item.isApproved === "For Review" && (
                         <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             FOR REVIEW
@@ -455,9 +461,9 @@ const Residents = () => {
                     </td>
                     <td className="xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block">
+                        <div className="hs-tooltip inline-block">
                           <Link
-                            to={`/editresidentS/?id=${id}&brgy=${brgy}`}
+                            to={`/editresidents/?id=${id}&brgy=${brgy}`}
                             state={{ ...item }}
                             className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
@@ -509,6 +515,20 @@ const Residents = () => {
                     </td>
                   </tr>
                 ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center sm:h-[18.7rem] xl:py-1 lg:h-[17rem] xxl:py-32 xl:h-[18.8rem]"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[14rem] xl:w-80 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
@@ -522,44 +542,39 @@ const Residents = () => {
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
         <ReactPaginate
-          breakLabel="..."
-          nextLabel={
-            pageCount > currentPage + 1 ? (
-              <span className="text-white">&gt;&gt;</span>
-            ) : (
-              <span className="text-gray-300 cursor-not-allowed">&gt;&gt;</span>
-            )
-          }
-          onPageChange={handlePageChange}
-          pageRangeDisplayed={3}
-          pageCount={pageCount}
-          previousLabel={
-            currentPage > 0 ? (
-              <span className="text-white"> &lt;&lt;</span>
-            ) : (
-              <span className="text-gray-300 cursor-not-allowed">&lt;&lt;</span>
-            )
-          }
-          className="flex space-x-3 text-white font-bold"
-          activeClassName="text-yellow-500"
-          disabledLinkClassName="text-gray-300"
-          renderOnZeroPageCount={null}
-        />
+            breakLabel="..."
+            nextLabel=">>"
+            onPageChange={handlePageChange}
+            pageRangeDisplayed={3}
+            pageCount={pageCount}
+            previousLabel="<<"
+            className="flex space-x-3 text-white font-bold"
+            activeClassName="text-yellow-500"
+            disabledLinkClassName="text-gray-400"
+            renderOnZeroPageCount={null}
+          />
       </div>
-      <AddResidentsModal brgy={brgy} />
+      <AddResidentsModal brgy={brgy} socket={socket} />
       <StatusResident
         user={user}
         setUser={setUser}
         brgy={brgy}
         status={status}
         setStatus={setStatus}
+        socket={socket}
       />
-      <MessageResidentModal 
-         user={user}
-         setUser={setUser}
-         brgy={brgy}
-         />
-       <ManageResidentModal user={user} setUser={setUser} brgy={brgy} />
+      <MessageResidentModal
+        user={user}
+        setUser={setUser}
+        brgy={brgy}
+        socket={socket}
+      />
+      <ManageResidentModal
+        user={user}
+        setUser={setUser}
+        brgy={brgy}
+        socket={socket}
+      />
     </div>
   );
 };
