@@ -40,7 +40,6 @@ const ArchivedEvents = () => {
           `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
         );
         if (announcementsResponse.status === 200) {
-     
           const announcementsData = announcementsResponse.data.result.map(
             async (announcement) => {
               const completedResponse = await axios.get(
@@ -95,7 +94,6 @@ const ArchivedEvents = () => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
-  
 
   const Announcements = announcements.filter(
     (item) =>
@@ -162,15 +160,15 @@ const ArchivedEvents = () => {
   useEffect(() => {
     const handleEventRestore = (obj) => {
       setAnnouncement(obj);
-      setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+      setAnnouncements((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredAnnouncements((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
     };
-
 
     socket.on("receive-restore-muni", handleEventRestore);
 
     return () => {
-
       socket.on("receive-restore-muni", handleEventRestore);
     };
   }, [socket, setAnnouncement, setAnnouncements]);
@@ -194,7 +192,6 @@ const ArchivedEvents = () => {
         const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
-
 
         return announcements.filter(
           (item) =>
@@ -221,10 +218,7 @@ const ArchivedEvents = () => {
   };
 
   const onSelect = (e) => {
-
-
     setSelected(e.target.value);
-
   };
 
   const onChangeDate = (e) => {
@@ -582,7 +576,10 @@ const ArchivedEvents = () => {
           announcement={announcement}
           setAnnouncement={setAnnouncement}
         />
-        <RestoreAnnouncementModal selectedItems={selectedItems} socket={socket}/>
+        <RestoreAnnouncementModal
+          selectedItems={selectedItems}
+          socket={socket}
+        />
       </div>
     </div>
   );

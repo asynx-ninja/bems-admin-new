@@ -88,18 +88,6 @@ const EventsRegistrations = () => {
   }, [brgy, statusFilter, selecteEventFilter]);
 
   useEffect(() => {
-    const filteredData = searchapplications.filter(
-      (item) =>
-        item.event_name &&
-        item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredApplications(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [searchapplications, searchQuery, currentPage]);
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -127,7 +115,18 @@ const EventsRegistrations = () => {
 
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
-
+  useEffect(() => {
+    const filteredData = searchapplications.filter(
+      (item) =>
+        item.event_name &&
+        item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredApplications(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [searchapplications, searchQuery, currentPage]);
+  
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
@@ -162,7 +161,6 @@ const EventsRegistrations = () => {
       item.event_name &&
       item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;

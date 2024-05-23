@@ -38,7 +38,7 @@ function ArchiveAnnouncementModal({ selectedItems, socket }) {
             setTimeout(() => {
               setUpdatingStatus(null);
               HSOverlay.close(document.getElementById("hs-modal-archive"));
-            }, 1000);
+            }, 3000);
         }
       }
     } catch (err) {

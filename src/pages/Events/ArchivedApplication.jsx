@@ -14,7 +14,9 @@ import ViewRegistrationModal from "../../components/eventRegistrations/ViewRegis
 import Breadcrumbs from "../../components/eventRegistrations/Breadcrumbs";
 import RestoreRegistrationModal from "../../components/eventRegistrations/RestoreRegistrationModal";
 import noData from "../../assets/image/no-data.png";
-
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link);
 const ArchivedRegistrations = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });
@@ -38,6 +40,7 @@ const ArchivedRegistrations = () => {
   const [selected, setSelected] = useState("date");
   const [eventFilter, setEventFilter] = useState([]);
   const [selecteEventFilter, setSelectedEventFilter] = useState("all");
+  const [searchapplications, setSearchApplications] = useState([]);
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -49,15 +52,14 @@ const ArchivedRegistrations = () => {
           let arr = [];
           response.data.result.map((item) => {
             arr.push(item.title);
-          })
+          });
           setEventFilter(arr);
         }
-
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
-    }
-    fetch()
+    };
+    fetch();
   }, [brgy]);
 
   useEffect(() => {
@@ -70,7 +72,7 @@ const ArchivedRegistrations = () => {
           setApplications(response.data.result);
           setFilteredApplications(response.data.result.slice(0, 10)); // Update filtered applications with all data
           setPageCount(response.data.pageCount); // Update page count based on all data
-          setUpdate(false);
+          setSearchApplications(response.data.result);
         } else {
           setApplications([]);
         }
@@ -78,9 +80,9 @@ const ArchivedRegistrations = () => {
         console.log(err);
       }
     };
-  
+
     fetch();
-  }, [brgy, statusFilter, selecteEventFilter, update]);
+  }, [brgy, statusFilter, selecteEventFilter]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -114,14 +116,16 @@ const ArchivedRegistrations = () => {
   };
 
   useEffect(() => {
-    const filteredData = applications.filter((item) =>
-      item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredData = searchapplications.filter(
+      (item) =>
+        item.event_name &&
+        item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const startIndex = currentPage * 10;
     const endIndex = startIndex + 10;
     setFilteredApplications(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
-  }, [applications, searchQuery, currentPage]);
+  }, [searchapplications, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -132,7 +136,23 @@ const ArchivedRegistrations = () => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
-  
+  useEffect(() => {
+    const handleEventArchive = (obj) => {
+      setApplication(obj);
+      setSearchApplications((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredApplications((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    socket.on("receive-archive-muni", handleEventArchive);
+    return () => {
+      socket.off("receive-archive-muni", handleEventArchive);
+    };
+  }, [socket, setApplication, setSearchApplications]);
+  // Handle search input change
 
   const Applications = applications.filter((item) =>
     item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -249,7 +269,6 @@ const ArchivedRegistrations = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
@@ -275,9 +294,7 @@ const ArchivedRegistrations = () => {
   };
 
   const onSelect = (e) => {
-
     setSelected(e.target.value);
-
   };
 
   const onChangeDate = (e) => {
@@ -310,7 +327,6 @@ const ArchivedRegistrations = () => {
 
   return (
     <div className="mx-4 mt-8">
-
       <div>
         <Breadcrumbs id={id} />
         {/* Header */}
@@ -512,8 +528,9 @@ const ArchivedRegistrations = () => {
                 >
                   EVENT TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -541,18 +558,17 @@ const ArchivedRegistrations = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
-                  {eventFilter.map((title, index) => (
-                    <a
-                      key={index}
-                      onClick={() => handleEventFilter(title)}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      {title}
-                    </a>
-                    
-                  ))}
-                    </div>
+                    {eventFilter.map((title, index) => (
+                      <a
+                        key={index}
+                        onClick={() => handleEventFilter(title)}
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        href="#"
+                      >
+                        {title}
+                      </a>
+                    ))}
+                  </div>
                 </ul>
               </div>
             </div>
@@ -667,7 +683,7 @@ const ArchivedRegistrations = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                        {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
                           {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
@@ -747,18 +763,18 @@ const ArchivedRegistrations = () => {
                 ))
               ) : (
                 <tr>
-                <td
-                  colSpan={tableHeader.length + 1}
-                  className="text-center  overflow-y-hidden h-[calc(100vh_-_400px)] xxxl:h-[calc(100vh_-_326px)]"
-                >
-                  <img
-                    src={noData}
-                    alt=""
-                    className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
-                  />
-                  <strong className="text-[#535353]">NO DATA FOUND</strong>
-                </td>
-              </tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center  overflow-y-hidden h-[calc(100vh_-_400px)] xxxl:h-[calc(100vh_-_326px)]"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
@@ -782,12 +798,15 @@ const ArchivedRegistrations = () => {
         />
       </div>
       {Object.hasOwn(application, "event_id") ? (
-        <ViewRegistrationModal application={application}  officials={officials}
-        brgy={brgy} />
+        <ViewRegistrationModal
+          application={application}
+          officials={officials}
+          brgy={brgy}
+        />
       ) : null}
       <ArchiveRegistrationModal />
-   
-      <RestoreRegistrationModal selectedItems={selectedItems} />
+
+      <RestoreRegistrationModal selectedItems={selectedItems} socket={socket} />
     </div>
   );
 };

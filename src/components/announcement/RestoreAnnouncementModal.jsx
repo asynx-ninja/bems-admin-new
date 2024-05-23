@@ -35,7 +35,7 @@ function RestoreAnnouncementModal({ selectedItems, socket }) {
           setTimeout(() => {
             setUpdatingStatus(null);
             HSOverlay.close(document.getElementById("hs-modal-restore"));
-          }, 1000);
+          }, 3000);
         }
       }
     } catch (err) {

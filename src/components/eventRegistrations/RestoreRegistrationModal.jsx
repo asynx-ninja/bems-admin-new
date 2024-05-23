@@ -5,7 +5,7 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import StatusLoader from "./loaders/RestoreLoader";
 import { LuArchiveRestore } from "react-icons/lu";
-function RestoreRegistrationModal({ selectedItems }) {
+function RestoreRegistrationModal({ selectedItems, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -30,14 +30,13 @@ function RestoreRegistrationModal({ selectedItems }) {
           `${API_LINK}/application/archived/${selectedItems[i]}/false`
         );
         if (response.status === 200) {
+          socket.emit("send-restore-muni", response.data);
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
           setTimeout(() => {
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
-            setTimeout(() => {
-              setUpdatingStatus(null);
-              HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
-              window.location.reload();
-            }, 3000);
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
           }, 3000);
         }
       }
