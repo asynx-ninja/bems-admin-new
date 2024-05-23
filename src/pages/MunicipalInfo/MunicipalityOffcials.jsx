@@ -94,16 +94,53 @@ const MunicipalityOfficials = () => {
   };
 
   
+  useEffect(() => {
+    const filteredData = officials.filter(
+      (item) =>
+       
+        item.firstName.toLowerCase().includes(searchQuery.toLowerCase())||
+        item.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredOfficials(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [officials, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredOfficials(officials.slice(start, end));
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const handleEditClick = async (official) => {
     setSelectedOfficial(official);
   };
+
+  useEffect(() => {
+    const handleOfficialUpt = (obj) => {
+      setFilteredOfficials((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
+    const handleOfficial = (obj) => {
+      setSelectedOfficial(obj);
+
+      setFilteredOfficials((prev) => [obj, ...prev]);
+    };
+
+    socket.on("receive-upt-muni-official", handleOfficialUpt);
+    socket.on("receive-muni-official", handleOfficial);
+    return () => {
+      socket.off("receive-upt-muni-official", handleOfficialUpt);
+      socket.off("receive-muni-official", handleOfficial);
+    };
+  }, [socket, setSelectedOfficial]);
 
   const tableHeader = [
     "IMAGE",
@@ -297,17 +334,7 @@ const MunicipalityOfficials = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = officials.filter(
-                      (item) =>
-                        item.firstName.toLowerCase().includes(e.target.value.toLowerCase())||
-                        item.lastName.toLowerCase().includes(e.target.value.toLowerCase())
-                      
-                    );
-                    setFilteredOfficials(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
@@ -460,13 +487,14 @@ const MunicipalityOfficials = () => {
             renderOnZeroPageCount={null}
           />
       </div>
-      <CreateOfficialModal brgy={brgy} />
+      <CreateOfficialModal brgy={brgy} socket={socket}/>
     
       <ArchiveOfficialModal selectedItems={selectedItems} />
       <EditOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}
         brgy={brgy}
+        socket={socket}
       />
     </div>
   );

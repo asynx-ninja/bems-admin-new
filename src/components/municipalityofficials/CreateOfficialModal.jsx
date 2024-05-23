@@ -4,7 +4,7 @@ import { CiImageOn } from "react-icons/ci";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import AddLoader from "./loaders/AddLoader";
-function CreateOfficialModal({ brgy }) {
+function CreateOfficialModal({ brgy, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -80,7 +80,7 @@ function CreateOfficialModal({ brgy }) {
       );
 
       if (result.status === 200) {
-   
+        socket.emit("send-muni-official", result.data);
         setOfficial({
           name: "",
           details: "",
@@ -93,7 +93,8 @@ function CreateOfficialModal({ brgy }) {
         setSubmitClicked(false);
         setCreationStatus("success");
         setTimeout(() => {
-          window.location.reload();
+          setCreationStatus(null);
+          HSOverlay.close(document.getElementById("hs-create-official-modal"));
         }, 3000);
       }
       }

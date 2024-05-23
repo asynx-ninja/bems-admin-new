@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
 import AddLoader from "./loaders/AddLoader";
-function AddTouristSpot({ brgy, section }) {
+function AddTouristSpot({ brgy, section, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -73,6 +73,7 @@ function AddTouristSpot({ brgy, section }) {
       const result = await axios.post(`${API_LINK}/tourist_spot/?folder_id=${response.data[0].tourist_spot}`, formData);
 
       if (result.status === 200) {
+        socket.emit("send-tourist-spot", result.data);
         settouristSpot({
           section: "",
           name: "",
@@ -83,7 +84,10 @@ function AddTouristSpot({ brgy, section }) {
         setSubmitClicked(false);
         setCreationStatus("success");
         setTimeout(() => {
-          window.location.reload();
+          setCreationStatus(null);
+          HSOverlay.close(
+            document.getElementById("hs-modal-addtouristspot")
+          );
         }, 3000);
       }
     }

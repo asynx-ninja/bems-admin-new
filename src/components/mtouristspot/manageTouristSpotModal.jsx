@@ -5,7 +5,12 @@ import { useNavigate } from "react-router-dom";
 import EditDropbox from "./EditDropbox";
 import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
-function ManageTouristSpotModal({brgy, touristspotInfo, settouristspotInfo }) {
+function ManageTouristSpotModal({
+  brgy,
+  touristspotInfo,
+  settouristspotInfo,
+  socket,
+}) {
   const [images, setImages] = useState([]);
   const [edit, setEdit] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -25,7 +30,6 @@ function ManageTouristSpotModal({brgy, touristspotInfo, settouristspotInfo }) {
       ...prev,
       [e.target.name]: e.target.value,
     }));
-
   };
 
   const editImageRef = useRef(null);
@@ -44,52 +48,48 @@ function ManageTouristSpotModal({brgy, touristspotInfo, settouristspotInfo }) {
 
   const handleSubmit = async (e) => {
     try {
-    e.preventDefault();
-  
-    if (
-      !touristspotInfo.name.trim() ||
-      !touristspotInfo.details.trim()
-    ) {
-     
-      setError("Please fill out all required fields.");
-      return; // Prevent further execution of handleSubmit
-    }
-    setSubmitClicked(true);
-    setError(null)
+      e.preventDefault();
 
-    const response = await axios.get(
-      `${API_LINK}/folder/specific/?brgy=${brgy}`
-    );
+      if (!touristspotInfo.name.trim() || !touristspotInfo.details.trim()) {
+        setError("Please fill out all required fields.");
+        return; // Prevent further execution of handleSubmit
+      }
+      setSubmitClicked(true);
+      setError(null);
 
-    if(response.status === 200){
-      let formData = new FormData();
-
-      images.forEach((image) => {
-        if (image instanceof File) {
-          formData.append("files", image);
-        } else {
-          formData.append("saved", JSON.stringify(image));
-        }
-      });
-
-      formData.append("touristspot", JSON.stringify(touristspotInfo));
-
-      const result = await axios.patch(
-        `${API_LINK}/tourist_spot/${touristspotInfo._id}/?folder_id=${response.data[0].tourist_spot}`,
-        formData
+      const response = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      if (result.status === 200) {
-        setTimeout(() => {
-          // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
+      if (response.status === 200) {
+        let formData = new FormData();
+
+        images.forEach((image) => {
+          if (image instanceof File) {
+            formData.append("files", image);
+          } else {
+            formData.append("saved", JSON.stringify(image));
+          }
+        });
+
+        formData.append("touristspot", JSON.stringify(touristspotInfo));
+
+        const result = await axios.patch(
+          `${API_LINK}/tourist_spot/${touristspotInfo._id}/?folder_id=${response.data[0].tourist_spot}`,
+          formData
+        );
+
+        if (result.status === 200) {
+          socket.emit("send-upt-tourist-spot", result.data);
+          setEdit(!edit);
           setSubmitClicked(false);
           setUpdatingStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-managetourist"));
           }, 3000);
-        }, 1000);
+        }
       }
-    }
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
@@ -120,32 +120,32 @@ function ManageTouristSpotModal({brgy, touristspotInfo, settouristspotInfo }) {
             </div>
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
-            {error && (
-                  <div
-                    className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
-                    role="alert"
-                  >
-                    <div className="flex p-4">
-                      <div className="flex-shrink-0">
-                        <svg
-                          className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={16}
-                          height={16}
-                          fill="currentColor"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                        </svg>
-                      </div>
-                      <div className="ms-3">
-                        <p className="text-sm text-gray-700 font-medium ">
-                          {error}
-                        </p>
-                      </div>
+              {error && (
+                <div
+                  className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
+                  role="alert"
+                >
+                  <div className="flex p-4">
+                    <div className="flex-shrink-0">
+                      <svg
+                        className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={16}
+                        height={16}
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                      </svg>
+                    </div>
+                    <div className="ms-3">
+                      <p className="text-sm text-gray-700 font-medium ">
+                        {error}
+                      </p>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
               <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
@@ -165,13 +165,12 @@ function ManageTouristSpotModal({brgy, touristspotInfo, settouristspotInfo }) {
                   disabled={!edit}
                   placeholder="Service Name"
                 />
-                 {error && !touristspotInfo.name && (
+                {error && !touristspotInfo.name && (
                   <p className="text-red-500 text-xs italic">
                     Please enter a tourist spot name.
                   </p>
                 )}
               </div>
-             
 
               <div className="mb-4">
                 <label
@@ -192,7 +191,7 @@ function ManageTouristSpotModal({brgy, touristspotInfo, settouristspotInfo }) {
                   }`}
                   placeholder="Enter service details..."
                 />
-                     {error && !touristspotInfo.details && (
+                {error && !touristspotInfo.details && (
                   <p className="text-red-500 text-xs italic">
                     Please enter a details.
                   </p>
@@ -208,7 +207,7 @@ function ManageTouristSpotModal({brgy, touristspotInfo, settouristspotInfo }) {
                 handleSubmit={handleSubmit}
                 id="imageInput"
               />
-                {error && images.length === 0 && (
+              {error && images.length === 0 && (
                 <p className="text-red-500 text-xs italic">
                   Please upload at least one image
                 </p>

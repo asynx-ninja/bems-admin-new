@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import API_LINK from "../../config/API";
 import { LiaRandomSolid } from "react-icons/lia";
 import AddLoader from "./loaders/AddLoader";
-function AddAdminModal({ brgy, occupation }) {
+function AddAdminModal({ brgy, occupation, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -109,6 +109,7 @@ function AddAdminModal({ brgy, occupation }) {
       const result = await axios.post(`${API_LINK}/municipal_admin/`, obj);
 
       if (result.status === 200) {
+        socket.emit("send-muni-admin", result.data);
         setUser({
           user_id: "",
           firstName: "",
@@ -137,7 +138,8 @@ function AddAdminModal({ brgy, occupation }) {
         setSubmitClicked(false);
         setCreationStatus("success");
         setTimeout(() => {
-          window.location.reload();
+          setCreationStatus(null);
+          HSOverlay.close(document.getElementById("hs-modal-addAdmin"));
         }, 3000);
       }
     } catch (err) {

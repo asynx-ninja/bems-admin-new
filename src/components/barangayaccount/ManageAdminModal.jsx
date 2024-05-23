@@ -6,7 +6,7 @@ import { LiaRandomSolid } from "react-icons/lia";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import EditLoader from "./loaders/EditLoader";
-function ManageAdminModal({ user, setUser }) {
+function ManageAdminModal({ user, setUser, socket }) {
   const [edit, setEdit] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -76,12 +76,12 @@ function ManageAdminModal({ user, setUser }) {
         !user.street ||
         !user.username ||
         !user.password
-      ) 
-      // {
-      //   setError("Please fill out all required fields.");
-      //   return; // Prevent further execution of handleSubmit
-      // }
-      setSubmitClicked(true);
+      )
+        // {
+        //   setError("Please fill out all required fields.");
+        //   return; // Prevent further execution of handleSubmit
+        // }
+        setSubmitClicked(true);
       var formData = new FormData();
       formData.append("users", JSON.stringify(user));
 
@@ -91,16 +91,16 @@ function ManageAdminModal({ user, setUser }) {
       );
 
       if (response.status === 200) {
-       
+        socket.emit("send-upt-brgy-admin", response.data);
         setTimeout(() => {
-          // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
           setSubmitClicked(false);
           setUpdatingStatus("success");
+          setEdit(!edit);
           setTimeout(() => {
-            window.location.reload();
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-editAdmin"));
           }, 3000);
         }, 1000);
-
       } else {
         console.error("Update failed. Status:", response.status);
       }
@@ -132,13 +132,10 @@ function ManageAdminModal({ user, setUser }) {
     return age;
   };
   const resetForm = () => {
-
     setError(null);
-   
   };
   return (
     <div>
-       
       <div className="">
         <div
           id="hs-modal-editAdmin"
@@ -158,32 +155,32 @@ function ManageAdminModal({ user, setUser }) {
               </div>
 
               <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
-              {error && (
-                <div
-                  className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
-                  role="alert"
-                >
-                  <div className="flex p-4">
-                    <div className="flex-shrink-0">
-                      <svg
-                        className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width={16}
-                        height={16}
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                      </svg>
-                    </div>
-                    <div className="ms-3">
-                      <p className="text-sm text-gray-700 font-medium ">
-                        {error}
-                      </p>
+                {error && (
+                  <div
+                    className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
+                    role="alert"
+                  >
+                    <div className="flex p-4">
+                      <div className="flex-shrink-0">
+                        <svg
+                          className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width={16}
+                          height={16}
+                          fill="currentColor"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                        </svg>
+                      </div>
+                      <div className="ms-3">
+                        <p className="text-sm text-gray-700 font-medium ">
+                          {error}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
                 <form>
                   <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                     <div className="flex flex-col mb-1 w-full">
@@ -214,7 +211,7 @@ function ManageAdminModal({ user, setUser }) {
                               value={user.firstName}
                               disabled={!edit}
                             />
-                             {error && !user.firstName && (
+                            {error && !user.firstName && (
                               <p className="text-red-500 text-xs italic">
                                 Please enter a first name.
                               </p>
@@ -242,7 +239,7 @@ function ManageAdminModal({ user, setUser }) {
                               value={user.middleName}
                               disabled={!edit}
                             />
-                             {error && !user.middleName && (
+                            {error && !user.middleName && (
                               <p className="text-red-500 text-xs italic">
                                 Please enter a middle name.
                               </p>
@@ -268,7 +265,7 @@ function ManageAdminModal({ user, setUser }) {
                               value={user.lastName}
                               disabled={!edit}
                             />
-                             {error && !user.lastName && (
+                            {error && !user.lastName && (
                               <p className="text-red-500 text-xs italic">
                                 Please enter a last name.
                               </p>
@@ -353,7 +350,7 @@ function ManageAdminModal({ user, setUser }) {
                               value={user.email}
                               disabled={!edit}
                             />
-                               {error && !user.email && (
+                            {error && !user.email && (
                               <p className="text-red-500 text-xs italic">
                                 Please enter an email.
                               </p>
@@ -379,11 +376,11 @@ function ManageAdminModal({ user, setUser }) {
                               value={user.contact}
                               disabled={!edit}
                             />
-                             {error && !user.contact && (
+                            {error && !user.contact && (
                               <p className="text-red-500 text-xs italic">
                                 Please enter a contact.
                               </p>
-                            )} 
+                            )}
                           </div>
 
                           <div className="w-full md:ml-4 md:w-[20%]">
@@ -509,11 +506,13 @@ function ManageAdminModal({ user, setUser }) {
                               defaultValue={user.occupation}
                               disabled
                               className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                error && !user.occupation ? "border-red-500" : ""
+                                error && !user.occupation
+                                  ? "border-red-500"
+                                  : ""
                               }`}
                               placeholder=""
                             />
-                             {error && !user.occupation && (
+                            {error && !user.occupation && (
                               <p className="text-red-500 text-xs italic">
                                 Please enter a occupation.
                               </p>
@@ -774,7 +773,7 @@ function ManageAdminModal({ user, setUser }) {
                             type="text"
                             id="facebook_name"
                             className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={user.socials?.facebook?.name ?? ''}
+                            value={user.socials?.facebook?.name ?? ""}
                             placeholder=""
                             disabled
                           />
@@ -786,7 +785,7 @@ function ManageAdminModal({ user, setUser }) {
                               type="text"
                               id="facebook_link"
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.socials?.facebook?.link ?? ''}
+                              value={user.socials?.facebook?.link ?? ""}
                               placeholder=""
                               disabled
                             />
@@ -823,7 +822,7 @@ function ManageAdminModal({ user, setUser }) {
                             type="text"
                             id="facebook_name"
                             className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={user.socials?.twitter?.name ?? ''}
+                            value={user.socials?.twitter?.name ?? ""}
                             placeholder=""
                             disabled
                           />
@@ -835,7 +834,7 @@ function ManageAdminModal({ user, setUser }) {
                               type="text"
                               id="facebook_link"
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.socials?.twitter?.link ?? ''}
+                              value={user.socials?.twitter?.link ?? ""}
                               placeholder=""
                               disabled
                             />
@@ -872,7 +871,7 @@ function ManageAdminModal({ user, setUser }) {
                             type="text"
                             id="facebook_name"
                             className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={user.socials?.instagram?.name ?? ''}
+                            value={user.socials?.instagram?.name ?? ""}
                             placeholder=""
                             disabled
                           />
@@ -884,7 +883,7 @@ function ManageAdminModal({ user, setUser }) {
                               type="text"
                               id="facebook_link"
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.socials?.instagram?.link ?? ''}
+                              value={user.socials?.instagram?.link ?? ""}
                               placeholder=""
                               disabled
                             />

@@ -60,6 +60,7 @@ function AddAboutus({ brgy, socket }) {
 
       // Create form data
       if (response.status === 200) {
+
         const formData = new FormData();
         formData.append("file", banner);
         formData.append(
@@ -74,6 +75,7 @@ function AddAboutus({ brgy, socket }) {
         // Submit form data
         const result = await axios.post(`${API_LINK}/aboutus/?folder_id=${response.data[0].about_us}`, formData);
         if (result.status === 200) {
+          socket.emit("send-muni-about", result.data);
           // Reset form fields
           setAboutus({
             brgy: "",
@@ -84,7 +86,10 @@ function AddAboutus({ brgy, socket }) {
           setSubmitClicked(false);
           setCreationStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            setCreationStatus(null);
+            HSOverlay.close(
+              document.getElementById("hs-modal-addaboutus")
+            );
           }, 3000);
         }
       }

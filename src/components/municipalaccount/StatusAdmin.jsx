@@ -2,17 +2,16 @@ import React from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { useState } from "react";
-function StatusAdmin({ status, setStatus }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [timerId, setTimerId] = useState(null);
+import Status from "./loaders/Status";
+function StatusAdmin({ status, setStatus, socket }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
   const handleSave = async (e) => {
-    setIsLoading(true);
-
-    // Clear any existing timer
-    clearTimeout(timerId);
     try {
       e.preventDefault();
-
+      setSubmitClicked(true);
+      setError(null)
       const response = await axios.patch(
         `${API_LINK}/users/status/${status.id}`,
         {
@@ -22,15 +21,17 @@ function StatusAdmin({ status, setStatus }) {
       );
 
       if (response.status === 200) {
-        setTimerId(
+        socket.emit("send-upt-muni-admin", response.data);
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
           setTimeout(() => {
-            setIsLoading(false);
+            setUpdatingStatus(null);
             HSOverlay.close(document.getElementById("hs-modal-statusAdmin"));
-            window.location.reload();
-          }, 1000)
-        );
+          }, 3000);
       } else;
     } catch (err) {
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
       console.log(err);
     }
   };
@@ -44,15 +45,6 @@ function StatusAdmin({ status, setStatus }) {
 
   return (
     <div>
-      {isLoading && (
-        <div className="fixed inset-0 bg-white z-50 flex justify-center items-center">
-          <div className="loaders">
-            <div className="loader"></div>
-            <div className="loader"></div>
-            <div className="loader"></div>
-          </div>
-        </div>
-      )}
       <div className="">
         <div
           id="hs-modal-statusAdmin"
@@ -105,7 +97,6 @@ function StatusAdmin({ status, setStatus }) {
                     type="button"
                     onClick={handleSave}
                     className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-[#295141]  text-white shadow-sm align-middle"
-                    data-hs-overlay="#hs-modal-statusAdmin"
                   >
                     SAVE CHANGES
                   </button>
@@ -121,6 +112,10 @@ function StatusAdmin({ status, setStatus }) {
             </div>
           </div>
         </div>
+        {submitClicked && <Status updatingStatus="updating" />}
+        {updatingStatus && (
+          <Status updatingStatus={updatingStatus} error={error} />
+        )}
       </div>
     </div>
   );

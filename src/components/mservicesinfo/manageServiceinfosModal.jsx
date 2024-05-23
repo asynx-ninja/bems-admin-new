@@ -5,7 +5,7 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import EditLoader from "./loaders/EditLoader";
-function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos }) {
+function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos, socket }) {
   const [icon, setIcon] = useState();
   const [edit, setEdit] = useState(false);
   const editIconRef = useRef(null);
@@ -33,10 +33,7 @@ function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      if (
-        !servicesinfos.name.trim() ||
-        !servicesinfos.details.trim() 
-      ) {
+      if (!servicesinfos.name.trim() || !servicesinfos.details.trim()) {
         // Highlight empty fields with red border
         if (!servicesinfos.name.trim()) {
           document.getElementById("name");
@@ -62,7 +59,7 @@ function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos }) {
       if (response.status === 200) {
         const formData = new FormData();
         formData.append("file", icon);
-        
+
         formData.append("servicesinfo", JSON.stringify(servicesinfos));
 
         const result = await axios.patch(
@@ -71,14 +68,17 @@ function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos }) {
         );
         if (result.status === 200) {
           // Handle successful update
-         
+
+          socket.emit("send-upt-offered-serv", result.data);
+          setSubmitClicked(false);
+          setEdit(!edit);
+          setUpdatingStatus("success");
           setTimeout(() => {
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }, 1000);
+            setUpdatingStatus(null);
+            HSOverlay.close(
+              document.getElementById("hs-modal-manageserviceinfo")
+            );
+          }, 3000);
         }
       }
     } catch (err) {
@@ -92,6 +92,7 @@ function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos }) {
   const handleOnEdit = () => {
     setEdit(!edit);
   };
+  
   const resetForm = () => {
     setError(null);
     setSubmitClicked(false);

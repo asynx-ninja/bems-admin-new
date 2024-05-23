@@ -5,7 +5,7 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
-function AddServicesInfo({ brgy }) {
+function AddServicesInfo({ brgy, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -74,6 +74,7 @@ function AddServicesInfo({ brgy }) {
         );
 
         if (result.status === 200) {
+          socket.emit("send-offered-serv", result.data);
           setServicesInfo({
             brgy: "",
             name: "",
@@ -83,7 +84,10 @@ function AddServicesInfo({ brgy }) {
           setSubmitClicked(false);
           setCreationStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            setCreationStatus(null);
+            HSOverlay.close(
+              document.getElementById("hs-modal-addservices-info")
+            );
           }, 3000);
         }
       }

@@ -54,11 +54,24 @@ const MHomepageInfo = () => {
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    const filteredData = aboutus.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredAboutUs(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [aboutus, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredAboutUs(aboutus.slice(start, end));
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
 
@@ -108,15 +121,24 @@ const MHomepageInfo = () => {
   };
 
   useEffect(() => {
-    const handleAbousUpt = (obj) => {
+    const handleAboustUpt = (obj) => {
       setFilteredAboutUs((curItem) =>
         curItem.map((item) => (item._id === obj._id ? obj : item))
       );
     };
 
-    socket.on("receive-upt-muni-about", handleAbousUpt);
+    const handleAboutUs = (obj) => {
+      setAboutusinfo(obj);
+
+      setFilteredAboutUs((prev) => [obj, ...prev]);
+    };
+
+
+    socket.on("receive-upt-muni-about", handleAboustUpt);
+    socket.on("receive-muni-about", handleAboutUs);
     return () => {
-      socket.off("receive-upt-muni-about", handleAbousUpt);
+      socket.off("receive-upt-muni-about", handleAboustUpt);
+      socket.off("receive-muni-about", handleAboutUs);
     };
   }, [socket, setAboutusinfo]);
 
@@ -399,16 +421,7 @@ const MHomepageInfo = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = aboutus.filter(
-                      (item) =>
-                        item.title.toLowerCase().includes(e.target.value.toLowerCase())
-                      
-                    );
-                    setFilteredAboutUs(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">

@@ -35,7 +35,7 @@ const Settings = () => {
     pass: false,
   });
   const [editButton, setEditButton] = useState(true);
-  const [pfp, setPfp] = useState();
+  const [pfp, setPfp] = useState("");
   const [userAddress, setUserAddress] = useState({
     street: "",
     brgy: "",
@@ -83,13 +83,12 @@ const Settings = () => {
   const handleFileChange = (e) => {
     e.preventDefault();
 
-    setPfp(e.target.files[0]);
-
     var output = document.getElementById("pfp");
     output.src = URL.createObjectURL(e.target.files[0]);
     output.onload = function () {
       URL.revokeObjectURL(output.src); // free memory
     };
+    setPfp(e.target.files[0]);
   };
 
   useEffect(() => {
@@ -248,11 +247,13 @@ const Settings = () => {
 
 
       if (res_folder.status === 200) {
+        setSubmitClicked(true);
+          setError(null);
         const response = await axios.patch(
-          `${API_LINK}/users/?doc_id=${id}&folder_id=${result.data[0].pfp}`,
+          `${API_LINK}/users/?doc_id=${id}&folder_id=${res_folder.data[0]?.pfp}`,
           formData
         );
-
+        console.log("ew", response.data[0])
         if (activeButton.credential === true) {
           if (
             userData.username &&
@@ -295,14 +296,14 @@ const Settings = () => {
          
           setUserData(response.data);
           setUserAddress({
-            street: response.data.address.street,
-            brgy: response.data.address.brgy,
-            city: response.data.address.city,
+            street: response.data?.address?.street,
+            brgy: response.data?.address?.brgy,
+            city: response.data?.address?.city,
           });
           setUserSocials({
-            facebook: response.data.socials.facebook,
-            instagram: response.data.socials.instagram,
-            twitter: response.data.socials.twitter,
+            facebook: response.data?.socials?.facebook,
+            instagram: response.data?.socials?.instagram,
+            twitter: response.data?.socials?.twitter,
           });
           setEditButton(true);
           setTimeout(() => {
@@ -1021,7 +1022,7 @@ const Settings = () => {
                           <input
                             id="facebook-name"
                             type="text"
-                            value={userSocials.facebook.name || ""}
+                            value={userSocials.facebook?.name || ""}
                             disabled={editButton}
                             onChange={(e) => {
                               handleUserSocials(
@@ -1045,7 +1046,7 @@ const Settings = () => {
                           <input
                             type="text"
                             id="facebook-name"
-                            value={userSocials.facebook.link || ""}
+                            value={userSocials.facebook?.link || ""}
                             disabled={editButton}
                             onChange={(e) => {
                               handleUserSocials(
@@ -1071,7 +1072,7 @@ const Settings = () => {
                           <input
                             id="instagram-name"
                             type="text"
-                            value={userSocials.instagram.name || ""}
+                            value={userSocials.instagram?.name || ""}
                             disabled={editButton}
                             onChange={(e) => {
                               handleUserSocials(
@@ -1095,7 +1096,7 @@ const Settings = () => {
                           <input
                             id="instagram-link"
                             type="text"
-                            value={userSocials.instagram.link || ""}
+                            value={userSocials.instagram?.link || ""}
                             disabled={editButton}
                             onChange={(e) => {
                               handleUserSocials(
@@ -1121,7 +1122,7 @@ const Settings = () => {
                           <input
                             id="twitter-name"
                             type="text"
-                            value={userSocials.twitter.name || ""}
+                            value={userSocials.twitter?.name || ""}
                             disabled={editButton}
                             onChange={(e) => {
                               handleUserSocials(
@@ -1144,7 +1145,7 @@ const Settings = () => {
                           </label>
                           <input
                             type="text"
-                            value={userSocials.twitter.link || ""}
+                            value={userSocials.twitter?.link || ""}
                             disabled={editButton}
                             onChange={(e) => {
                               handleUserSocials(

@@ -12,6 +12,7 @@ import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
+import dprofile from "../../assets/sample-image/default-pfp.png";
 import { FaTimes, FaFileImage } from "react-icons/fa";
 // import { io } from "socket.io-client";
 // import Socket_link from "../../config/Socket";
@@ -21,7 +22,8 @@ function ViewInquiriesModal({
   setInquiry,
   brgy,
   socket,
-  inqContainerRef
+  inqContainerRef,
+  inquiries,
 }) {
   const [onSend, setOnSend] = useState(false);
   const [errMsg, setErrMsg] = useState(false);
@@ -35,6 +37,7 @@ function ViewInquiriesModal({
   const [replyStatus, setReplyStatus] = useState(null);
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState({});
+  const [userDatas, setUserDatas] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const chatContainerRef = useRef(null);
@@ -70,7 +73,8 @@ function ViewInquiriesModal({
       chats.scrollTop = chats.scrollHeight;
     }
   });
-
+  const user_id = inquiries.user_id;
+  console.log(user_id);
   useEffect(() => {
     const container = chatContainerRef.current;
 
@@ -90,9 +94,10 @@ function ViewInquiriesModal({
     const fetch = async () => {
       try {
         const res = await axios.get(`${API_LINK}/users/specific/${id}`);
-
         if (res.status === 200) {
           setUserData(res.data[0]);
+          console.log("1", userData);
+          console.log("2", userData.profile.link);
         }
       } catch (error) {
         console.log(error);
@@ -100,6 +105,24 @@ function ViewInquiriesModal({
     };
     fetch();
   }, [id]);
+
+  useEffect(() => {
+    const fetch1 = async () => {
+      try {
+        const res1 = await axios.get(
+          `${API_LINK}/users/specific_user/acc/?user_id=${user_id}`
+        );
+        if (res1.status === 200) {
+          setUserDatas(res1.data[0]);
+          console.log("3", userDatas);
+          console.log("4", userDatas?.profile?.link);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch1();
+  }, [user_id]);
 
   const fileInputRef = useRef();
   const imageInputRef = useRef();
@@ -224,8 +247,9 @@ function ViewInquiriesModal({
               "MMM. DD, YYYY h:mm a"
             )}\n
             - Status: ${inquiry.isApproved}\n
-            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${userData.middleName
-              }\n\n
+            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
+              userData.middleName
+            }\n\n
             `,
             go_to: "Inquiries",
           },
@@ -412,8 +436,9 @@ function ViewInquiriesModal({
                           key={index}
                           className={
                             responseItem.sender ===
-                              `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                              } (${userData.type})`
+                            `${userData?.firstName?.toUpperCase() ?? ""} ${
+                              userData?.lastName?.toUpperCase() ?? ""
+                            } (${userData.type})`
                               ? "flex flex-col justify-end items-end w-full h-auto"
                               : "flex flex-col justify-start items-start mb-1 w-full h-auto"
                           }
@@ -421,8 +446,9 @@ function ViewInquiriesModal({
                           <div
                             className={
                               responseItem.sender ===
-                                `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                                } (${userData.type})`
+                              `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                userData?.lastName?.toUpperCase() ?? ""
+                              } (${userData.type})`
                                 ? "flex flex-col items-end h-auto max-w-[80%]"
                                 : "flex flex-col items-start mb-5 h-auto max-w-[80%]"
                             }
@@ -430,51 +456,91 @@ function ViewInquiriesModal({
                             <div
                               className={
                                 responseItem.sender ===
-                                  `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                                  } (${userData.type})`
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                  userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})`
                                   ? "hidden"
                                   : "flex flex-row w-full justify-between"
                               }
                             >
-                              <div className="flex flex-col md:flex-row md:items-center">
+                              {/* <div className="flex flex-col md:flex-row md:items-center">
                                 <p className="text-[14px] text-black md:text-sm font-medium capitalize text-wrap">
-                                  {responseItem && responseItem.sender ? responseItem.sender.toLowerCase() : ""}
+                                  {responseItem && responseItem.sender
+                                    ? responseItem.sender.toLowerCase()
+                                    : ""}
                                 </p>
-                              </div>
+                              </div> */}
                             </div>
-                            {responseItem.message !== "" ? (
-                              <div
-                                className={
-                                  responseItem.sender ===
-                                    `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+
+                            <div
+                              className={`flex flex-row w-full items-center ${
+                                responseItem.sender ===
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                  userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})`
+                                  ? "justify-start"
+                                  : "justify-end"
+                              }`}
+                            >
+                              {responseItem.sender !==
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                  userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})` && (
+                                <img
+                                  src={
+                                    responseItem.sender ===
+                                    `${
+                                      userData?.firstName?.toUpperCase() ?? ""
+                                    } ${
+                                      userData?.lastName?.toUpperCase() ?? ""
                                     } (${userData.type})`
-                                    ? "flex flex-col rounded-xl bg-green-400 mb-1 text-white px-2 md:px-4 py-2 cursor-pointer"
-                                    : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
-                                }
-                                onClick={() => handleOnViewTime(index)}
-                              >
-                                <div className="w-full h-full">
-                                  <div className="w-full h-full rounded-xl p-1">
-                                    <p className="text-[12px] md:text-xs break-all">
-                                      {responseItem.message}
-                                    </p>
+                                      ? userData?.profile?.link || dprofile
+                                      : userDatas?.profile?.link || dprofile
+                                  }
+                                  alt="Profile Image"
+                                  className="w-8 h-8 rounded-full mr-2 border border-green-600"
+                                />
+                              )}
+                              <div>
+                                {responseItem.message !== "" ? (
+                                  <div
+                                    className={
+                                      responseItem.sender ===
+                                      `${
+                                        userData?.firstName?.toUpperCase() ?? ""
+                                      } ${
+                                        userData?.lastName?.toUpperCase() ?? ""
+                                      } (${userData.type})`
+                                        ? "flex flex-col rounded-xl bg-green-400 mb-1 text-white px-2 md:px-4 py-2 cursor-pointer"
+                                        : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
+                                    }
+                                    onClick={() => handleOnViewTime(index)}
+                                  >
+                                    <div className="w-full h-full">
+                                      <div className="w-full h-full rounded-xl p-1">
+                                        <p className="text-[12px] md:text-xs break-all">
+                                          {responseItem.message}
+                                        </p>
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-                            ) : null}
-                            {!responseItem.file ? null : (
-                              <ViewDropbox
-                                viewFiles={responseItem.file || []}
-                                responseItem={
-                                  responseItem.sender ===
-                                    `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                                    } (${userData.type})`
-                                    ? true
-                                    : false
-                                }
-                              />
-                            )}
-                            <p
+                                ) : null}
+                                {!responseItem.file ? null : (
+                                  <ViewDropbox
+                                    viewFiles={responseItem.file || []}
+                                    responseItem={
+                                      responseItem.sender ===
+                                      `${
+                                        userData?.firstName?.toUpperCase() ?? ""
+                                      } ${
+                                        userData?.lastName?.toUpperCase() ?? ""
+                                      } (${userData.type})`
+                                        ? true
+                                        : false
+                                    }
+                                  />
+                                )}
+                                {/* <p
                               className={
                                 viewTime.timeKey === index
                                   ? "text-[10px] md:text-xs mt-[5px] text-black text-right text-xs"
@@ -482,7 +548,9 @@ function ViewInquiriesModal({
                               }
                             >
                               {DateFormat(responseItem.date) || ""}
-                            </p>
+                            </p> */}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -496,16 +564,17 @@ function ViewInquiriesModal({
               ) : null}
 
               <div
-                className={`${inquiry.status === "Cancelled" ||
-                    inquiry.status === "Rejected" ||
-                    inquiry.status === "Completed"
+                className={`${
+                  inquiry.status === "Cancelled" ||
+                  inquiry.status === "Rejected" ||
+                  inquiry.status === "Completed"
                     ? "w-[98%] mb-2 border-0 rounded-lg"
                     : "w-[98%] mb-2 border-[1px] border-[#b7e4c7] rounded-lg"
-                  }`}
+                }`}
               >
                 {inquiry.status === "Cancelled" ||
-                  inquiry.status === "Rejected" ||
-                  inquiry.status === "Application Completed" ? (
+                inquiry.status === "Rejected" ||
+                inquiry.status === "Application Completed" ? (
                   <div>
                     <p className="text-center text-[14px] my-5 px-5">
                       You are unable to reply to this conversation due to the
@@ -659,17 +728,13 @@ function ViewInquiriesModal({
                                       const newStatus = e.target.value;
                                       const statusRegex =
                                         /The status of your inquiry is [\w\s]+/;
-                                      let updatedMessage =
-                                        newMessage.message;
+                                      let updatedMessage = newMessage.message;
 
-                                      if (
-                                        statusRegex.test(updatedMessage)
-                                      ) {
-                                        updatedMessage =
-                                          updatedMessage.replace(
-                                            statusRegex,
-                                            `The status of your inquiry is ${newStatus}`
-                                          );
+                                      if (statusRegex.test(updatedMessage)) {
+                                        updatedMessage = updatedMessage.replace(
+                                          statusRegex,
+                                          `The status of your inquiry is ${newStatus}`
+                                        );
                                       } else if (!updatedMessage.trim()) {
                                         updatedMessage = `The status of your inquiry is ${newStatus}`;
                                       }
@@ -698,9 +763,7 @@ function ViewInquiriesModal({
                                     <option value="In Progress">
                                       IN PROGRESS
                                     </option>
-                                    <option value="Completed">
-                                      COMPLETED
-                                    </option>
+                                    <option value="Completed">COMPLETED</option>
                                   </select>
                                 </div>
                               </div>

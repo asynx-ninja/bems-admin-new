@@ -6,14 +6,14 @@ import { useSearchParams } from "react-router-dom";
 
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive, FaPlus } from "react-icons/fa";
- 
+
 import moment from "moment";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import API_LINK from "../../config/API";
 
 import ArchiveServicesInfoModal from "../../components/mservicesinfo/archivedServicesInfoModal";
-import ManageServiceInfoModal from "../../components/mservicesinfo/manageServiceinfosModal"
+import ManageServiceInfoModal from "../../components/mservicesinfo/manageServiceinfosModal";
 import AddServicesInfoModal from "../../components/mservicesinfo/addServicesModal";
 import noData from "../../assets/image/no-data.png";
 
@@ -45,22 +45,35 @@ const MServicesInfo = () => {
         setPageCount(response.data.pageCount);
         setFilteredServices(response.data.result.slice(0, 10));
         setServicesInfo(response.data.result);
-      }
-        
-      else setServicesInfo([]);
+      } else setServicesInfo([]);
     };
-    fetch()
+    fetch();
   }, []);
 
   const Services = servicesinfo.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    const filteredData = servicesinfo.filter(
+      (item) =>
+       
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredServices(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [servicesinfo, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredServices(servicesinfo.slice(start, end));
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const checkboxHandler = (e) => {
@@ -92,15 +105,42 @@ const MServicesInfo = () => {
     }
   };
 
-  const tableHeader = ["banner", "title", "details", "creation date", "actions"];
+  const tableHeader = [
+    "banner",
+    "title",
+    "details",
+    "creation date",
+    "actions",
+  ];
 
   useEffect(() => {
-    document.title = "Municilaplity Services Info | Barangay E-Services Management";
+    document.title =
+      "Municilaplity Services Info | Barangay E-Services Management";
   }, []);
 
   const handleView = (item) => {
     setServicesInfos(item);
   };
+  useEffect(() => {
+    const handleOfferedServUpt = (obj) => {
+      setFilteredServices((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
+    const handleOfferedServ = (obj) => {
+      setServicesInfos(obj);
+
+      setFilteredServices((prev) => [obj, ...prev]);
+    };
+
+    socket.on("receive-upt-offered-serv", handleOfferedServUpt);
+    socket.on("receive-offered-serv", handleOfferedServ);
+    return () => {
+      socket.off("receive-upt-offered-serv", handleOfferedServUpt);
+      socket.off("receive-offered-serv", handleOfferedServ);
+    };
+  }, [socket, setServicesInfos]);
 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 10);
@@ -164,11 +204,7 @@ const MServicesInfo = () => {
   };
 
   const onSelect = (e) => {
-   
-
     setSelected(e.target.value);
-
-    
   };
 
   const onChangeDate = (e) => {
@@ -196,7 +232,7 @@ const MServicesInfo = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      
+
       setFilteredServices(filters(selected, date));
     }
   };
@@ -205,7 +241,7 @@ const MServicesInfo = () => {
       <div className="flex flex-col ">
         <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
-          <h1
+            <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
@@ -263,7 +299,7 @@ const MServicesInfo = () => {
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
-          <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left] shadow-sm">
+            <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left] shadow-sm">
               <button
                 id="hs-dropdown"
                 type="button"
@@ -357,7 +393,7 @@ const MServicesInfo = () => {
               </ul>
             </div>
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
-            <div className="flex flex-row w-full md:mr-2">
+              <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#295141] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
                     <svg
@@ -385,16 +421,7 @@ const MServicesInfo = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = servicesinfo.filter(
-                      (item) =>
-                        item.name.toLowerCase().includes(e.target.value.toLowerCase())
-                      
-                    );
-                    setFilteredServices(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
@@ -444,89 +471,92 @@ const MServicesInfo = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-            {filteredServices.length === 0 ? (
-                   <tr>
-                   <td
-                     colSpan={tableHeader.length + 1}
-                     className="text-center  overflow-y-hidden h-[calc(100vh_-_400px)] xxxl:h-[calc(100vh_-_326px)]"
-                   >
-                     <img
-                       src={noData}
-                       alt=""
-                       className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
-                     />
-                     <strong className="text-[#535353]">NO DATA FOUND</strong>
-                   </td>
-                 </tr>
-              ) : (
-                filteredServices.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                        id=""
-                      />
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                      <div className="px-2 sm:px-6 py-2">
-                        {item.icon.link ? (
-                          <div className="lg:w-32 lg:h-20 w-16 h-24 aspect-w-4 aspect-h-3 overflow-hidden mx-auto ">
-                            <img
-                              src={item.icon.link}
-                              alt="picture"
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <FaUserCircle className="lg:w-20 lg:h-32 w-16 h-24 object-cover border border-4 border-[#013D74] rounded-full text-gray-500 mx-auto" />
-                        )}
-                      </div>
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-2 ">
-                        {item.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-1 w-[100px] ">
-                        {item.details}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                      {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
-                          {TimeFormat(item.createdAt) || ""}
-                      </span>
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <button
-                        type="button"
-                        data-hs-overlay="#hs-modal-manageserviceinfo"
-                        onClick={() => handleView({ ...item })}
-                        className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                      >
-                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
-                      </button>
-                    </div>
+              {filteredServices.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center  overflow-y-hidden h-[calc(100vh_-_400px)] xxxl:h-[calc(100vh_-_326px)]"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
                 </tr>
-               ))
-               )}
+              ) : (
+                filteredServices.map((item, index) => (
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
+                          id=""
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                        <div className="px-2 sm:px-6 py-2">
+                          {item.icon.link ? (
+                            <div className="lg:w-32 lg:h-20 w-16 h-24 aspect-w-4 aspect-h-3 overflow-hidden mx-auto ">
+                              <img
+                                src={item.icon.link}
+                                alt="picture"
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <FaUserCircle className="lg:w-20 lg:h-32 w-16 h-24 object-cover border border-4 border-[#013D74] rounded-full text-gray-500 mx-auto" />
+                          )}
+                        </div>
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-2 ">
+                          {item.name}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-1 w-[100px] ">
+                          {item.details}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {TimeFormat(item.createdAt) || ""}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <button
+                          type="button"
+                          data-hs-overlay="#hs-modal-manageserviceinfo"
+                          onClick={() => handleView({ ...item })}
+                          className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineEye
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -547,12 +577,13 @@ const MServicesInfo = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddServicesInfoModal brgy={brgy} />
+        <AddServicesInfoModal brgy={brgy} socket={socket} />
         <ArchiveServicesInfoModal selectedItems={selectedItems} />
         <ManageServiceInfoModal
           brgy={brgy}
           servicesinfos={servicesinfos}
           setServicesInfos={setServicesInfos}
+          socket={socket}
         />
       </div>
     </div>

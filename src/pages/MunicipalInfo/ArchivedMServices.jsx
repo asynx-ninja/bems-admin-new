@@ -51,13 +51,27 @@ const ArchivedServicesInfo = () => {
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    const filteredData = servicesinfo.filter(
+      (item) =>
+       
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredServices(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [servicesinfo, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredServices(servicesinfo.slice(start, end));
   };
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -331,16 +345,7 @@ const ArchivedServicesInfo = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = servicesinfo.filter(
-                      (item) =>
-                        item.name.toLowerCase().includes(e.target.value.toLowerCase())
-                      
-                    );
-                    setFilteredServices(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">

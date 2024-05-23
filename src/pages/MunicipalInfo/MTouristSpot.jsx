@@ -54,11 +54,26 @@ const MTouristSpot = () => {
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    const filteredData = touristspot.filter(
+      (item) =>
+       
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredTouristSpot(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [touristspot, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredTouristSpot(touristspot.slice(start, end));
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
   
   const checkboxHandler = (e) => {
@@ -104,6 +119,26 @@ const MTouristSpot = () => {
   const handleView = (item) => {
     settouristspotInfo(item);
   };
+  useEffect(() => {
+    const handleTouristSpotUpt = (obj) => {
+      setFilteredTouristSpot((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
+    const handleTouristSpot = (obj) => {
+      settouristspotInfo(obj);
+
+      setFilteredTouristSpot((prev) => [obj, ...prev]);
+    };
+
+    socket.on("receive-upt-tourist-spot", handleTouristSpotUpt);
+    socket.on("receive-tourist-spot", handleTouristSpot);
+    return () => {
+      socket.off("receive-upt-tourist-spot", handleTouristSpotUpt);
+      socket.off("receive-tourist-spot", handleTouristSpot);
+    };
+  }, [socket, settouristspotInfo]);
 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 10);
@@ -384,16 +419,7 @@ const MTouristSpot = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = touristspot.filter((item) =>
-                      item.name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-                    setFilteredTouristSpot(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
@@ -550,12 +576,13 @@ const MTouristSpot = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddAboutusModal section={section} brgy={brgy} />
+        <AddAboutusModal section={section} brgy={brgy} socket={socket}/>
         <ArchiveTouristSpotModal selectedItems={selectedItems} />
         <ManageTouristSpotModal
           brgy={brgy}
           touristspotInfo={touristspotInfo}
           settouristspotInfo={settouristspotInfo}
+          socket={socket}
         />
       </div>
     </div>

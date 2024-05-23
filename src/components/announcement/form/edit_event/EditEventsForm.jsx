@@ -8,7 +8,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditEventsForm = ({ announcement_id, brgy, eventsForm }) => {
+const EditEventsForm = ({ announcement_id, brgy, eventsForm, socket }) => {
   const information = GetBrgy(brgy);
 
   const [details, setDetails] = useState([]);
@@ -75,9 +75,10 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm }) => {
           );
 
           if (response.status === 200) {
-            socket.emit("send-get_events_forms", response.data);
+            socket.emit("send-edit-event-form", response.data);
             setSubmitClicked(false);
             setUpdatingStatus("success");
+            setOnSend(false);
             setTimeout(() => {
               setUpdatingStatus(null);
               setDetail({});
@@ -108,7 +109,7 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm }) => {
         );
 
         if (response.status === 200) {
-          // clearForm();
+          socket.emit("send-edit-event-form", response.data);
           setSubmitClicked(false);
           setUpdatingStatus("success");
           setOnSend(false);

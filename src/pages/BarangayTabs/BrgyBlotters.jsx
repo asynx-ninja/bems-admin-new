@@ -671,7 +671,7 @@ const Blotters = () => {
                             </span>
                           </div>
 
-                          <div className="hs-tooltip inline-block">
+                          {/* <div className="hs-tooltip inline-block">
                             <button
                               type="button"
                               data-hs-overlay="#hs-replys-modal"
@@ -689,9 +689,9 @@ const Blotters = () => {
                             >
                               Reply to Request
                             </span>
-                          </div>
+                          </div> */}
 
-                          <div className="hs-tooltip inline-block">
+                          {/* <div className="hs-tooltip inline-block">
                             <button
                               type="button"
                               data-hs-overlay="#hs-create-serviceDocument-modal"
@@ -709,8 +709,8 @@ const Blotters = () => {
                             >
                               Create Blotter Document
                             </span>
-                          </div>
-                          <div className="hs-tooltip inline-block">
+                          </div> */}
+                          {/* <div className="hs-tooltip inline-block">
                             <button
                               type="button"
                               data-hs-overlay="#hs-edit-serviceDocument-modal"
@@ -728,7 +728,7 @@ const Blotters = () => {
                             >
                               Edit Blotter Document
                             </span>
-                          </div>
+                          </div> */}
                         </div>
                       </td>
                     </tr>

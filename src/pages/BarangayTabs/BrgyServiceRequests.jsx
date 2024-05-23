@@ -694,7 +694,7 @@ function ServiceRequests() {
                             View Request
                           </span>
                         </div>
-                        <div className="hs-tooltip inline-block">
+                        {/* <div className="hs-tooltip inline-block">
                           <button
                             type="button"
                             data-hs-overlay="#hs-reply-modal"
@@ -712,7 +712,7 @@ function ServiceRequests() {
                           >
                             Reply to Request
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                     </td>
                   </tr>

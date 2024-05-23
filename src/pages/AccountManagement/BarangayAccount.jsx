@@ -98,22 +98,55 @@ const BarangayAccount = () => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    const filteredData = users.filter(
+      (item) =>
+        item.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredUser(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [users, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredUser(users.slice(start, end));
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const handleView = (item) => {
     setUser(item);
   };
+  useEffect(() => {
+    const handleBrgyAccUpt = (obj) => {
+      setFilteredUser((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
+    const handleBrgyAcc = (obj) => {
+      setUser(obj);
+
+      setFilteredUser((prev) => [obj, ...prev]);
+    };
+
+    socket.on("receive-upt-brgy-admin", handleBrgyAccUpt);
+    socket.on("receive-brgy-admin", handleBrgyAcc);
+    return () => {
+      socket.off("receive-upt-brgy-admin", handleBrgyAccUpt);
+      socket.off("receive-brgy-admin", handleBrgyAcc);
+    };
+  }, [socket, setUser]);
 
   const handleStatus = (status) => {
     setStatus(status);
   };
-
-
 
   return (
     <div className="mx-4 mt-4">
@@ -207,17 +240,7 @@ const BarangayAccount = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = users.filter(
-                      (item) =>
-                        item.firstName.toLowerCase().includes(e.target.value.toLowerCase())||
-                        item.lastName.toLowerCase().includes(e.target.value.toLowerCase())
-                      
-                    );
-                    setFilteredUser(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
@@ -401,40 +424,24 @@ const BarangayAccount = () => {
           </span>
           <ReactPaginate
             breakLabel="..."
-            nextLabel={
-              pageCount > currentPage + 1 ? (
-                <span className="text-white">&gt;&gt;</span>
-              ) : (
-                <span className="text-gray-300 cursor-not-allowed">
-                  &gt;&gt;
-                </span>
-              )
-            }
+            nextLabel=">>"
             onPageChange={handlePageChange}
             pageRangeDisplayed={3}
             pageCount={pageCount}
-            previousLabel={
-              currentPage > 0 ? (
-                <span className="text-white"> &lt;&lt;</span>
-              ) : (
-                <span className="text-gray-300 cursor-not-allowed">
-                  &lt;&lt;
-                </span>
-              )
-            }
+            previousLabel="<<"
             className="flex space-x-3 text-white font-bold"
             activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
+            disabledLinkClassName="text-gray-400"
             renderOnZeroPageCount={null}
           />
         </div>
       </div>
       <ArchiveAccAdmin selectedItems={selectedItems} />
       {/* <StatusAccAdmin /> */}
-    
-      <AddAdminModal occupation={occupation} type={type} />
-      <ManageAdminModal user={user} setUser={setUser} />
-      <StatusAccAdmin status={status} setStatus={setStatus} />
+
+      <AddAdminModal occupation={occupation} type={type} socket={socket} />
+      <ManageAdminModal user={user} setUser={setUser} socket={socket} />
+      <StatusAccAdmin status={status} setStatus={setStatus} socket={socket} />
     </div>
   );
 };

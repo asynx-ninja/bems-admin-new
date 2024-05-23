@@ -6,7 +6,7 @@ import { LiaRandomSolid } from "react-icons/lia";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import EditLoader from "./loaders/EditLoader";
-function ManageAdminModal({ user, setUser }) {
+function ManageAdminModal({ user, setUser, socket }) {
   const [edit, setEdit] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -92,13 +92,14 @@ function ManageAdminModal({ user, setUser }) {
       );
 
       if (response.status === 200) {
-   
+        socket.emit("send-upt-muni-admin", response.data);
         setTimeout(() => {
-          // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
+          setEdit(!edit);
           setSubmitClicked(false);
           setUpdatingStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-editAdmin"));
           }, 3000);
         }, 1000);
 

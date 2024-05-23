@@ -55,27 +55,41 @@ const Inquiries = () => {
       );
 
       if (response.status === 200) {
-        setAllInquiries(response.data.result);
-        setInquiries(response.data.result.slice(0, 10)); // Set initial page data
+        // setAllInquiries(response.data.result);
+        setInquiries(response.data.result); // Set initial page data
         setFilteredInquiries(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount); // Calculate page count based on all data
       } else {
         setInquiries([]);
         setFilteredInquiries([]);
       }
-      const container = inqContainerRef.current;
-      container.scrollTop = container.scrollHeight;
+      // const container = inqContainerRef.current;
+      // container.scrollTop = container.scrollHeight;
       // setInqsUpdate((prevState) => !prevState);
     };
 
     fetchInquiries();
   }, [id, to, statusFilter]);
 
+  useEffect(() => {
+    const filteredData = inquiries.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase()) 
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredInquiries(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [inquiries, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredInquiries(allInquiries.slice(start, end));
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const checkboxHandler = (e) => {
@@ -125,6 +139,7 @@ const Inquiries = () => {
 
   const handleView = (item) => {
     setInquiry(item);
+    setInquiries(item)
     // setInqsUpdate((prevState) => !prevState);
   };
 
@@ -235,6 +250,7 @@ const Inquiries = () => {
       setFilteredInquiries(filters(selected, date));
     }
   };
+
   const [showTooltip, setShowTooltip] = useState(false);
   const isLatestResponseResident = (inquiry) => {
     const { response, isApproved } = inquiry;
@@ -247,6 +263,7 @@ const Inquiries = () => {
     }
     return false;
   };
+
   useEffect(() => {
     const interval = setInterval(() => {
       setShowTooltip((prev) => !prev);
@@ -254,6 +271,7 @@ const Inquiries = () => {
 
     return () => clearInterval(interval);
   }, []);
+
   return (
     <div className="mx-4 mt-4">
       <div className="flex flex-col ">
@@ -481,20 +499,7 @@ const Inquiries = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = allInquiries.filter(
-                      (item) =>
-                        item.name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.inq_id
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase())
-                    );
-                    setFilteredInquiries(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
@@ -702,6 +707,7 @@ const Inquiries = () => {
         <ArchiveModal selectedItems={selectedItems} />
         <ViewInquiriesModal
           inquiry={inquiry}
+          inquiries={inquiries}
           setInquiry={setInquiry}
           brgy={brgy}
           socket={socket}

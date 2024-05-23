@@ -117,7 +117,7 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
 
   return (
     <div className="">
-      <main className="container mx-auto h-auto px-1">
+      <main className="  h-auto ">
         <article
           aria-label="File Upload Modal"
           className="relative h-full flex flex-col "
@@ -139,11 +139,11 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
             {/* <h1 className="pb-2 text-sm font-medium text-white">
               Files Attached:
             </h1> */}
-            <ul id="gallery" className="flex flex-1 flex-wrap gap-2">
+            <ul id="gallery" className="flex gap-0 sm:gap-2">
               {viewFiles && viewFiles.length > 0 ? (
                 viewFiles.map((file, idx) => (
                   <li
-                    className="flex mx-2"
+                    className="flex "
                     key={idx}
                     // onClick={() => handleFileClick(file)}
                   >
