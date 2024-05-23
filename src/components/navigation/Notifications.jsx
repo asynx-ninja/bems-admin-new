@@ -8,6 +8,10 @@ import API_LINK from "../../config/API";
  
 import { Link } from "react-router-dom";
 import moment from "moment";
+
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link);
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [notification, setNotification] = useState([]);
@@ -103,9 +107,22 @@ const Notifications = () => {
     // };
   }, [brgy, unreadNotifications]);
 
+
   const handleView = (item) => {
     setNotification(item);
   };
+  useEffect(() => {
+    const handleNotif = (obj) => {
+      setUnreadNotifications((prev) => prev + 1)
+      setNotifications((prev) => [obj, ...prev]);
+    };
+
+    socket.on("receive-muni-notif", handleNotif);
+
+    return () => {
+      socket.off("receive-muni-notif", handleNotif);
+    };
+  }, [socket, setNotifications]);
 
   return (
     <>

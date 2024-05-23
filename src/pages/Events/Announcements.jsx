@@ -22,6 +22,7 @@ import noData from "../../assets/image/no-data.png";
 import { io } from "socket.io-client";
 import Socket_link from "../../config/Socket";
 const socket = io(Socket_link);
+
 const EventsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [announcements, setAnnouncements] = useState([]);

@@ -4,7 +4,7 @@ import API_LINK from "../../../config/API";
 import { useState } from "react";
 import StatusLoader from "./loaders/StatusLoader";
 import GetBrgy from "../../GETBrgy/getbrgy";
-function ServiceStatus({ status, setStatus, selectedService, brgy }) {
+function ServiceStatus({ status, setStatus, selectedService, brgy, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -56,11 +56,13 @@ function ServiceStatus({ status, setStatus, selectedService, brgy }) {
       });
         
       if (response.status === 200) {
+        socket.emit("send-updated-service", response.data);
         setTimeout(() => {
           setSubmitClicked(false);
           setUpdatingStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-serviceStatus"));
           }, 3000);
         }, 1000);
       }

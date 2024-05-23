@@ -32,7 +32,7 @@ const EventsRegistrations = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const chatContainerRef = useRef();
-
+  const [searchapplications, setSearchApplications] = useState([]);
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredApplications, setFilteredApplications] = useState([]);
@@ -68,6 +68,7 @@ const EventsRegistrations = () => {
           `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}`
         );
         if (response.status === 200) {
+          setSearchApplications(response.data.result);
           setApplications(response.data.result);
           setFilteredApplications(response.data.result.slice(0, 10)); // Update filtered applications with all data
           setPageCount(response.data.pageCount); // Update page count based on all data
@@ -85,6 +86,17 @@ const EventsRegistrations = () => {
 
     fetch();
   }, [brgy, statusFilter, selecteEventFilter]);
+  useEffect(() => {
+    const filteredData = searchapplications.filter(
+      (item) =>
+        item.event_name &&
+        item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredApplications(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [searchapplications, searchQuery, currentPage]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,16 +127,6 @@ const EventsRegistrations = () => {
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
 
-  useEffect(() => {
-    const filteredData = applications.filter((item) =>
-      item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredApplications(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [applications, searchQuery, currentPage]);
-
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
@@ -154,9 +156,12 @@ const EventsRegistrations = () => {
     document.title = "Events Applications | Barangay E-Services Management";
   }, []);
 
-  const Applications = applications.filter((item) =>
-    item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+  const Applications = searchapplications.filter(
+    (item) =>
+      item.event_name &&
+      item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -198,6 +203,7 @@ const EventsRegistrations = () => {
 
   const handleView = (item) => {
     setApplication(item);
+    setApplications(item);
     // setEventUpdate((prevState) => !prevState);
   };
 
@@ -835,6 +841,7 @@ const EventsRegistrations = () => {
         brgy={brgy}
         socket={socket}
         chatContainerRef={chatContainerRef}
+        applications={applications}
       />
       <ArchiveRegistrationModal selectedItems={selectedItems} />
     </div>

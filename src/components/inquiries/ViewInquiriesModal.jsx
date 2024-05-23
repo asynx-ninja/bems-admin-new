@@ -511,7 +511,7 @@ function ViewInquiriesModal({
                                       } ${
                                         userData?.lastName?.toUpperCase() ?? ""
                                       } (${userData.type})`
-                                        ? "flex flex-col rounded-xl bg-green-400 mb-1 text-white px-2 md:px-4 py-2 cursor-pointer"
+                                        ? "flex flex-col rounded-xl bg-[#52b788] border border-[#2d6a4f] mb-1 text-black px-2 md:px-4 py-2 cursor-pointer"
                                         : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
                                     }
                                     onClick={() => handleOnViewTime(index)}

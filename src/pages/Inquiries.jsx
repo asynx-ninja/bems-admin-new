@@ -55,7 +55,7 @@ const Inquiries = () => {
       );
 
       if (response.status === 200) {
-        // setAllInquiries(response.data.result);
+        setAllInquiries(response.data.result);
         setInquiries(response.data.result); // Set initial page data
         setFilteredInquiries(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount); // Calculate page count based on all data
@@ -72,15 +72,17 @@ const Inquiries = () => {
   }, [id, to, statusFilter]);
 
   useEffect(() => {
-    const filteredData = inquiries.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase()) 
-    );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredInquiries(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [inquiries, searchQuery, currentPage]);
+    if (Array.isArray(inquiries)) {
+        const filteredData = allInquiries.filter((item) =>
+            (item.name && item.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (item.inq_id && item.inq_id.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
+        const startIndex = currentPage * 10;
+        const endIndex = startIndex + 10;
+        setFilteredInquiries(filteredData.slice(startIndex, endIndex));
+        setPageCount(Math.ceil(filteredData.length / 10));
+    }
+}, [allInquiries, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -252,6 +254,7 @@ const Inquiries = () => {
   };
 
   const [showTooltip, setShowTooltip] = useState(false);
+  
   const isLatestResponseResident = (inquiry) => {
     const { response, isApproved } = inquiry;
     if (response && response.length > 0) {

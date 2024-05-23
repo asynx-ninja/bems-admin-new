@@ -10,6 +10,9 @@ import StatusResident from "../../components/barangaytabs/brgyServices/StatusSer
 import API_LINK from "../../config/API";
 import noData from "../../assets/image/no-data.png";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link);
 function Services() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [services, setServices] = useState([]);
@@ -64,6 +67,28 @@ function Services() {
     setCurrentPage(selected);
   };
 
+  useEffect(() => {
+    const handleServiceUpt = (obj) => {
+      setFilteredServices((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
+    const handleService = (obj) => {
+      setServices(obj);
+
+      setFilteredServices((prev) => [obj, ...prev]);
+    };
+
+
+    socket.on("receive-updated-service", handleServiceUpt);
+    socket.on("receive-get-service", handleService);
+    return () => {
+      socket.off("receive-updated-service", handleServiceUpt);
+      socket.off("receive-get-service", handleService);
+    };
+  }, [socket, setServices]);
+  
   const Services = services.filter(
     (item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -432,6 +457,7 @@ function Services() {
         selectedService={selectedService}
         setSelectedService={setSelectedService}
         brgy={brgy}
+        socket={socket}
       />
     </div>
   );

@@ -13,6 +13,7 @@ import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import { FaTimes, FaFileImage } from "react-icons/fa";
+import dprofile from "../../assets/sample-image/default-pfp.png";
 // import { io } from "socket.io-client";
 // import Socket_link from "../../config/Socket";
 // const socket = io(Socket_link);
@@ -23,6 +24,7 @@ function ReplyRegistrationModal({
   brgy,
   socket,
   chatContainerRef,
+  applications
 }) {
   const [onSend, setOnSend] = useState(false);
   const [errMsg, setErrMsg] = useState(false);
@@ -36,6 +38,7 @@ function ReplyRegistrationModal({
     isRepliable: true,
   });
   const [userData, setUserData] = useState({});
+  const [userDatas, setUserDatas] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -52,7 +55,8 @@ function ReplyRegistrationModal({
     },
   });
   const [currentPage, setCurrentPage] = useState(0);
-
+  const user_id = applications.user_id;
+  console.log(user_id);
   useEffect(() => {
     var container = document.getElementById("scrolltobottom");
     container.scrollTop = container.scrollHeight;
@@ -73,6 +77,25 @@ function ReplyRegistrationModal({
     };
     fetch();
   }, [id]);
+
+  
+  useEffect(() => {
+    const fetch1 = async () => {
+      try {
+        const res1 = await axios.get(
+          `${API_LINK}/users/specific_user/acc/?user_id=${user_id}`
+        );
+        if (res1.status === 200) {
+          setUserDatas(res1.data[0]);
+          console.log("3", userDatas);
+          console.log("4", userDatas?.profile?.link);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch1();
+  }, [user_id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -389,51 +412,77 @@ function ReplyRegistrationModal({
                                   : "flex flex-row w-full justify-between"
                               }
                             >
-                              <div className="flex flex-col md:flex-row md:items-center">
-                                <p className="text-[14px] text-black md:text-sm font-medium capitalize text-wrap">
-                                {responseItem && responseItem.sender ? responseItem.sender.toLowerCase() : ""}
-                                </p>
-                              </div>
+                      
                             </div>
-                            {responseItem.message !== "" ? (
-                              <div
-                                className={
-                                  responseItem.sender ===
-                                    `${userData?.firstName?.toUpperCase() ?? ""
-                                    } ${userData?.lastName?.toUpperCase() ?? ""
-                                    } (${userData.type})`
-                                    ? "flex flex-col rounded-xl bg-green-400 mb-1 text-white px-2 md:px-4 py-2 cursor-pointer relative"
-                                    : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer relative"
-                                }
-                                onClick={() => handleOnViewTime(index)}
-                              >
-                                <div className="w-full h-full">
-                                  <div className="w-full h-full rounded-xl p-1">
-                                    <p className="text-[12px] md:text-xs break-all">
-                                      {responseItem.message}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            ) : null}
-                            {!responseItem.file ? null : (
-                              <div className="flex flex-col rounded-xl">
-                                <ViewDropbox
-                                  viewFiles={responseItem.file || []}
-                                  responseItem={
+                            <div
+                              className={`flex flex-row w-full items-center ${
+                                responseItem.sender ===
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                  userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})`
+                                  ? "justify-start"
+                                  : "justify-end"
+                              }`}
+                            >
+                              {responseItem.sender !==
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                  userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})` && (
+                                <img
+                                  src={
                                     responseItem.sender ===
                                     `${
                                       userData?.firstName?.toUpperCase() ?? ""
                                     } ${
                                       userData?.lastName?.toUpperCase() ?? ""
                                     } (${userData.type})`
-                                      ? true
-                                      : false
+                                      ? userData?.profile?.link || dprofile
+                                      : userDatas?.profile?.link || dprofile
                                   }
+                                  alt="Profile Image"
+                                  className="w-8 h-8 rounded-full mr-2 border border-green-600"
                                 />
-                              </div>
-                            )}
-                            <p
+                              )}
+                              <div>
+                                {responseItem.message !== "" ? (
+                                  <div
+                                    className={
+                                      responseItem.sender ===
+                                      `${
+                                        userData?.firstName?.toUpperCase() ?? ""
+                                      } ${
+                                        userData?.lastName?.toUpperCase() ?? ""
+                                      } (${userData.type})`
+                                        ? "flex flex-col rounded-xl bg-[#52b788] border border-[#2d6a4f] mb-1 text-black px-2 md:px-4 py-2 cursor-pointer"
+                                        : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
+                                    }
+                                    onClick={() => handleOnViewTime(index)}
+                                  >
+                                    <div className="w-full h-full">
+                                      <div className="w-full h-full rounded-xl p-1">
+                                        <p className="text-[12px] md:text-xs break-all">
+                                          {responseItem.message}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : null}
+                                {!responseItem.file ? null : (
+                                  <ViewDropbox
+                                    viewFiles={responseItem.file || []}
+                                    responseItem={
+                                      responseItem.sender ===
+                                      `${
+                                        userData?.firstName?.toUpperCase() ?? ""
+                                      } ${
+                                        userData?.lastName?.toUpperCase() ?? ""
+                                      } (${userData.type})`
+                                        ? true
+                                        : false
+                                    }
+                                  />
+                                )}
+                                {/* <p
                               className={
                                 viewTime.timeKey === index
                                   ? "text-[10px] md:text-xs mt-[5px] text-black text-right text-xs"
@@ -441,7 +490,9 @@ function ReplyRegistrationModal({
                               }
                             >
                               {DateFormat(responseItem.date) || ""}
-                            </p>
+                            </p> */}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       ))}

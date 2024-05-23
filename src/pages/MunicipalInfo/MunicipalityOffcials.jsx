@@ -2,11 +2,11 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { AiOutlineStop  } from "react-icons/ai";
+import { AiOutlineStop } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import { FaArchive, FaPlus, FaUserCircle } from "react-icons/fa";
 import CreateOfficialModal from "../../components/municipalityofficials/CreateOfficialModal";
- 
+
 import ArchiveOfficialModal from "../../components/municipalityofficials/ArchiveOfficialModal";
 import EditOfficialModal from "../../components/municipalityofficials/ManageOfficialModal";
 import { useSearchParams } from "react-router-dom";
@@ -29,9 +29,8 @@ const MunicipalityOfficials = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [positionFilter, setPositionFilter] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
   const [filteredOfficials, setFilteredOfficials] = useState([]);
-
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -70,9 +69,9 @@ const MunicipalityOfficials = () => {
         );
 
         if (response.status === 200) {
-          setPageCount(response.data.pageCount)
-          setOfficials(response.data.result)
-          setFilteredOfficials(response.data.result.slice(0, 10))
+          setPageCount(response.data.pageCount);
+          setOfficials(response.data.result);
+          setFilteredOfficials(response.data.result.slice(0, 10));
         } else {
           // Handle error here
           console.error("Error fetching users:", response.error);
@@ -83,7 +82,7 @@ const MunicipalityOfficials = () => {
     };
 
     fetchData();
-  }, [brgy , positionFilter]);
+  }, [brgy, positionFilter]);
 
   const handlePositionFilter = (selectedPosition) => {
     setPositionFilter(selectedPosition);
@@ -93,12 +92,10 @@ const MunicipalityOfficials = () => {
     setPositionFilter("all");
   };
 
-  
   useEffect(() => {
     const filteredData = officials.filter(
       (item) =>
-       
-        item.firstName.toLowerCase().includes(searchQuery.toLowerCase())||
+        item.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.lastName.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const startIndex = currentPage * 10;
@@ -156,13 +153,13 @@ const MunicipalityOfficials = () => {
 
     const startYearMonth = startDate
       ? `${startDate.toLocaleString("default", {
-        month: "short",
-      })} ${startDate.getFullYear()}`
+          month: "short",
+        })} ${startDate.getFullYear()}`
       : "";
     const endYearMonth = endDate
       ? `${endDate.toLocaleString("default", {
-        month: "short",
-      })} ${endDate.getFullYear()}`
+          month: "short",
+        })} ${endDate.getFullYear()}`
       : "";
 
     return `${startYearMonth} ${endYearMonth}`;
@@ -170,10 +167,10 @@ const MunicipalityOfficials = () => {
 
   return (
     <div className="mx-4 mt-4">
-    <div className="flex flex-col ">
-      <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
+      <div className="flex flex-col ">
+        <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
-          <h1
+            <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
@@ -240,8 +237,9 @@ const MunicipalityOfficials = () => {
               >
                 POSITION
                 <svg
-                  className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                  className={`hs-dropdown-open:rotate-${
+                    sortOrder === "asc" ? "180" : "0"
+                  } w-2.5 h-2.5 text-white`}
                   width="16"
                   height="16"
                   viewBox="0 0 16 16"
@@ -475,20 +473,20 @@ const MunicipalityOfficials = () => {
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
         <ReactPaginate
-            breakLabel="..."
-            nextLabel=">>"
-            onPageChange={handlePageChange}
-            pageRangeDisplayed={3}
-            pageCount={pageCount}
-            previousLabel="<<"
-            className="flex space-x-3 text-white font-bold"
-            activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-400"
-            renderOnZeroPageCount={null}
-          />
+          breakLabel="..."
+          nextLabel=">>"
+          onPageChange={handlePageChange}
+          pageRangeDisplayed={3}
+          pageCount={pageCount}
+          previousLabel="<<"
+          className="flex space-x-3 text-white font-bold"
+          activeClassName="text-yellow-500"
+          disabledLinkClassName="text-gray-400"
+          renderOnZeroPageCount={null}
+        />
       </div>
-      <CreateOfficialModal brgy={brgy} socket={socket}/>
-    
+      <CreateOfficialModal brgy={brgy} socket={socket} />
+
       <ArchiveOfficialModal selectedItems={selectedItems} />
       <EditOfficialModal
         selectedOfficial={selectedOfficial}
