@@ -86,6 +86,7 @@ const EventsRegistrations = () => {
 
     fetch();
   }, [brgy, statusFilter, selecteEventFilter]);
+
   useEffect(() => {
     const filteredData = searchapplications.filter(
       (item) =>
@@ -212,7 +213,7 @@ const EventsRegistrations = () => {
       console.log("received appli", obj);
 
       setApplication(obj);
-
+     
       setFilteredApplications((curItem) =>
         curItem.map((item) => (item._id === obj._id ? obj : item))
       );
@@ -220,7 +221,7 @@ const EventsRegistrations = () => {
 
     const handleEvent = (obj) => {
       setApplication(obj);
-
+      setSearchApplications((prev) => [obj, ...prev]);
       setFilteredApplications((prev) => [obj, ...prev]);
     };
 
@@ -231,7 +232,7 @@ const EventsRegistrations = () => {
       socket.off("receive-reply-event-appli", handleEventAppli);
       socket.off("receive-event-appli", handleEvent);
     };
-  }, [socket, setApplication]);
+  }, [socket, setApplication, setSearchApplications]);
 
   const filters = (choice, selectedDate, applications) => {
     switch (choice) {

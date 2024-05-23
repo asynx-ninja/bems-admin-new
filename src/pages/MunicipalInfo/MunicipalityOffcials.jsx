@@ -120,6 +120,8 @@ const MunicipalityOfficials = () => {
 
   useEffect(() => {
     const handleOfficialUpt = (obj) => {
+      setOfficials((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item)))
       setFilteredOfficials((curItem) =>
         curItem.map((item) => (item._id === obj._id ? obj : item))
       );
@@ -127,7 +129,7 @@ const MunicipalityOfficials = () => {
 
     const handleOfficial = (obj) => {
       setSelectedOfficial(obj);
-
+      setOfficials((prev) => [obj, ...prev])
       setFilteredOfficials((prev) => [obj, ...prev]);
     };
 
