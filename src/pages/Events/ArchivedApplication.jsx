@@ -116,7 +116,7 @@ const ArchivedRegistrations = () => {
   };
 
   useEffect(() => {
-    const filteredData = searchapplications.filter(
+    const filteredData = applications.filter(
       (item) =>
         item.event_name &&
         item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -125,7 +125,7 @@ const ArchivedRegistrations = () => {
     const endIndex = startIndex + 10;
     setFilteredApplications(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
-  }, [searchapplications, searchQuery, currentPage]);
+  }, [applications, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -137,21 +137,22 @@ const ArchivedRegistrations = () => {
     setCurrentPage(0); // Reset current page when search query changes
   };
   useEffect(() => {
-    const handleEventArchive = (obj) => {
+    const handleEventRestore = (obj) => {
       setApplication(obj);
-      setSearchApplications((prev) =>
+      setApplications((prev) =>
         prev.filter((item) => item._id !== obj._id)
       );
       setFilteredApplications((prev) =>
         prev.filter((item) => item._id !== obj._id)
       );
     };
+  
 
-    socket.on("receive-archive-muni", handleEventArchive);
+    socket.on("receive-restore-muni", handleEventRestore);
     return () => {
-      socket.off("receive-archive-muni", handleEventArchive);
+      socket.off("receive-restore-muni", handleEventRestore);
     };
-  }, [socket, setApplication, setSearchApplications]);
+  }, [socket, setApplication, setApplications]);
   // Handle search input change
 
   const Applications = applications.filter((item) =>

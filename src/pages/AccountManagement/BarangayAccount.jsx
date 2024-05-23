@@ -135,12 +135,23 @@ const BarangayAccount = () => {
 
       setFilteredUser((prev) => [obj, ...prev]);
     };
+    const handleBrgyAccArchive = (obj) => {
+      setUser(obj);
+      setUsers((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredUser((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
 
     socket.on("receive-upt-brgy-admin", handleBrgyAccUpt);
     socket.on("receive-brgy-admin", handleBrgyAcc);
+    socket.on("receive-archive-muni", handleBrgyAccArchive);
     return () => {
       socket.off("receive-upt-brgy-admin", handleBrgyAccUpt);
       socket.off("receive-brgy-admin", handleBrgyAcc);
+      socket.off("receive-archive-muni", handleBrgyAccArchive);
     };
   }, [socket, setUser]);
 
@@ -436,7 +447,7 @@ const BarangayAccount = () => {
           />
         </div>
       </div>
-      <ArchiveAccAdmin selectedItems={selectedItems} />
+      <ArchiveAccAdmin selectedItems={selectedItems} socket={socket} />
       {/* <StatusAccAdmin /> */}
 
       <AddAdminModal occupation={occupation} type={type} socket={socket} />

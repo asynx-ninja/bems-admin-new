@@ -6,7 +6,7 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import RestoreLoader from "./loaders/RestoreLoader";
 import { LuArchiveRestore } from "react-icons/lu";
-function RestoreOfficialModal({ selectedItems }) {
+function RestoreOfficialModal({ selectedItems, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -30,16 +30,16 @@ function RestoreOfficialModal({ selectedItems }) {
           `${API_LINK}/mofficials/archived/${selectedItems[i]}/false`
         );
         if (response.status === 200) {
-          setTimeout(() => {
+          socket.emit("send-restore-muni", response.data);
+         
             setSubmitClicked(false);
             setError(null);
             setUpdatingStatus("success");
             setTimeout(() => {
               setUpdatingStatus(null);
               HSOverlay.close(document.getElementById("hs-restore-official-modal"));
-              window.location.reload();
+             
             }, 3000);
-          }, 3000);
         }
     }
   } catch (err) {

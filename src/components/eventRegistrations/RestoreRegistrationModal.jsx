@@ -24,7 +24,6 @@ function RestoreRegistrationModal({ selectedItems, socket }) {
         return;
       }
       setSubmitClicked(true);
-      setSubmitClicked(true);
       for (let i = 0; i < selectedItems.length; i++) {
         const response = await axios.patch(
           `${API_LINK}/application/archived/${selectedItems[i]}/false`

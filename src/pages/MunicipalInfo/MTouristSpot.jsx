@@ -135,11 +135,23 @@ const MTouristSpot = () => {
       setFilteredTouristSpot((prev) => [obj, ...prev]);
     };
 
+    const handleTouristArchive = (obj) => {
+      settouristspotInfo(obj);
+      settouristSpot((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredTouristSpot((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
     socket.on("receive-upt-tourist-spot", handleTouristSpotUpt);
     socket.on("receive-tourist-spot", handleTouristSpot);
+    socket.on("receive-archive-muni", handleTouristArchive);
     return () => {
       socket.off("receive-upt-tourist-spot", handleTouristSpotUpt);
       socket.off("receive-tourist-spot", handleTouristSpot);
+      socket.off("receive-archive-muni", handleTouristArchive);
     };
   }, [socket, settouristspotInfo, settouristSpot]);
 
@@ -580,7 +592,7 @@ const MTouristSpot = () => {
           />
         </div>
         <AddAboutusModal section={section} brgy={brgy} socket={socket}/>
-        <ArchiveTouristSpotModal selectedItems={selectedItems} />
+        <ArchiveTouristSpotModal selectedItems={selectedItems} socket={socket}/>
         <ManageTouristSpotModal
           brgy={brgy}
           touristspotInfo={touristspotInfo}

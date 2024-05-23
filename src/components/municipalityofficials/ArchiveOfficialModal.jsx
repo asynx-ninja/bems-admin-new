@@ -5,7 +5,7 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import ArchiveLoader from "./loaders/ArchiveLoader";
 import { IoArchiveOutline } from "react-icons/io5";
-function ArchiveOfficialModal({ selectedItems }) {
+function ArchiveOfficialModal({ selectedItems, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -30,16 +30,16 @@ function ArchiveOfficialModal({ selectedItems }) {
           `${API_LINK}/mofficials/archived/${selectedItems[i]}/true`
         );
         if (response.status === 200) {
-          setTimeout(() => {
+          socket.emit("send-archive-muni", response.data);
+         
             setSubmitClicked(false);
             setError(null);
             setUpdatingStatus("success");
             setTimeout(() => {
               setUpdatingStatus(null);
               HSOverlay.close(document.getElementById("hs-archive-official-modal"));
-              window.location.reload();
+            
             }, 3000);
-          }, 3000);
         }
     }
   } catch (err) {

@@ -12,6 +12,10 @@ import Breadcrumbs from "../../components/maboutusnfo/Breadcrumbs";
 import RestoreAboutusModal from "../../components/maboutusnfo/restoreAboutusModal";
 import ViewArchivedAboutusModal from "../../components/maboutusnfo/viewArchivedAboutusModal";
 import noData from "../../assets/image/no-data.png";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+
+const socket = io(Socket_link);
 const ArchivedAboutusInfo = () => {
   useEffect(() => {
     document.title = "Archived About Us | Barangay E-Services Management";
@@ -45,9 +49,8 @@ const ArchivedAboutusInfo = () => {
 
     fetch();
   }, []);
-  const Aboutus = aboutus.filter(
-    (item) =>
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) 
+  const Aboutus = aboutus.filter((item) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   useEffect(() => {
@@ -70,8 +73,19 @@ const ArchivedAboutusInfo = () => {
     setCurrentPage(0); // Reset current page when search query changes
   };
 
+  useEffect(() => {
+    const handleAboutRestore = (obj) => {
+      setAboutusinfo(obj);
+      setAboutus((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredAboutUs((prev) => prev.filter((item) => item._id !== obj._id));
+    };
 
+    socket.on("receive-restore-muni", handleAboutRestore);
 
+    return () => {
+      socket.off("receive-restore-muni", handleAboutRestore);
+    };
+  }, [socket, setAboutusinfo, setAboutus]);
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -87,9 +101,8 @@ const ArchivedAboutusInfo = () => {
     }
   };
 
- const checkAllHandler = () => {
-    const announcementsToCheck =
-      Aboutus.length > 0 ? Aboutus : aboutus;
+  const checkAllHandler = () => {
+    const announcementsToCheck = Aboutus.length > 0 ? Aboutus : aboutus;
 
     if (announcementsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
@@ -168,11 +181,7 @@ const ArchivedAboutusInfo = () => {
   };
 
   const onSelect = (e) => {
- 
-
     setSelected(e.target.value);
-
-   
   };
 
   const onChangeDate = (e) => {
@@ -200,19 +209,25 @@ const ArchivedAboutusInfo = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-     
+
       setFilteredAboutUs(filters(selected, date));
     }
-  }
+  };
 
-  const tableHeader = ["banner", "title", "details", "creation date", "actions"];
+  const tableHeader = [
+    "banner",
+    "title",
+    "details",
+    "creation date",
+    "actions",
+  ];
   return (
     <div className="mx-4 mt-8">
-    <div>
+      <div>
         <Breadcrumbs id={id} />
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
-          <h1
+            <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
@@ -223,7 +238,7 @@ const ArchivedAboutusInfo = () => {
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
-          <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left] shadow-sm">
+            <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left] shadow-sm">
               <button
                 id="hs-dropdown"
                 type="button"
@@ -317,7 +332,7 @@ const ArchivedAboutusInfo = () => {
               </ul>
             </div>
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
-            <div className="flex flex-row w-full md:mr-2">
+              <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#295141] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
                     <svg
@@ -394,8 +409,8 @@ const ArchivedAboutusInfo = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-            {filteredAboutUs.length === 0 ? (
-                  <tr>
+              {filteredAboutUs.length === 0 ? (
+                <tr>
                   <td
                     colSpan={tableHeader.length + 1}
                     className="text-center  overflow-y-hidden h-[calc(100vh_-_400px)] xxxl:h-[calc(100vh_-_326px)]"
@@ -410,73 +425,76 @@ const ArchivedAboutusInfo = () => {
                 </tr>
               ) : (
                 filteredAboutUs.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                        id=""
-                      />
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                      <div className="px-2 sm:px-6 py-2">
-                        {item.banner.link ? (
-                          <div className="lg:w-32 lg:h-20 w-16 h-24 aspect-w-4 aspect-h-3 overflow-hidden mx-auto border border-4 border-[#013D74]">
-                            <img
-                              src={item.banner.link}
-                              alt="picture"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <FaUserCircle className="lg:w-20 lg:h-32 w-16 h-24 object-cover border border-4 border-[#013D74] rounded-full text-gray-500 mx-auto" />
-                        )}
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
+                          id=""
+                        />
                       </div>
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-2 ">
-                        {item.title}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-2 ">
-                        {item.details}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
+                    </td>
+                    <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                      {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
-                          {TimeFormat(item.createdAt) || ""}
+                        <div className="px-2 sm:px-6 py-2">
+                          {item.banner.link ? (
+                            <div className="lg:w-32 lg:h-20 w-16 h-24 aspect-w-4 aspect-h-3 overflow-hidden mx-auto border border-4 border-[#013D74]">
+                              <img
+                                src={item.banner.link}
+                                alt="picture"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <FaUserCircle className="lg:w-20 lg:h-32 w-16 h-24 object-cover border border-4 border-[#013D74] rounded-full text-gray-500 mx-auto" />
+                          )}
+                        </div>
                       </span>
-                    </div>
-                  </td>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-2 ">
+                          {item.title}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-2 ">
+                          {item.details}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {TimeFormat(item.createdAt) || ""}
+                        </span>
+                      </div>
+                    </td>
 
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <button
-                        type="button"
-                        data-hs-overlay="#hs-modal-viewaboutus"
-                        onClick={() => handleView({ ...item })}
-                        className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                      >
-                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                 ))
-                 )}
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <button
+                          type="button"
+                          data-hs-overlay="#hs-modal-viewaboutus"
+                          onClick={() => handleView({ ...item })}
+                          className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineEye
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -514,7 +532,7 @@ const ArchivedAboutusInfo = () => {
           />
         </div>
         {/* <ViewArchivedAdmin user={user} setUser={setUser}/> */}
-        <RestoreAboutusModal selectedItems={selectedItems} />
+        <RestoreAboutusModal selectedItems={selectedItems} socket={socket} />
         <ViewArchivedAboutusModal
           aboutusInfo={aboutusInfo}
           setAboutusinfo={setAboutusinfo}

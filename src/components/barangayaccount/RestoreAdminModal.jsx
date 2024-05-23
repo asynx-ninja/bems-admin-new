@@ -5,12 +5,11 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import RestoreLoader from "./loaders/RestoreLoader";
 import { LuArchiveRestore } from "react-icons/lu";
-function RestoreAdminModal({ selectedItems }) {
+function RestoreAdminModal({ selectedItems, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
   const handleSave = async (e) => {
-
     try {
       e.preventDefault();
       if (selectedItems.length === 0) {
@@ -20,7 +19,7 @@ function RestoreAdminModal({ selectedItems }) {
           setUpdatingStatus(null);
           HSOverlay.close(document.getElementById("hs-modal-restoreAdmin"));
         }, 3000);
- 
+
         return;
       }
       setSubmitClicked(true);
@@ -29,24 +28,22 @@ function RestoreAdminModal({ selectedItems }) {
           `${API_LINK}/users/archived/${selectedItems[i]}/false`
         );
         if (response.status === 200) {
+          socket.emit("send-restore-muni", response.data);
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
           setTimeout(() => {
-            setSubmitClicked(false);
-            setError(null);
-            setUpdatingStatus("success");
-            setTimeout(() => {
-              setUpdatingStatus(null);
-              HSOverlay.close(document.getElementById("hs-modal-restoreAdmin"));
-              window.location.reload();
-            }, 3000);
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-restoreAdmin"));
           }, 3000);
         }
       }
-  } catch (err) {
-    console.log(err);
-    setSubmitClicked(false);
-    setUpdatingStatus(null);
-    setError("An error occurred while creating the account.");
-  }
+    } catch (err) {
+      console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the account.");
+    }
   };
 
   return (
@@ -56,7 +53,7 @@ function RestoreAdminModal({ selectedItems }) {
         className="z-[100] hs-overlay hidden w-full h-full fixed top-0 left-0 z-60 overflow-x-hidden overflow-y-auto"
       >
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-300 bg-opacity-0">
-        <div className="flex items-center justify-center min-h-screen pt-4 pb-20 ">
+          <div className="flex items-center justify-center min-h-screen pt-4 pb-20 ">
             <div className="w-10/12 lg:max-w-md p-6 bg-white rounded-lg shadow-xl ">
               <LuArchiveRestore size={40} className="mb-5 justify-start" />
               <h3 className="text-2xl font-bold mb-4">Are you sure?</h3>

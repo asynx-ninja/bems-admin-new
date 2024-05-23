@@ -126,7 +126,7 @@ const EventsRegistrations = () => {
     setFilteredApplications(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
   }, [searchapplications, searchQuery, currentPage]);
-  
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
@@ -224,13 +224,22 @@ const EventsRegistrations = () => {
       setSearchApplications((prev) => [obj, ...prev]);
       setFilteredApplications((prev) => [obj, ...prev]);
     };
-
+    const handleEventArchive = (obj) => {
+      setApplication(obj);
+      setSearchApplications((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredApplications((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
     socket.on("receive-reply-event-appli", handleEventAppli);
     socket.on("receive-event-appli", handleEvent);
-
+    socket.on("receive-archive-muni", handleEventArchive);
     return () => {
       socket.off("receive-reply-event-appli", handleEventAppli);
       socket.off("receive-event-appli", handleEvent);
+      socket.off("receive-archive-muni", handleEventArchive);
     };
   }, [socket, setApplication, setSearchApplications]);
 

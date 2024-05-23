@@ -11,6 +11,10 @@ import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
 import {FaUserCircle} from "react-icons/fa"
 import noData from "../../assets/image/no-data.png";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+
+const socket = io(Socket_link);
 const ArchivedOfficials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [officials, setOfficials] = useState([]);
@@ -135,7 +139,27 @@ const ArchivedOfficials = () => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
+  useEffect(() => {
 
+
+    const handleOfficialRestore = (obj) => {
+      setSelectedOfficial(obj);
+      setOfficials((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredOfficials((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    socket.on("receive-restore-muni", handleOfficialRestore);
+
+    return () => {
+
+      socket.off("receive-restore-muni", handleOfficialRestore);
+
+    };
+  }, [socket, setSelectedOfficial, setOfficials]);
   const tableHeader = [
     "IMAGE",
     "NAME",
@@ -452,7 +476,7 @@ const ArchivedOfficials = () => {
         />
       </div>
      
-      <RestoreOfficialModal selectedItems={selectedItems} />
+      <RestoreOfficialModal selectedItems={selectedItems} socket={socket}/>
       <ViewOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}

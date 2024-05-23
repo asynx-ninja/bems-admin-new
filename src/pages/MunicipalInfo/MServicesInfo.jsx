@@ -136,12 +136,22 @@ const MServicesInfo = () => {
       setServicesInfo((prev) => [obj, ...prev]);
       setFilteredServices((prev) => [obj, ...prev]);
     };
-
+    const handleServiceArchive = (obj) => {
+      setServicesInfos(obj);
+      setServicesInfo((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredServices((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
     socket.on("receive-upt-offered-serv", handleOfferedServUpt);
     socket.on("receive-offered-serv", handleOfferedServ);
+    socket.on("receive-archive-muni", handleServiceArchive);
     return () => {
       socket.off("receive-upt-offered-serv", handleOfferedServUpt);
       socket.off("receive-offered-serv", handleOfferedServ);
+      socket.off("receive-archive-muni", handleServiceArchive);
     };
   }, [socket, setServicesInfos, setServicesInfo]);
 
@@ -581,7 +591,7 @@ const MServicesInfo = () => {
           />
         </div>
         <AddServicesInfoModal brgy={brgy} socket={socket} />
-        <ArchiveServicesInfoModal selectedItems={selectedItems} />
+        <ArchiveServicesInfoModal selectedItems={selectedItems} socket={socket}/>
         <ManageServiceInfoModal
           brgy={brgy}
           servicesinfos={servicesinfos}

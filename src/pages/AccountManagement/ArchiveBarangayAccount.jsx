@@ -12,6 +12,10 @@ import Breadcrumbs from "../../components/barangayaccount/Breadcrumbs";
 import ViewArchivedAdmin from "../../components/barangayaccount/ViewArchivedAdmin";
 import RestoreAdminModal from "../../components/barangayaccount/RestoreAdminModal";
 import noData from "../../assets/image/no-data.png";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+
+const socket = io(Socket_link);
 const ArchiveBarangayAccount = () => {
   useEffect(() => {
     document.title = "Archived Account | Barangay E-Services Management";
@@ -52,12 +56,10 @@ const ArchiveBarangayAccount = () => {
     fetchUsers();
   }, []);
 
-
   useEffect(() => {
     const filteredData = users.filter(
       (item) =>
-       
-        item.firstName.toLowerCase().includes(searchQuery.toLowerCase())||
+        item.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.lastName.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const startIndex = currentPage * 10;
@@ -75,6 +77,20 @@ const ArchiveBarangayAccount = () => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
+
+  useEffect(() => {
+    const handleBrgyAccRestore = (obj) => {
+      setUser(obj);
+      setUsers((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredUser((prev) => prev.filter((item) => item._id !== obj._id));
+    };
+
+    socket.on("receive-restore-muni", handleBrgyAccRestore);
+    return () => {
+      socket.off("receive-restore-muni", handleBrgyAccRestore);
+    };
+  }, [socket, setUser]);
+
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -130,7 +146,7 @@ const ArchiveBarangayAccount = () => {
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
-          <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0"></div>
+            <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0"></div>
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12 justify-start">
               <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#295141] p-3 rounded-l-md">
@@ -359,8 +375,7 @@ const ArchiveBarangayAccount = () => {
           />
         </div>
         <ViewArchivedAdmin user={user} setUser={setUser} />
-        <RestoreAdminModal selectedItems={selectedItems} />
-        
+        <RestoreAdminModal selectedItems={selectedItems} socket={socket} />
       </div>
     </div>
   );

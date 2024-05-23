@@ -133,11 +133,25 @@ const MunicipalityOfficials = () => {
       setFilteredOfficials((prev) => [obj, ...prev]);
     };
 
+    const handleOfficialArchive = (obj) => {
+      setSelectedOfficial(obj);
+      setOfficials((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredOfficials((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
     socket.on("receive-upt-muni-official", handleOfficialUpt);
     socket.on("receive-muni-official", handleOfficial);
+    socket.on("receive-archive-muni", handleOfficialArchive);
+
     return () => {
       socket.off("receive-upt-muni-official", handleOfficialUpt);
       socket.off("receive-muni-official", handleOfficial);
+      socket.off("receive-archive-muni", handleOfficialArchive);
+
     };
   }, [socket, setSelectedOfficial, setOfficials]);
 
@@ -489,7 +503,7 @@ const MunicipalityOfficials = () => {
       </div>
       <CreateOfficialModal brgy={brgy} socket={socket} />
 
-      <ArchiveOfficialModal selectedItems={selectedItems} />
+      <ArchiveOfficialModal selectedItems={selectedItems} socket={socket}/>
       <EditOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}

@@ -138,12 +138,23 @@ const AccountManagement = () => {
       setFilteredUser((prev) => [obj, ...prev]);
     };
 
+    const handleMuniAccArchive = (obj) => {
+      setUser(obj);
+      setUsers((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredUser((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
 
     socket.on("receive-upt-muni-admin", handleMuniAccUpt);
     socket.on("receive-muni-admin", handleMuniAcc);
+    socket.on("receive-archive-muni", handleMuniAccArchive);
     return () => {
       socket.off("receive-upt-muni-admin", handleMuniAccUpt);
       socket.off("receive-muni-admin", handleMuniAcc);
+      socket.off("receive-archive-muni", handleMuniAccArchive);
     };
   }, [socket, setUser]);
 
@@ -493,7 +504,7 @@ const AccountManagement = () => {
           />
         </div>
       </div>
-      <ArchiveAccAdmin selectedItems={selectedItems} />
+      <ArchiveAccAdmin selectedItems={selectedItems} socket={socket} />
       {/* <StatusAccAdmin /> */}
      
       <AddAdminModal brgy={brgy} occupation={occupation} type={type} socket={socket}/>

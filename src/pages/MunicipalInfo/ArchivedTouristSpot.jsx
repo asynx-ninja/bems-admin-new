@@ -13,6 +13,10 @@ import Breadcrumbs from "../../components/mtouristspot/Breadcrumbs";
 import RestoreTouristSpotModal from "../../components/mtouristspot/restoreTouristSpot";
 import ViewArchivedTouristSpot from "../../components/mtouristspot/viewArchivedTouristSpotModal"
 import noData from "../../assets/image/no-data.png";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+
+const socket = io(Socket_link);
 const ArchivedTouristSpot = () => {
   useEffect(() => {
     document.title = "Archived Tourist Spot | Barangay E-Services Management";
@@ -26,7 +30,7 @@ const ArchivedTouristSpot = () => {
   const brgy = "Municipal Info";
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-
+  const section = "MUNISIPYO";
   const [searchQuery, setSearchQuery] = useState("");
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredTouristSpot, setFilteredTouristSpot] = useState([]);
@@ -73,6 +77,24 @@ const handleSearchChange = (e) => {
   setSearchQuery(e.target.value);
   setCurrentPage(0); // Reset current page when search query changes
 };
+useEffect(() => {
+
+  const handleTouristRestore = (obj) => {
+    settouristspotInfo(obj);
+    settouristSpot((prev) =>
+      prev.filter((item) => item._id !== obj._id)
+    );
+    setFilteredTouristSpot((prev) =>
+      prev.filter((item) => item._id !== obj._id)
+    );
+  };
+
+
+  socket.on("receive-restore-muni", handleTouristRestore);
+  return () => {
+    socket.off("receive-restore-muni", handleTouristRestore);
+  };
+}, [socket, settouristspotInfo, settouristSpot]);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -515,7 +537,7 @@ const handleSearchChange = (e) => {
           />
         </div>
         {/* <ViewArchivedAdmin user={user} setUser={setUser}/> */}
-        <RestoreTouristSpotModal selectedItems={selectedItems} />
+        <RestoreTouristSpotModal selectedItems={selectedItems} socket={socket}/>
         <ViewArchivedTouristSpot touristspotInfo={touristspotInfo}/>
       </div>
     </div>

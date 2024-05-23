@@ -11,7 +11,10 @@ import { useSearchParams } from "react-router-dom";
 import Breadcrumbs from "../../components/municipalaccount/Breadcrumbs";
 import ViewArchivedAdmin from "../../components/municipalaccount/ViewArchivedAdmin";
 import RestoreAdminModal from "../../components/municipalaccount/RestoreAdminModal";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
 
+const socket = io(Socket_link);
 import noData from "../../assets/image/no-data.png";
 const ArchivedAccountManagement = () => {
   useEffect(() => {
@@ -84,6 +87,26 @@ const ArchivedAccountManagement = () => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
+
+  useEffect(() => {
+
+    const handleMuniAccRestore = (obj) => {
+      setUser(obj);
+      setUsers((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredUser((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    socket.on("receive-restore-muni", handleMuniAccRestore);
+    return () => {
+;
+      socket.off("receive-restore-muni", handleMuniAccRestore);
+    };
+  }, [socket, setUser]);
+
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -417,7 +440,7 @@ const ArchivedAccountManagement = () => {
           />
         </div>
         <ViewArchivedAdmin user={user} setUser={setUser} />
-        <RestoreAdminModal selectedItems={selectedItems} />
+        <RestoreAdminModal selectedItems={selectedItems} socket={socket}/>
  
       </div>
     </div>

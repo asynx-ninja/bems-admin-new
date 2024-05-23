@@ -12,6 +12,10 @@ import Breadcrumbs from "../../components/mservicesinfo/Breadcrumbs";
 import RestoreServicesInfoModal from "../../components/mservicesinfo/restoreServiceInfoModal";
 import ViewArchivedServicesInfo from "../../components/mservicesinfo/viewArchivedServicesInfoModal"
 import noData from "../../assets/image/no-data.png";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+
+const socket = io(Socket_link);
 const ArchivedServicesInfo = () => {
   useEffect(() => {
     document.title = "Archived Municipal Services | Barangay E-Services Management";
@@ -72,6 +76,27 @@ const ArchivedServicesInfo = () => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
+
+  useEffect(() => {
+   
+    const handleServiceRestore = (obj) => {
+      setServicesInfos(obj);
+      setServicesInfo((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredServices((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    socket.on("receive-restore-muni", handleServiceRestore);
+    return () => {
+
+      socket.off("receive-restore-muni", handleServiceRestore);
+    };
+  }, [socket, setServicesInfos, setServicesInfo]);
+
+
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -514,7 +539,7 @@ const ArchivedServicesInfo = () => {
           />
         </div>
         {/* <ViewArchivedAdmin user={user} setUser={setUser}/> */}
-        <RestoreServicesInfoModal selectedItems={selectedItems} />
+        <RestoreServicesInfoModal selectedItems={selectedItems} socket={socket}/>
         <ViewArchivedServicesInfo servicesinfos={servicesinfos}/>
       </div>
     </div>

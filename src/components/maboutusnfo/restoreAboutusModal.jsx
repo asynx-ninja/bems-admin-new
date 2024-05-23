@@ -5,7 +5,7 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import { LuArchiveRestore } from "react-icons/lu";
 import RestoreLoader from "./loaders/RestoreLoader";
-function RestoreAboutusModal({selectedItems}) {
+function RestoreAboutusModal({selectedItems, socket}) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -31,16 +31,17 @@ function RestoreAboutusModal({selectedItems}) {
         );
 
         if (response.status === 200) {
-          setTimeout(() => {
+          socket.emit("send-restore-muni", response.data);
+        
             setSubmitClicked(false);
             setError(null);
             setUpdatingStatus("success");
             setTimeout(() => {
               setUpdatingStatus(null);
               HSOverlay.close(document.getElementById("hs-restore-aboutus-modal"));
-              window.location.reload();
+
             }, 3000);
-          }, 3000);
+
         }
       }
     } catch (err) {

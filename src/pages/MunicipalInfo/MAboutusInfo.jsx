@@ -136,12 +136,24 @@ const MHomepageInfo = () => {
       setFilteredAboutUs((prev) => [obj, ...prev]);
     };
 
-
+    const handleAboutArchive = (obj) => {
+      setAboutusinfo(obj);
+      setAboutus((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+      setFilteredAboutUs((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
     socket.on("receive-upt-muni-about", handleAboustUpt);
     socket.on("receive-muni-about", handleAboutUs);
+    socket.on("receive-archive-muni", handleAboutArchive);
+
     return () => {
       socket.off("receive-upt-muni-about", handleAboustUpt);
       socket.off("receive-muni-about", handleAboutUs);
+      socket.off("receive-archive-muni", handleAboutArchive);
+
     };
   }, [socket, setAboutusinfo, setAboutus]);
 
@@ -581,7 +593,7 @@ const MHomepageInfo = () => {
           />
         </div>
         <AddAboutusModal brgy={brgy} socket={socket} />
-        <ArchiveAboutusModal selectedItems={selectedItems} />
+        <ArchiveAboutusModal selectedItems={selectedItems} socket={socket} />
         <ManageAboutusModal
           socket={socket}
           brgy={brgy}
