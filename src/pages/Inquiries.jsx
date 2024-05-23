@@ -148,12 +148,17 @@ const Inquiries = () => {
   useEffect(() => {
     const handleMuniInq = (obj) => {
       setInquiry(obj);
-
+      setAllInquiries((prev) => [obj, ...prev]);
       setFilteredInquiries((prev) => [obj, ...prev]);
     };
 
      const handleReMuniInq = (obj) => {
       setInquiry(obj);
+      setAllInquiries((curItem) =>
+        curItem.map((item) =>
+          item._id === obj._id ? obj : item
+        )
+      );
       setFilteredInquiries((curItem) =>
         curItem.map((item) =>
           item._id === obj._id ? obj : item
@@ -167,7 +172,7 @@ const Inquiries = () => {
       socket.off("receive-reply-muni-inquiry", handleReMuniInq);
       socket.off("receive-muni-inquiry", handleMuniInq);
     };
-  }, [socket, setInquiry]);
+  }, [socket, setInquiry, setAllInquiries]);
 
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
@@ -254,7 +259,7 @@ const Inquiries = () => {
   };
 
   const [showTooltip, setShowTooltip] = useState(false);
-  
+
   const isLatestResponseResident = (inquiry) => {
     const { response, isApproved } = inquiry;
     if (response && response.length > 0) {

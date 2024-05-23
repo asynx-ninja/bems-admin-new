@@ -213,7 +213,9 @@ const EventsRegistrations = () => {
       console.log("received appli", obj);
 
       setApplication(obj);
-     
+      setSearchApplications((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
       setFilteredApplications((curItem) =>
         curItem.map((item) => (item._id === obj._id ? obj : item))
       );
@@ -844,7 +846,7 @@ const EventsRegistrations = () => {
         chatContainerRef={chatContainerRef}
         applications={applications}
       />
-      <ArchiveRegistrationModal selectedItems={selectedItems} />
+      <ArchiveRegistrationModal selectedItems={selectedItems} socket={socket} />
     </div>
   );
 };

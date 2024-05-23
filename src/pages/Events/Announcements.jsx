@@ -170,8 +170,14 @@ const EventsManagement = () => {
   useEffect(() => {
     const handleEvent = (obj) => {
       setAnnouncement(obj);
-
+      setAnnouncements((prev) => [obj, ...prev]);
       setFilteredAnnouncements((prev) => [obj, ...prev]);
+    };
+
+    const handleEventArchive = (obj) => {
+      setAnnouncement(obj);
+      setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
     };
 
     const handleEventForm = (obj) => {
@@ -181,21 +187,25 @@ const EventsManagement = () => {
     };
 
     const handleEventUpdate = (obj) => {
+      setAnnouncements((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
       setFilteredAnnouncements((curItem) =>
         curItem.map((item) => (item._id === obj._id ? obj : item))
       );
     };
-
     socket.on("receive-get-event", handleEvent);
     socket.on("receive-edit-event-form", handleEventForm);
     socket.on("receive-update-event", handleEventUpdate);
+    socket.on("receive-archive-muni", handleEventArchive);
 
     return () => {
       socket.off("receive-get-event", handleEvent);
       socket.off("receive-edit-event-form", handleEventForm);
       socket.off("receive-update-event", handleEventUpdate);
+      socket.on("receive-archive-muni", handleEventArchive);
     };
-  }, [socket, setAnnouncement]);
+  }, [socket, setAnnouncement, setAnnouncements]);
 
   const DateFormat = (date) => {
     const dateFormat = date === undefined ? "" : date.substr(0, 10);
@@ -694,7 +704,7 @@ const EventsManagement = () => {
           />
         </div>
         <AddModal brgy={brgy} setUpdate={setUpdate} socket={socket} />
-        <ArchiveModal selectedItems={selectedItems} />
+        <ArchiveModal selectedItems={selectedItems} socket={socket}/>
         <ManageAnnouncementModal
           announcement={announcement}
           setAnnouncement={setAnnouncement}

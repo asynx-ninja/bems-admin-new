@@ -138,7 +138,7 @@ const Notifications = () => {
             <span className="flex absolute top-0 end-0 h-4 w-4">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600"></span>
               <span className="relative inline-flex items-center justify-center rounded-full h-4 w-4 bg-red-500">
-                {unreadNotifications}
+              {unreadNotifications > 99 ? '99+' : unreadNotifications}
               </span>
             </span>
           )}

@@ -11,7 +11,9 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../../assets/image/no-data.png";
-
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+const socket = io(Socket_link);
 const ArchivedEvents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
@@ -38,7 +40,7 @@ const ArchivedEvents = () => {
           `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
         );
         if (announcementsResponse.status === 200) {
-          setUpdate(false)
+     
           const announcementsData = announcementsResponse.data.result.map(
             async (announcement) => {
               const completedResponse = await axios.get(
@@ -157,7 +159,21 @@ const ArchivedEvents = () => {
   const handleView = (item) => {
     setAnnouncement(item);
   };
+  useEffect(() => {
+    const handleEventRestore = (obj) => {
+      setAnnouncement(obj);
+      setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+    };
 
+
+    socket.on("receive-restore-muni", handleEventRestore);
+
+    return () => {
+
+      socket.on("receive-restore-muni", handleEventRestore);
+    };
+  }, [socket, setAnnouncement, setAnnouncements]);
   const handleResetFilter = () => {
     setSearchQuery("");
     setAnnouncements();
@@ -566,7 +582,7 @@ const ArchivedEvents = () => {
           announcement={announcement}
           setAnnouncement={setAnnouncement}
         />
-        <RestoreAnnouncementModal selectedItems={selectedItems} />
+        <RestoreAnnouncementModal selectedItems={selectedItems} socket={socket}/>
       </div>
     </div>
   );

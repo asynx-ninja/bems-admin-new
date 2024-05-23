@@ -196,6 +196,9 @@ function ManageAnnouncementModal({
         if (response.status === 200) {
           setEdit(!edit);
           socket.emit("send-update-event", response.data);
+          socket.emit("send-staff-notif", response.data);
+          socket.emit("send-muni-notif", response.data);
+          socket.emit("send-resident-notif", response.data);
           console.log("ito", response.data)
           setSubmitClicked(false);
           setUpdatingStatus("success");

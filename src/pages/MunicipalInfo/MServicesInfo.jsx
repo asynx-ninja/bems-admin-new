@@ -123,6 +123,9 @@ const MServicesInfo = () => {
   };
   useEffect(() => {
     const handleOfferedServUpt = (obj) => {
+      setServicesInfo((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
       setFilteredServices((curItem) =>
         curItem.map((item) => (item._id === obj._id ? obj : item))
       );
@@ -130,7 +133,7 @@ const MServicesInfo = () => {
 
     const handleOfferedServ = (obj) => {
       setServicesInfos(obj);
-
+      setServicesInfo((prev) => [obj, ...prev]);
       setFilteredServices((prev) => [obj, ...prev]);
     };
 
@@ -140,7 +143,7 @@ const MServicesInfo = () => {
       socket.off("receive-upt-offered-serv", handleOfferedServUpt);
       socket.off("receive-offered-serv", handleOfferedServ);
     };
-  }, [socket, setServicesInfos]);
+  }, [socket, setServicesInfos, setServicesInfo]);
 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 10);

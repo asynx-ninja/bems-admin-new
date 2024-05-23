@@ -139,7 +139,7 @@ const MunicipalityOfficials = () => {
       socket.off("receive-upt-muni-official", handleOfficialUpt);
       socket.off("receive-muni-official", handleOfficial);
     };
-  }, [socket, setSelectedOfficial]);
+  }, [socket, setSelectedOfficial, setOfficials]);
 
   const tableHeader = [
     "IMAGE",

@@ -270,6 +270,7 @@ function ViewInquiriesModal({
       }
       console.log("wew", response.data);
       socket.emit("send-reply-muni-inquiry", response.data);
+      socket.emit("send-resident-notif", response.data);
       setOnSend(false);
       setErrMsg(false);
     } catch (error) {

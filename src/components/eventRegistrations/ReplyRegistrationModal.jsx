@@ -287,6 +287,7 @@ function ReplyRegistrationModal({
         });
       }
       socket.emit("send-reply-event-appli", response.data);
+      socket.emit("send-resident-notif", response.data);
       setOnSend(false);
       setErrMsg(false);
     } catch (error) {

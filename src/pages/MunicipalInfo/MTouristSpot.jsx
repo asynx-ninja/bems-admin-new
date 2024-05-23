@@ -121,6 +121,9 @@ const MTouristSpot = () => {
   };
   useEffect(() => {
     const handleTouristSpotUpt = (obj) => {
+      settouristSpot((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
       setFilteredTouristSpot((curItem) =>
         curItem.map((item) => (item._id === obj._id ? obj : item))
       );
@@ -128,7 +131,7 @@ const MTouristSpot = () => {
 
     const handleTouristSpot = (obj) => {
       settouristspotInfo(obj);
-
+      settouristSpot((prev) => [obj, ...prev]);
       setFilteredTouristSpot((prev) => [obj, ...prev]);
     };
 
@@ -138,7 +141,7 @@ const MTouristSpot = () => {
       socket.off("receive-upt-tourist-spot", handleTouristSpotUpt);
       socket.off("receive-tourist-spot", handleTouristSpot);
     };
-  }, [socket, settouristspotInfo]);
+  }, [socket, settouristspotInfo, settouristSpot]);
 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 10);

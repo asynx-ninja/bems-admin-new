@@ -122,6 +122,9 @@ const MHomepageInfo = () => {
 
   useEffect(() => {
     const handleAboustUpt = (obj) => {
+      setAboutus((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
       setFilteredAboutUs((curItem) =>
         curItem.map((item) => (item._id === obj._id ? obj : item))
       );
@@ -129,7 +132,7 @@ const MHomepageInfo = () => {
 
     const handleAboutUs = (obj) => {
       setAboutusinfo(obj);
-
+      setAboutus((prev) => [obj, ...prev]);
       setFilteredAboutUs((prev) => [obj, ...prev]);
     };
 
@@ -140,7 +143,7 @@ const MHomepageInfo = () => {
       socket.off("receive-upt-muni-about", handleAboustUpt);
       socket.off("receive-muni-about", handleAboutUs);
     };
-  }, [socket, setAboutusinfo]);
+  }, [socket, setAboutusinfo, setAboutus]);
 
   const TimeFormat = (date) => {
     if (!date) return "";
