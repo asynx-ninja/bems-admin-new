@@ -15,7 +15,9 @@ import axios from "axios";
 import noData from "../../assets/image/no-data.png";
 import { io } from "socket.io-client";
 import Socket_link from "../../config/Socket";
-
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 const socket = io(Socket_link);
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
@@ -23,7 +25,7 @@ const EventsRegistrations = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
-  const brgy = "MUNISIPYO";
+  const brgys = "MUNISIPYO";
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchQuery, setSearchQuery] = useState("");
   const [eventupdate, setEventUpdate] = useState(false);
@@ -45,7 +47,7 @@ const EventsRegistrations = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&page=${currentPage}`
+          `${API_LINK}/announcement/?brgy=${brgys}&page=${currentPage}`
         );
         if (response.status === 200) {
           let arr = [];
@@ -59,13 +61,13 @@ const EventsRegistrations = () => {
       }
     };
     fetch();
-  }, [brgy]);
+  }, [brgys]);
 
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}`
+          `${API_LINK}/application/?brgy=${brgys}&archived=false&status=${statusFilter}&title=${selecteEventFilter}`
         );
         if (response.status === 200) {
           setSearchApplications(response.data.result);
@@ -85,13 +87,13 @@ const EventsRegistrations = () => {
     };
 
     fetch();
-  }, [brgy, statusFilter, selecteEventFilter]);
+  }, [statusFilter, selecteEventFilter]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/mofficials/?brgy=${brgy}&archived=false`
+          `${API_LINK}/mofficials/?brgy=${brgys}&archived=false`
         );
 
         if (response.status === 200) {
@@ -101,7 +103,7 @@ const EventsRegistrations = () => {
             setOfficials(officialsData);
           } else {
             setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
+            console.log(`No officials found for Barangay ${brgys}`);
           }
         } else {
           setOfficials([]);
@@ -114,7 +116,7 @@ const EventsRegistrations = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy]); // Add positionFilter dependency
+  }, [currentPage]); // Add positionFilter dependency
   useEffect(() => {
     const filteredData = searchapplications.filter(
       (item) =>
@@ -312,7 +314,92 @@ const EventsRegistrations = () => {
       setFilteredApplications(filters(selected, date, applications));
     }
   };
+  const exportToExcel = () => {
+    // 1. Prepare data for Excel export (excluding unwanted columns)
+    const dataForExcel = searchapplications.map((item) => ({
+      "APPLICATION ID": item.application_id,
+      "EVENT NAME": item.event_name,
+      SENDER:
+        item.form[0].lastName.value +
+        ", " +
+        item.form[0].firstName.value +
+        " " +
+        item.form[0].middleName.value,
 
+      BARANGAY: item.brgy,
+      // Exclude item.status
+      // Add other fields as needed
+    }));
+
+    // 2. Create a new worksheet from the prepared data
+    const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
+
+    // 3. Autofit columns
+    worksheet["!cols"] = Object.keys(dataForExcel[0] || {}).map((key) => ({
+      // Adjust 'wpx' for a wider initial width
+      wpx: 180,
+    }));
+
+    // 4. Add styling (example - set header background color)
+    const headerStyle = {
+      fill: {
+        fgColor: { rgb: "FFB13C" }, // Example color, change as needed
+      },
+      font: {
+        bold: true,
+      },
+    };
+
+    // Apply header style to the first row (assuming headers are in row 1)
+    Object.keys(worksheet).forEach((cell) => {
+      if (cell.startsWith("A1") && cell.length === 2) {
+        // Target header cells
+        worksheet[cell].s = headerStyle;
+      }
+    });
+
+    // 5. Create a new workbook and append the styled worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Event Applications");
+
+    // 6. Write the workbook to an Excel file
+    XLSX.writeFile(workbook, "event_applications.xlsx");
+  };
+
+  // Function to export data to PDF
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+  
+    const pdfTableHeader = tableHeader.filter(
+      (header) => header !== "STATUS" && header !== "ACTIONS"
+    ).concat("BARANGAY"); // Add "BARANGAY" to the header
+  
+    // Add title header 
+    const titleText = "List of Event Applications";
+    doc.setFontSize(18);
+    doc.setTextColor(41, 81, 65); // Dark green color (hex: #295141)
+    const textWidth = doc.getTextWidth(titleText);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - textWidth) / 2; 
+    doc.text(titleText, xPosition, 20); // Place the title
+  
+    doc.autoTable({
+      startY: 30, // Start the table below the title
+      head: [pdfTableHeader],
+      body: searchapplications.map((item) => [
+        item.brgy,
+        item.event_name,
+        item.form[0].lastName.value +
+          ", " +
+          item.form[0].firstName.value +
+          " " +
+          item.form[0].middleName.value,
+        // ... other data fields
+      ]),
+    });
+  
+    doc.save("event_applications.pdf");
+  };
   return (
     <div className="mx-4 ">
       {/* Body */}
@@ -330,7 +417,7 @@ const EventsRegistrations = () => {
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
             <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
               <div className="w-full rounded-lg ">
-                <Link to={`/archived_registrations/?id=${id}&brgy=${brgy}`}>
+                <Link to={`/archived_registrations/?id=${id}&brgys=${brgys}`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -585,6 +672,57 @@ const EventsRegistrations = () => {
                   </div>
                 </ul>
               </div>
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown-export" // Unique ID for this dropdown
+                  type="button"
+                  className="bg-[#295141] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                >
+                  EXPORT
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-48 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2"
+                  aria-labelledby="hs-dropdown-export"
+                >
+                  <li>
+                    <a
+                      href="#"
+                      onClick={
+                        exportToExcel // Export immediately after selection
+                      }
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 w-full text-left"
+                    >
+                      EXCEL
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      onClick={exportToPDF}
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 w-full text-left"
+                    >
+                      PDF
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
@@ -776,7 +914,7 @@ const EventsRegistrations = () => {
                             View Application
                           </span>
                         </div>
-
+                        {/* 
                         <div className="hs-tooltip inline-block">
                           <button
                             type="button"
@@ -797,7 +935,7 @@ const EventsRegistrations = () => {
                           >
                             Reply to Application
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                     </td>
                   </tr>
@@ -842,13 +980,13 @@ const EventsRegistrations = () => {
         <ViewRegistrationModal
           application={application}
           officials={officials}
-          brgy={brgy}
+          brgys={brgys}
         />
       ) : null}
       <ReplyRegistrationModal
         application={application}
         setApplication={setApplication}
-        brgy={brgy}
+        brgys={brgys}
         socket={socket}
         chatContainerRef={chatContainerRef}
         applications={applications}
