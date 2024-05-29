@@ -56,7 +56,7 @@ function ReplyRegistrationModal({
   });
   const [currentPage, setCurrentPage] = useState(0);
   const user_id = applications.user_id;
-  console.log(user_id);
+  // console.log(user_id);
   useEffect(() => {
     var container = document.getElementById("scrolltobottom");
     container.scrollTop = container.scrollHeight;
@@ -70,7 +70,7 @@ function ReplyRegistrationModal({
         if (res.status === 200) {
           setUserData(res.data[0]);
         }
-        console.log(res.data[0]);
+        // console.log(res.data[0]);
       } catch (error) {
         console.log(error);
       }
@@ -87,8 +87,8 @@ function ReplyRegistrationModal({
         );
         if (res1.status === 200) {
           setUserDatas(res1.data[0]);
-          console.log("3", userDatas);
-          console.log("4", userDatas?.profile?.link);
+          // console.log("3", userDatas);
+          // console.log("4", userDatas?.profile?.link);
         }
       } catch (error) {
         console.log(error);
@@ -188,7 +188,7 @@ function ReplyRegistrationModal({
   };
   const handleKeyDown = (event) => {
     if (event.keyCode === 13 && !event.shiftKey) {
-      console.log("nag enter si idol");
+      // console.log("nag enter si idol");
 
       event.preventDefault();
       handleOnSend(event);
@@ -320,7 +320,7 @@ function ReplyRegistrationModal({
   //   }
   // }, [application.response]);
   const handleOnViewTime = (item) => {
-    console.log(item);
+    // console.log(item);
     setViewTime({
       state: !viewTime.state,
       timeKey: item,

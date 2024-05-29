@@ -15,9 +15,10 @@ import axios from "axios";
 import noData from "../../assets/image/no-data.png";
 import { io } from "socket.io-client";
 import Socket_link from "../../config/Socket";
-import * as XLSX from "xlsx";
+import * as XLSX from 'xlsx';
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import ExcelJS from 'exceljs';
 const socket = io(Socket_link);
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
@@ -79,7 +80,7 @@ const EventsRegistrations = () => {
         }
         const container = chatContainerRef.current;
         container.scrollTop = container.scrollHeight;
-        console.log(container);
+        // console.log(container);
         // setEventUpdate((prev) => !prev);
       } catch (err) {
         console.log(err);
@@ -198,7 +199,9 @@ const EventsRegistrations = () => {
     "APPLICATION ID",
     "EVENT NAME",
     "SENDER",
-    "STATUS",
+    // "STATUS",
+    "CONTACT",
+    "EMAIL",
     "ACTIONS",
   ];
 
@@ -245,161 +248,174 @@ const EventsRegistrations = () => {
     };
   }, [socket, setApplication, setSearchApplications]);
 
-  const filters = (choice, selectedDate, applications) => {
+  const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
-        return applications.filter((item) => {
-          const itemDate = new Date(item.createdAt);
+        return searchapplications.filter((item) => {
           return (
-            itemDate.getFullYear() === selectedDate.getFullYear() &&
-            itemDate.getMonth() === selectedDate.getMonth() &&
-            itemDate.getDate() === selectedDate.getDate()
+            new Date(item.createdAt).getFullYear() ===
+            selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
+            new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
         });
       case "week":
-        const startDate = new Date(selectedDate);
+        const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        return applications.filter((item) => {
-          const itemDate = new Date(item.createdAt);
-          return itemDate >= startDate && itemDate <= endDate;
-        });
+
+        return searchapplications.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+            startDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
+            new Date(item.createdAt).getDate() >= startDate.getDate() &&
+            new Date(item.createdAt).getDate() <= endDate.getDate()
+        );
       case "month":
-        return applications.filter((item) => {
-          const itemDate = new Date(item.createdAt);
-          return (
-            itemDate.getFullYear() === selectedDate.getFullYear() &&
-            itemDate.getMonth() === selectedDate.getMonth()
-          );
-        });
+        return searchapplications.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+            selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
+        );
       case "year":
-        return applications.filter((item) => {
-          const itemDate = new Date(item.createdAt);
-          return itemDate.getFullYear() === selectedDate.getFullYear();
-        });
-      default:
-        return applications; // Return all applications if no valid choice is selected
+        return searchapplications.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+            selectedDate.getFullYear()
+        );
     }
   };
 
   const onSelect = (e) => {
+
     setSelected(e.target.value);
   };
 
   const onChangeDate = (e) => {
     const date = new Date(e.target.value);
     setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date, applications));
+    setSearchApplications(filters(selected, date));
   };
 
   const onChangeWeek = (e) => {
-    const date = new Date(e.target.value);
+    const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date, applications));
+    setSearchApplications(filters(selected, date));
+
   };
 
   const onChangeMonth = (e) => {
-    const date = new Date(e.target.value);
+    const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date, applications));
+    setSearchApplications(filters(selected, date));
+
   };
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredApplications(applications);
+      setSearchApplications(applications);
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      setFilteredApplications(filters(selected, date, applications));
+      setSearchApplications(filters(selected, date));
     }
   };
-  const exportToExcel = () => {
-    // 1. Prepare data for Excel export (excluding unwanted columns)
+
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Event Applications');
+
     const dataForExcel = searchapplications.map((item) => ({
-      "APPLICATION ID": item.application_id,
-      "EVENT NAME": item.event_name,
-      SENDER:
+      SENDER: item.form[0].lastName.value + ", " + item.form[0].firstName.value + " " + item.form[0].middleName.value,
+      CONTACT: item.form[0].contact?.value || "N/A",
+      EMAIL: item.form[0].email?.value || "N/A"
+    }));
+
+    // Check for empty data BEFORE creating the worksheet
+    if (dataForExcel.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    // Add Title Row
+    const titleRow = worksheet.addRow([`LIST OF EVENT APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`]);
+    // Merge cells for the title row
+    worksheet.mergeCells(`A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`);
+    titleRow.getCell(1).font = { bold: true, size: 16, color: { argb: 'FFFFFFFF' } };
+    titleRow.getCell(1).alignment = { horizontal: 'center' };
+    titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '295141' } };
+
+    // Add Header Row
+    const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
+    headerRow.eachCell((cell) => {
+      if (cell.value) {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.alignment = { horizontal: 'center' };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFB13C' } };
+      }
+    });
+
+    // Add Data Rows
+    dataForExcel.forEach((item, index) => {
+      const row = worksheet.addRow(Object.values(item));
+      const rowStyle = index % 2 === 0 ? 'EBF6EB' : 'F5FDF5';
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowStyle } };
+      });
+    });
+
+    // Set Column Widths
+    worksheet.columns.forEach((column) => {
+      column.width = 30; // Adjust the column width as needed
+    });
+
+    // Save the Workbook
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Event-Applications-${selecteEventFilter}.xlsx`;
+    link.click();
+  };
+
+
+  // Function to export data to PDF
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const titleText = `LIST OF EVENT APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`;
+    doc.setFontSize(18);
+    doc.setTextColor(41, 81, 65); // Dark green color (hex: #295141)
+    const textWidth = doc.getTextWidth(titleText);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - textWidth) / 2;
+    doc.text(titleText, xPosition, 20); // Place the title
+
+    doc.autoTable({
+      startY: 30,
+      head: [
+        ["NAME", "CONTACT", "EMAIL"],
+      ],
+      body: searchapplications.map((item) => [
         item.form[0].lastName.value +
         ", " +
         item.form[0].firstName.value +
         " " +
         item.form[0].middleName.value,
 
-      BARANGAY: item.brgy,
-      // Exclude item.status
-      // Add other fields as needed
-    }));
-
-    // 2. Create a new worksheet from the prepared data
-    const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
-
-    // 3. Autofit columns
-    worksheet["!cols"] = Object.keys(dataForExcel[0] || {}).map((key) => ({
-      // Adjust 'wpx' for a wider initial width
-      wpx: 180,
-    }));
-
-    // 4. Add styling (example - set header background color)
-    const headerStyle = {
-      fill: {
-        fgColor: { rgb: "FFB13C" }, // Example color, change as needed
-      },
-      font: {
-        bold: true,
-      },
-    };
-
-    // Apply header style to the first row (assuming headers are in row 1)
-    Object.keys(worksheet).forEach((cell) => {
-      if (cell.startsWith("A1") && cell.length === 2) {
-        // Target header cells
-        worksheet[cell].s = headerStyle;
-      }
-    });
-
-    // 5. Create a new workbook and append the styled worksheet
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Event Applications");
-
-    // 6. Write the workbook to an Excel file
-    XLSX.writeFile(workbook, "event_applications.xlsx");
-  };
-
-  // Function to export data to PDF
-  const exportToPDF = () => {
-    const doc = new jsPDF();
-  
-    const pdfTableHeader = tableHeader.filter(
-      (header) => header !== "STATUS" && header !== "ACTIONS"
-    ).concat("BARANGAY"); // Add "BARANGAY" to the header
-  
-    // Add title header 
-    const titleText = "List of Event Applications";
-    doc.setFontSize(18);
-    doc.setTextColor(41, 81, 65); // Dark green color (hex: #295141)
-    const textWidth = doc.getTextWidth(titleText);
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const xPosition = (pageWidth - textWidth) / 2; 
-    doc.text(titleText, xPosition, 20); // Place the title
-  
-    doc.autoTable({
-      startY: 30, // Start the table below the title
-      head: [pdfTableHeader],
-      body: searchapplications.map((item) => [
-        item.brgy,
-        item.event_name,
-        item.form[0].lastName.value +
-          ", " +
-          item.form[0].firstName.value +
-          " " +
-          item.form[0].middleName.value,
+        item.form[0].contact?.value || "N/A",
+        item.form[0].email?.value || "N/A",
         // ... other data fields
       ]),
+      styles: {
+        halign: 'center',
+      }
     });
-  
-    doc.save("event_applications.pdf");
+    doc.save(`Event-Applications-${selecteEventFilter}.pdf`);
   };
+
   return (
     <div className="mx-4 ">
       {/* Body */}
@@ -446,7 +462,7 @@ const EventsRegistrations = () => {
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
               {/* Status Sort */}
-              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+              {/* <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
                   type="button"
@@ -454,9 +470,8 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -526,7 +541,7 @@ const EventsRegistrations = () => {
                     REJECTED
                   </a>
                 </ul>
-              </div>
+              </div> */}
 
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
@@ -629,9 +644,8 @@ const EventsRegistrations = () => {
                 >
                   EVENT TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -680,9 +694,8 @@ const EventsRegistrations = () => {
                 >
                   EXPORT
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -837,6 +850,16 @@ const EventsRegistrations = () => {
                           item.form[0].middleName.value}
                       </span>
                     </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                        {item.form[0].contact?.value || "N/A"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                        {item.form[0].email?.value || "N/A"}
+                      </span>
+                    </td>
                     {/* <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
@@ -845,7 +868,7 @@ const EventsRegistrations = () => {
                         </span>
                       </div>
                     </td> */}
-                    <td className="px-6 py-3 xxl:w-3/12">
+                    {/* <td className="px-6 py-3 xxl:w-3/12">
                       {item.status === "Application Completed" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
@@ -890,7 +913,7 @@ const EventsRegistrations = () => {
                           </span>
                         </div>
                       )}
-                    </td>
+                    </td>*/}
                     <td className="px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
@@ -960,9 +983,11 @@ const EventsRegistrations = () => {
         </div>
       </div>
       <div className="md:py-4 md:px-4 bg-[#295141] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
+
         <ReactPaginate
           breakLabel="..."
           nextLabel=">>"

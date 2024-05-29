@@ -19,6 +19,7 @@ import ManageAnnouncementModal from "../../components/announcement/ManageAnnounc
 import AddEventsForm from "../../components/announcement/form/add_event/AddEventsForm";
 import EditEventsForm from "../../components/announcement/form/edit_event/EditEventsForm";
 import noData from "../../assets/image/no-data.png";
+import { CronJob } from 'node-cron'; 
 import { io } from "socket.io-client";
 import Socket_link from "../../config/Socket";
 const socket = io(Socket_link);
@@ -43,6 +44,7 @@ const EventsManagement = () => {
   const [update, setUpdate] = useState(false);
 
   const [eventsForm, setEventsForm] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -85,6 +87,42 @@ const EventsManagement = () => {
 
     fetchData();
   }, [brgy]);
+  
+ useEffect(() => {
+    const cronJob = new CronJob('0 0 0 */3 * *', () => {
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+      const eventsToArchive = announcements.filter(event => {
+        const createdAt = new Date(event.createdAt);
+        return createdAt <= threeDaysAgo;
+      });
+
+      if (eventsToArchive.length > 0) {
+        eventsToArchive.forEach(async (event) => {
+          try {
+            const response = await axios.patch(
+              `${API_LINK}/announcement/archived/${event._id}/true`
+            );
+
+            if (response.status === 200) {
+              // Update announcements state and socket emission can go here
+              // e.g., setAnnouncements(...), socket.emit(...)
+              console.log(`Event ${event._id} archived successfully.`);
+            } else {
+              console.error(`Error archiving event ${event._id}:`, response.data);
+            }
+          } catch (error) {
+            console.error(`Error archiving event ${event._id}:`, error);
+          }
+        });
+      }
+    }, null, true, 'America/Los_Angeles'); // Adjust timezone if necessary
+
+    cronJob.start();
+
+    // ... (your existing code)
+  }, [announcements]);
 
   useEffect(() => {
     const filteredData = announcements.filter((item) =>
