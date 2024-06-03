@@ -387,26 +387,12 @@ const EventsRegistrations = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Paid")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PAID
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
-                  </a>
+                    FOR REVIEW
+                  </a>               
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
@@ -415,11 +401,11 @@ const EventsRegistrations = () => {
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Application Completed")}
+                    onClick={() => handleStatusFilter("Approved")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    APPLICATION COMPLETED
+                    APPROVED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
@@ -682,10 +668,10 @@ const EventsRegistrations = () => {
                       </div>
                     </td>
                     <td className="px-6 py-3 xxl:w-3/12">
-                      {item.status === "Application Completed" && (
+                      {item.status === "Approved" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            APPLICATION COMPLETED
+                            APPROVED
                           </span>
                         </div>
                       )}
@@ -696,25 +682,10 @@ const EventsRegistrations = () => {
                           </span>
                         </div>
                       )}
-                      {item.status === "Pending" && (
-                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Processing" && (
+                      {item.status === "For Review" && (
                         <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            PROCESSING
+                            FOR REVIEW
                           </span>
                         </div>
                       )}

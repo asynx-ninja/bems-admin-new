@@ -252,7 +252,7 @@ const Officials = () => {
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
             <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
-              <div className="w-full rounded-lg flex justify-center">
+              {/* <div className="w-full rounded-lg flex justify-center">
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
@@ -274,7 +274,7 @@ const Officials = () => {
                     </span>
                   </button>
                 </div>
-              </div>
+              </div> */}
               <div className="w-full rounded-lg ">
                 <Link
                   to={`/brgyarchivedofficials/?id=${id}&brgy=${brgy}&archived=true`}

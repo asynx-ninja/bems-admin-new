@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import {  AiOutlineEye } from "react-icons/ai";
+import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
 import { Link, useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
@@ -94,7 +94,6 @@ function ArchiveServiceRequests() {
             setOfficials(officialsData);
           } else {
             setOfficials([]);
-
           }
         } else {
           setOfficials([]);
@@ -110,7 +109,8 @@ function ArchiveServiceRequests() {
   }, [currentPage, brgy]); // Add positionFilter dependency
   useEffect(() => {
     const filteredData = requests.filter((item) => {
-      const fullName = item.form[0].lastName.value.toLowerCase() +
+      const fullName =
+        item.form[0].lastName.value.toLowerCase() +
         ", " +
         item.form[0].firstName.value.toLowerCase() +
         " " +
@@ -166,8 +166,8 @@ function ArchiveServiceRequests() {
   };
 
   const Requests = requests.filter((item) =>
-  item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
-);
+    item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const TimeFormat = (date) => {
     if (!date) return "";
@@ -181,7 +181,7 @@ function ArchiveServiceRequests() {
         return requests.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -191,11 +191,10 @@ function ArchiveServiceRequests() {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -204,7 +203,7 @@ function ArchiveServiceRequests() {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -217,11 +216,7 @@ function ArchiveServiceRequests() {
   };
 
   const onSelect = (e) => {
-
-
     setSelected(e.target.value);
-
-
   };
 
   const onChangeDate = (e) => {
@@ -280,9 +275,9 @@ function ArchiveServiceRequests() {
                   background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                 }}
               >
-                 <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
-              style={{ letterSpacing: "0.2em" }}
+                <h1
+                  className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
+                  style={{ letterSpacing: "0.2em" }}
                 >
                   ARCHIVED SERVICE REQUESTS
                 </h1>
@@ -332,49 +327,40 @@ function ArchiveServiceRequests() {
                       </a>
                       <hr className="border-[#4e4e4e] my-1" />
                       <a
-                        onClick={() => handleStatusFilter("Pending")}
-                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                        href="#"
-                      >
-                        PENDING
-                      </a>
-                      <a
-                        onClick={() => handleStatusFilter("Paid")}
-                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                        href="#"
-                      >
-                        PAID
-                      </a>
-                      <a
-                        onClick={() => handleStatusFilter("Processing")}
-                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                        href="#"
-                      >
-                        PROCESSING
-                      </a>
-                      <a
-                        onClick={() => handleStatusFilter("Cancelled")}
-                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                        href="#"
-                      >
-                        CANCELLED
-                      </a>
-                      <a
-                        onClick={() =>
-                          handleStatusFilter("Transaction Completed")
-                        }
-                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                        href="#"
-                      >
-                        TRANSACTION COMPLETED
-                      </a>
-                      <a
-                        onClick={() => handleStatusFilter("Rejected")}
-                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                        href="#"
-                      >
-                        REJECTED
-                      </a>
+                    onClick={() => handleStatusFilter("For Review")}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    FOR REVIEW
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Processing")}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    PROCESSING
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Cancelled")}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    CANCELLED
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Transaction Completed")}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    TRANSACTION COMPLETED
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Rejected")}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    REJECTED
+                  </a>
                     </ul>
                   </div>
 
@@ -474,56 +460,58 @@ function ArchiveServiceRequests() {
                   </div>
 
                   {/* Service Type Sort */}
-                <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-                <button
-                  id="hs-dropdown"
-                  type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm bg-[#295141] " style={{ backgroundColor: information?.theme?.primary }}
-                >
-                  SERVICE TYPE
-                  <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-                <ul
-                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
-                  aria-labelledby="hs-dropdown"
-                >
-                  <a
-                    onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    RESET FILTERS
-                  </a>
-                  <hr className="border-[#4e4e4e] my-1" />
-                  <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
-                  {requestFilter.map((service_name, index) => (
-                    <a
-                      key={index}
-                      onClick={() => handleRequestFilter(service_name)}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
+                  <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                    <button
+                      id="hs-dropdown"
+                      type="button"
+                      className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm bg-[#295141] "
+                      style={{ backgroundColor: information?.theme?.primary }}
                     >
-                      {service_name}
-                    </a>
-                  ))}
+                      SERVICE TYPE
+                      <svg
+                        className={`hs-dropdown-open:rotate-${
+                          sortOrder === "asc" ? "180" : "0"
+                        } w-2.5 h-2.5 text-white`}
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </button>
+                    <ul
+                      className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                      aria-labelledby="hs-dropdown"
+                    >
+                      <a
+                        onClick={handleResetFilter}
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
+                        href="#"
+                      >
+                        RESET FILTERS
+                      </a>
+                      <hr className="border-[#4e4e4e] my-1" />
+                      <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
+                        {requestFilter.map((service_name, index) => (
+                          <a
+                            key={index}
+                            onClick={() => handleRequestFilter(service_name)}
+                            className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                            href="#"
+                          >
+                            {service_name}
+                          </a>
+                        ))}
+                      </div>
+                    </ul>
                   </div>
-                </ul>
-              </div>
                 </div>
                 <div className="sm:flex-col md:flex-row flex sm:w-full md:w-4/12">
                   <div className="flex flex-row w-full md:mr-2">
@@ -604,107 +592,104 @@ function ArchiveServiceRequests() {
                     filteredRequests.map((item, index) => (
                       <tr key={index} className="odd:bg-slate-100 text-center">
                         <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-4">
-                        {item.req_id}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.service_name}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.form[0].lastName.value +
-                          ", " +
-                          item.form[0].firstName.value +
-                          " " +
-                          item.form[0].middleName.value}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {item.type}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 xxl:w-3/12">
-                      {item.status === "Transaction Completed" && (
-                        <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            TRANSACTION COMPLETED
+                          <span className="text-xs sm:text-sm text-black line-clamp-4">
+                            {item.req_id}
                           </span>
-                        </div>
-                      )}
-
-                      {item.status === "Rejected" && (
-                        <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            REJECTED
+                        </td>
+                        <td className="px-6 py-3">
+                          <span className="text-xs sm:text-sm text-black line-clamp-2">
+                            {item.service_name}
                           </span>
-                        </div>
-                      )}
-
-                      {item.status === "Pending" && (
-                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PENDING
+                        </td>
+                        <td className="px-6 py-3">
+                          <span className="text-xs sm:text-sm text-black line-clamp-2">
+                            {item.form[0].lastName.value +
+                              ", " +
+                              item.form[0].firstName.value +
+                              " " +
+                              item.form[0].middleName.value}
                           </span>
-                        </div>
-                      )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Processing" && (
-                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PROCESSING
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Cancelled" && (
-                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            CANCELLED
-                          </span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center space-x-1 sm:space-x-none">
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-view-request-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <AiOutlineEye
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            View Request
-                          </span>
-                        </div>
+                        </td>
+                        <td className="px-6 py-3">
+                          <div className="flex justify-center items-center">
+                            <span className="text-xs sm:text-sm text-black line-clamp-2">
+                              {item.type}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-3">
+                          <div className="flex justify-center items-center">
+                            <span className="text-xs sm:text-sm text-black line-clamp-2">
+                              {DateFormat(item.createdAt) || ""} -{" "}
+                              {TimeFormat(item.createdAt) || ""}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-3 xxl:w-3/12">
+                          {item.status === "Transaction Completed" && (
+                            <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
+                                TRANSACTION COMPLETED
+                              </span>
+                            </div>
+                          )}
+                          {item.status === "Rejected" && (
+                            <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
+                                REJECTED
+                              </span>
+                            </div>
+                          )}
+                          {item.status === "Cancelled" && (
+                            <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
+                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
+                                CANCELLED
+                              </span>
+                            </div>
+                          )}
+                          {item.status === "For Review" && (
+                            <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
+                                FOR REVIEW
+                              </span>
+                            </div>
+                          )}
+                          {item.status === "Processing" && (
+                            <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
+                                PROCESSING
+                              </span>
+                            </div>
+                          )}
+                          {item.status === "Rejected" && (
+                            <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
+                                REJECTED
+                              </span>
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-6 py-3">
+                          <div className="flex justify-center space-x-1 sm:space-x-none">
+                            <div className="hs-tooltip inline-block">
+                              <button
+                                type="button"
+                                data-hs-overlay="#hs-view-request-modal"
+                                onClick={() => handleView({ ...item })}
+                                className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                              >
+                                <AiOutlineEye
+                                  size={24}
+                                  style={{ color: "#ffffff" }}
+                                />
+                              </button>
+                              <span
+                                className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                role="tooltip"
+                              >
+                                View Request
+                              </span>
+                            </div>
                             {/* <div className="hs-tooltip inline-block">
                               <button
                                 type="button"
@@ -771,9 +756,12 @@ function ArchiveServiceRequests() {
           </div>
         </div>
         {Object.hasOwn(request, "service_id") ? (
-          <ViewRequestModal request={request} brgy={brgy} officials={officials}/>
+          <ViewRequestModal
+            request={request}
+            brgy={brgy}
+            officials={officials}
+          />
         ) : null}
-   
       </div>
     </>
   );

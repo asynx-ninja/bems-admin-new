@@ -187,7 +187,7 @@ const Residents = () => {
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
             <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
-              <div className="w-full rounded-lg flex justify-center">
+              {/* <div className="w-full rounded-lg flex justify-center">
                 <div className="hs-tooltip inline-block w-full">
                   <Link
                     type="button"
@@ -210,7 +210,7 @@ const Residents = () => {
                     </span>
                   </Link>
                 </div>
-              </div>
+              </div> */}
               <div className="w-full rounded-lg ">
                 <Link to={`/brgyarchivedresidents/?id=${id}&brgy=${brgy}`}>
                   <div className="hs-tooltip inline-block w-full">
@@ -282,29 +282,38 @@ const Residents = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
+                 
                   <li
-                    onClick={() => handleStatusFilter("Registered")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Registered" && "bg-[#b3c5cc]"
-                    }`}
-                  >
-                    REGISTERED
-                  </li>
-                  <li
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Pending" && "bg-[#b3c5cc]"
                     }`}
                   >
-                    PENDING
+                    FOR REVIEW
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Denied")}
+                    onClick={() => handleStatusFilter("Partially Verified")}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Registered" && "bg-[#b3c5cc]"
+                    }`}
+                  >
+                    PARTIALLY VERIFIED
+                  </li>
+                  <li
+                    onClick={() => handleStatusFilter("Fully Verified")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Denied" && "bg-[#b3c5cc]"
                     }`}
                   >
-                    DENIED
+                    FULLY VERIFIED
+                  </li>
+                  <li
+                    onClick={() => handleStatusFilter("Rejected")}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Denied" && "bg-[#b3c5cc]"
+                    }`}
+                  >
+                    REJECTED
                   </li>
                 </ul>
               </div>
@@ -423,10 +432,10 @@ const Residents = () => {
                       </div>
                     </td>
                     <td className="py-3">
-                      {item.isApproved === "Verified" && (
+                      {item.isApproved === "Fully Verified" && (
                         <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            VERIFIED
+                            FULLY VERIFIED
                           </span>
                         </div>
                       )}
@@ -437,27 +446,20 @@ const Residents = () => {
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Registered" && (
+                      {item.isApproved === "Partially Verified" && (
                         <div className="flex w-full items-center justify-center bg-custom-green-button3 xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            REGISTERED
+                            PARTIALLY VERIFIED
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Denied" && (
+                      {item.isApproved === "Rejected" && (
                         <div className="flex w-full items-center justify-center bg-custom-red-button xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            DENIED
+                            REJECTED
                           </span>
                         </div>
-                      )}
-                      {item.isApproved === "Pending" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber xl:m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
+                      )}                     
                     </td>
                     <td className="xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">

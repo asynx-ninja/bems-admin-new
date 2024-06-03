@@ -199,9 +199,9 @@ const EventsRegistrations = () => {
     "APPLICATION ID",
     "EVENT NAME",
     "SENDER",
-    // "STATUS",
     "CONTACT",
     "EMAIL",
+    "STATUS",
     "ACTIONS",
   ];
 
@@ -462,7 +462,7 @@ const EventsRegistrations = () => {
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
               {/* Status Sort */}
-              {/* <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
                   type="button"
@@ -499,26 +499,12 @@ const EventsRegistrations = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Paid")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PAID
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
-                  </a>
+                    FOR REVIEW
+                  </a>               
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
@@ -527,11 +513,11 @@ const EventsRegistrations = () => {
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Application Completed")}
+                    onClick={() => handleStatusFilter("Approved")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    APPLICATION COMPLETED
+                    APPROVED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
@@ -541,7 +527,7 @@ const EventsRegistrations = () => {
                     REJECTED
                   </a>
                 </ul>
-              </div> */}
+              </div>
 
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
@@ -868,11 +854,11 @@ const EventsRegistrations = () => {
                         </span>
                       </div>
                     </td> */}
-                    {/* <td className="px-6 py-3 xxl:w-3/12">
-                      {item.status === "Application Completed" && (
+                    <td className="px-6 py-3 xxl:w-3/12">
+                    {item.status === "Approved" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            APPLICATION COMPLETED
+                            APPROVED
                           </span>
                         </div>
                       )}
@@ -883,25 +869,10 @@ const EventsRegistrations = () => {
                           </span>
                         </div>
                       )}
-                      {item.status === "Pending" && (
-                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Processing" && (
+                      {item.status === "For Review" && (
                         <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            PROCESSING
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
@@ -913,7 +884,7 @@ const EventsRegistrations = () => {
                           </span>
                         </div>
                       )}
-                    </td>*/}
+                    </td>
                     <td className="px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
@@ -937,7 +908,7 @@ const EventsRegistrations = () => {
                             View Application
                           </span>
                         </div>
-                        {/* 
+                        
                         <div className="hs-tooltip inline-block">
                           <button
                             type="button"
@@ -958,7 +929,7 @@ const EventsRegistrations = () => {
                           >
                             Reply to Application
                           </span>
-                        </div> */}
+                        </div>
                       </div>
                     </td>
                   </tr>

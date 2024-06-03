@@ -107,7 +107,7 @@ const BrgyArchivedInquiries = () => {
     "message",
     "date",
     "status",
-    "actions",
+    // "actions",
   ];
 
   const DateFormat = (date) => {
@@ -282,26 +282,26 @@ const BrgyArchivedInquiries = () => {
                     </a>
                     <hr className="border-[#4e4e4e] my-1" />
                     <a
-                      onClick={() => handleStatusFilter("Pending")}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      PENDING
-                    </a>
-                    <a
-                      onClick={() => handleStatusFilter("In Progress")}
-                      className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      IN PROGRESS
-                    </a>
-                    <a
-                      onClick={() => handleStatusFilter("Completed")}
-                      className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      COMPLETED
-                    </a>
+                    onClick={() => handleStatusFilter("Submitted")}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SUBMITTED
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("In Progress")}
+                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    IN PROGRESS
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Resolved")}
+                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    RESOLVED
+                  </a>
                   </ul>
                 </div>
               
@@ -498,30 +498,30 @@ const BrgyArchivedInquiries = () => {
                     </td>
                       <td className="px-6 py-3">
                         <div className="flex justify-center items-center">
-                          {item.isApproved === "Completed" && (
-                            <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                                COMPLETED
-                              </span>
-                            </div>
-                          )}
-                          {item.isApproved === "Pending" && (
-                            <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                                PENDING
-                              </span>
-                            </div>
-                          )}
-                          {item.isApproved === "In Progress" && (
-                            <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                              <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                                IN PROGRESS
-                              </span>
-                            </div>
-                          )}
+                        {item.isApproved === "Resolved" && (
+                          <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
+                              RESOLVED
+                            </span>
+                          </div>
+                        )}
+                        {item.isApproved === "Submitted" && (
+                          <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
+                              SUBMITTED
+                            </span>
+                          </div>
+                        )}
+                        {item.isApproved === "In Progress" && (
+                          <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
+                              IN PROGRESS
+                            </span>
+                          </div>
+                        )}
                         </div>
                       </td>
-                      <td className="px-6 py-3">
+                      {/* <td className="px-6 py-3">
                         <div className="flex justify-center space-x-1 sm:space-x-none">
                           <div className="hs-tooltip inline-block w-full">
                             <button
@@ -543,7 +543,7 @@ const BrgyArchivedInquiries = () => {
                             </span>
                           </div>
                         </div>
-                      </td>
+                      </td> */}
                     </tr>
                   ))
                 )}

@@ -346,18 +346,11 @@ function ServiceRequests() {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Paid")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PAID
+                    FOR REVIEW
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Processing")}
@@ -658,22 +651,21 @@ function ServiceRequests() {
                           </span>
                         </div>
                       )}
-                      {item.status === "Pending" && (
+                      {item.status === "Cancelled" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            PENDING
+                            CANCELLED
                           </span>
                         </div>
-                      )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
+                      )}                 
+                      {item.status === "For Review" && (
+                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            PAID
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
-
-                      {item.status === "Processing" && (
+                        {item.status === "Processing" && (
                         <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
                             PROCESSING
@@ -681,10 +673,10 @@ function ServiceRequests() {
                         </div>
                       )}
 
-                      {item.status === "Cancelled" && (
+                      {item.status === "Rejected" && (
                         <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-white font-bold p-3 mx-5">
-                            CANCELLED
+                            REJECTED
                           </span>
                         </div>
                       )}

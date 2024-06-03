@@ -102,7 +102,7 @@ const Inquiries = () => {
     "message",
     "date",
     "status",
-    "actions",
+    // "actions",
   ];
 
   const DateFormat = (date) => {
@@ -294,11 +294,11 @@ const Inquiries = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("Submitted")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                    SUBMITTED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("In Progress")}
@@ -308,11 +308,11 @@ const Inquiries = () => {
                     IN PROGRESS
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleStatusFilter("Resolved")}
                     className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    COMPLETED
+                    RESOLVED
                   </a>
                 </ul>
               </div>
@@ -505,23 +505,23 @@ const Inquiries = () => {
 
                     <td className="xl:px-6 py-3 xxl:w-2/12">
                       <div className="flex justify-center items-center">
-                        {item.isApproved === "Completed" && (
+                      {item.isApproved === "Resolved" && (
                           <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
-                              COMPLETED
+                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
+                              RESOLVED
                             </span>
                           </div>
                         )}
-                        {item.isApproved === "Pending" && (
+                        {item.isApproved === "Submitted" && (
                           <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
-                              PENDING
+                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
+                              SUBMITTED
                             </span>
                           </div>
                         )}
                         {item.isApproved === "In Progress" && (
                           <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
+                            <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
                               IN PROGRESS
                             </span>
                           </div>
@@ -529,7 +529,7 @@ const Inquiries = () => {
                       </div>
                     </td>
 
-                    <td className="xl:px-6 py-3">
+                    {/* <td className="xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
                           {isLatestResponseResident(item) && (
@@ -563,7 +563,7 @@ const Inquiries = () => {
                           </span>
                         </div>
                       </div>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               ) : (
