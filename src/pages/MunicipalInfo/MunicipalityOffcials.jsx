@@ -501,13 +501,14 @@ const MunicipalityOfficials = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <CreateOfficialModal brgy={brgy} socket={socket} />
+      <CreateOfficialModal brgy={brgy} socket={socket}  id={id}/>
 
-      <ArchiveOfficialModal selectedItems={selectedItems} socket={socket}/>
+      <ArchiveOfficialModal selectedItems={selectedItems} socket={socket}  id={id}/>
       <EditOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}
         brgy={brgy}
+        id={id}
         socket={socket}
       />
     </div>

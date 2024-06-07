@@ -1,10 +1,10 @@
 import React from "react";
-import { useState  } from "react";
+import { useState } from "react";
 import { CiImageOn } from "react-icons/ci";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import AddLoader from "./loaders/AddLoader";
-function CreateOfficialModal({ brgy, socket }) {
+function CreateOfficialModal({ brgy, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -52,51 +52,73 @@ function CreateOfficialModal({ brgy, socket }) {
       }
 
       setSubmitClicked(true);
-      setError(null)
+      setError(null);
       const response = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      if (response.status === 200){
+      if (response.status === 200) {
         const formData = new FormData();
-      formData.append("file", pfp);
+        formData.append("file", pfp);
 
-      const obj = {
-        firstName: official.firstName,
-        middleName: official.middleName,
-        lastName: official.lastName,
-        suffix: official.suffix,
-        details: official.details,
-        position: official.position,
-        fromYear: official.fromYear,
-        toYear: official.toYear,
-      };
+        const obj = {
+          firstName: official.firstName,
+          middleName: official.middleName,
+          lastName: official.lastName,
+          suffix: official.suffix,
+          details: official.details,
+          position: official.position,
+          fromYear: official.fromYear,
+          toYear: official.toYear,
+        };
 
-      formData.append("official", JSON.stringify(obj));
+        formData.append("official", JSON.stringify(obj));
 
-      const result = await axios.post(
-        `${API_LINK}/mofficials/?brgy=${brgy}&folder_id=${response.data[0].pfp}`,
-        formData
-      );
+        const result = await axios.post(
+          `${API_LINK}/mofficials/?brgy=${brgy}&folder_id=${response.data[0].pfp}`,
+          formData
+        );
 
-      if (result.status === 200) {
-        socket.emit("send-muni-official", result.data);
-        setOfficial({
-          name: "",
-          details: "",
-          position: "",
-          fromYear: "",
-          toYear: "",
-          brgy: "",
-        });
-        setPfp(null);
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          setCreationStatus(null);
-          HSOverlay.close(document.getElementById("hs-create-official-modal"));
-        }, 3000);
-      }
+        if (result.status === 200) {
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Created",
+            details: "A new municipality officials named" + official.firstName + " " + official.lastName,
+            ip: ip,
+          };
+  
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-muni-official", result.data);
+            setOfficial({
+              name: "",
+              details: "",
+              position: "",
+              fromYear: "",
+              toYear: "",
+              brgy: "",
+            });
+            setPfp(null);
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            setTimeout(() => {
+              setCreationStatus(null);
+              HSOverlay.close(
+                document.getElementById("hs-create-official-modal")
+              );
+            }, 3000);
+          }
+        }
       }
     } catch (err) {
       console.log(err);

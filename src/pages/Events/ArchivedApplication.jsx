@@ -777,11 +777,10 @@ const ArchivedRegistrations = () => {
           application={application}
           officials={officials}
           brgy={brgy}
+          id={id}
         />
       ) : null}
-      <ArchiveRegistrationModal />
-
-      <RestoreRegistrationModal selectedItems={selectedItems} socket={socket} />
+      <RestoreRegistrationModal selectedItems={selectedItems} socket={socket}  id={id}/>
     </div>
   );
 };

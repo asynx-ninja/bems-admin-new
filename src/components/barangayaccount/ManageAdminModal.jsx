@@ -6,7 +6,7 @@ import { LiaRandomSolid } from "react-icons/lia";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import EditLoader from "./loaders/EditLoader";
-function ManageAdminModal({ user, setUser, socket }) {
+function ManageAdminModal({ user, setUser, socket, id }) {
   const [edit, setEdit] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -91,16 +91,40 @@ function ManageAdminModal({ user, setUser, socket }) {
       );
 
       if (response.status === 200) {
-        socket.emit("send-upt-brgy-admin", response.data);
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setEdit(!edit);
+        const getIP = async () => {
+          const response = await fetch("https://api64.ipify.org?format=json");
+          const data = await response.json();
+          return data.ip;
+        };
+
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Updated",
+          details:
+              "A barangay admin info named " +
+              user.firstName +
+              " " +
+              user.lastName,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-upt-brgy-admin", response.data);
           setTimeout(() => {
-            setUpdatingStatus(null);
-            HSOverlay.close(document.getElementById("hs-modal-editAdmin"));
-          }, 3000);
-        }, 1000);
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setEdit(!edit);
+            setTimeout(() => {
+              setUpdatingStatus(null);
+              HSOverlay.close(document.getElementById("hs-modal-editAdmin"));
+            }, 3000);
+          }, 1000);
+        }
       } else {
         console.error("Update failed. Status:", response.status);
       }
@@ -108,7 +132,7 @@ function ManageAdminModal({ user, setUser, socket }) {
       console.log(err);
       setSubmitClicked(false);
       setUpdatingStatus(null);
-      setError("An error occurred while creating the announcement.");
+      setError("An error occurred while updating the info.");
     }
   };
 

@@ -591,13 +591,14 @@ const MTouristSpot = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddAboutusModal section={section} brgy={brgy} socket={socket}/>
-        <ArchiveTouristSpotModal selectedItems={selectedItems} socket={socket}/>
+        <AddAboutusModal section={section} brgy={brgy} socket={socket}  id={id}/>
+        <ArchiveTouristSpotModal selectedItems={selectedItems} socket={socket}  id={id}/>
         <ManageTouristSpotModal
           brgy={brgy}
           touristspotInfo={touristspotInfo}
           settouristspotInfo={settouristspotInfo}
           socket={socket}
+          id={id}
         />
       </div>
     </div>

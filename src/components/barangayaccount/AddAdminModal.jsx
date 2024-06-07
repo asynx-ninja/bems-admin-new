@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import API_LINK from "../../config/API";
 import { LiaRandomSolid } from "react-icons/lia";
 import AddLoader from "./loaders/AddLoader";
-function AddAdminModal({ occupation, type, socket }) {
+function AddAdminModal({ occupation, type, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -29,11 +29,11 @@ function AddAdminModal({ occupation, type, socket }) {
     username: "",
     password: "",
     isArchived: false,
-    isApproved: "Registered",
+    isApproved: "Fully Verified",
     city: "Rodriguez, Rizal",
     brgy: "",
   });
- 
+
   const handleButtonClick = (e) => {
     e.preventDefault();
     setUser((prev) => ({
@@ -73,7 +73,7 @@ function AddAdminModal({ occupation, type, socket }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-   
+
       if (
         !user.firstName.trim() ||
         !user.lastName.trim() ||
@@ -122,38 +122,62 @@ function AddAdminModal({ occupation, type, socket }) {
       const result = await axios.post(`${API_LINK}/brgy_admin/`, obj);
 
       if (result.status === 200) {
-        socket.emit("send-brgy-admin", result.data);
-        setUser({
-          user_id: "",
-          firstName: "",
-          middleName: "",
-          lastName: "",
-          suffix: "",
-          religion: "",
-          email: "",
-          birthday: "",
-          age: "",
-          contact: "",
-          sex: "",
-          address: "",
-          occupation: "",
-          civil_status: "",
-          type: "",
-          isVoter: "",
-          isHead: "",
-          username: "",
-          password: "",
-          isArchived: "",
-          isApproved: "",
-          city: "Rodriguez, Rizal",
-          brgy: "",
-        });
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          setCreationStatus(null);
-          HSOverlay.close(document.getElementById("hs-modal-addAdmin"));
-        }, 3000);
+        const getIP = async () => {
+          const response = await fetch("https://api64.ipify.org?format=json");
+          const data = await response.json();
+          return data.ip;
+        };
+
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Created",
+          details:
+          "A new barangay admin named " +
+          user.firstName +
+          " " +
+          user.lastName,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-brgy-admin", result.data);
+          setUser({
+            user_id: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            suffix: "",
+            religion: "",
+            email: "",
+            birthday: "",
+            age: "",
+            contact: "",
+            sex: "",
+            address: "",
+            occupation: "",
+            civil_status: "",
+            type: "",
+            isVoter: "",
+            isHead: "",
+            username: "",
+            password: "",
+            isArchived: "",
+            isApproved: "",
+            city: "Rodriguez, Rizal",
+            brgy: "",
+          });
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            setCreationStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-addAdmin"));
+          }, 3000);
+        }
       }
     } catch (err) {
       console.log(err);

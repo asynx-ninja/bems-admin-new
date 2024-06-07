@@ -172,6 +172,7 @@ const ArchivedEvents = () => {
       socket.on("receive-restore-muni", handleEventRestore);
     };
   }, [socket, setAnnouncement, setAnnouncements]);
+  
   const handleResetFilter = () => {
     setSearchQuery("");
     setAnnouncements();
@@ -579,6 +580,7 @@ const ArchivedEvents = () => {
         <RestoreAnnouncementModal
           selectedItems={selectedItems}
           socket={socket}
+          id={id}
         />
       </div>
     </div>

@@ -375,7 +375,7 @@ const ArchiveBarangayAccount = () => {
           />
         </div>
         <ViewArchivedAdmin user={user} setUser={setUser} />
-        <RestoreAdminModal selectedItems={selectedItems} socket={socket} />
+        <RestoreAdminModal selectedItems={selectedItems} socket={socket}  id={id}/>
       </div>
     </div>
   );

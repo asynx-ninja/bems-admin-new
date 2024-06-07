@@ -5,7 +5,7 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
-function AddServicesInfo({ brgy, socket }) {
+function AddServicesInfo({ brgy, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -68,27 +68,47 @@ function AddServicesInfo({ brgy, socket }) {
         formData.append("servicesinfo", JSON.stringify(obj));
 
         const result = await axios.post(
-          `${API_LINK}/services_info/?folder_id=${response.data[0].
-            offered_services}`,
+          `${API_LINK}/services_info/?folder_id=${response.data[0].offered_services}`,
           formData
         );
 
         if (result.status === 200) {
-          socket.emit("send-offered-serv", result.data);
-          setServicesInfo({
-            brgy: "",
-            name: "",
-            details: "",
-          });
-          setIcon();
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            setCreationStatus(null);
-            HSOverlay.close(
-              document.getElementById("hs-modal-addservices-info")
-            );
-          }, 3000);
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Created",
+            details: "A new offered services named" + servicesinfo.name,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-offered-serv", result.data);
+
+            setServicesInfo({
+              brgy: "",
+              name: "",
+              details: "",
+            });
+            setIcon();
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            setTimeout(() => {
+              setCreationStatus(null);
+              HSOverlay.close(
+                document.getElementById("hs-modal-addservices-info")
+              );
+            }, 3000);
+          }
         }
       }
     } catch (err) {

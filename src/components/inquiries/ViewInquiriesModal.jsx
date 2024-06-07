@@ -24,12 +24,12 @@ function ViewInquiriesModal({
   socket,
   inqContainerRef,
   inquiries,
+  id
 }) {
   const [onSend, setOnSend] = useState(false);
   const [errMsg, setErrMsg] = useState(false);
   const [reply, setReply] = useState(false);
   const [upload, setUpload] = useState(false);
-  const [expandedIndexes, setExpandedIndexes] = useState([]);
   const [files, setFiles] = useState([]);
   const [createFiles, setCreateFiles] = useState([]);
   const [viewFiles, setViewFiles] = useState([]);
@@ -38,8 +38,6 @@ function ViewInquiriesModal({
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState({});
   const [userDatas, setUserDatas] = useState({});
-  const [searchParams, setSearchParams] = useSearchParams();
-  const id = searchParams.get("id");
   const chatContainerRef = useRef(null);
   const [statusChanger, setStatusChanger] = useState(false);
   const [newMessage, setNewMessage] = useState({

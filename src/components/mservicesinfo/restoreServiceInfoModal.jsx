@@ -5,7 +5,7 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import RestoreLoader from "./loaders/RestoreLoader";
 import { LuArchiveRestore } from "react-icons/lu";
-function RestoreServicesModal({selectedItems, socket}) {
+function RestoreServicesModal({ selectedItems, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -17,10 +17,11 @@ function RestoreServicesModal({selectedItems, socket}) {
         setError("Unable to restore, Please select first to restore.");
         setTimeout(() => {
           setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-restore-servicesinfo-modal"));
+          HSOverlay.close(
+            document.getElementById("hs-restore-servicesinfo-modal")
+          );
         }, 3000);
 
-   
         return;
       }
 
@@ -30,16 +31,37 @@ function RestoreServicesModal({selectedItems, socket}) {
           `${API_LINK}/services_info/archived/${selectedItems[i]}/false`
         );
         if (response.status === 200) {
-          socket.emit("send-restore-muni", response.data);
-         
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Restored",
+            details: `A offered services (${selectedItems[i]})`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-restore-muni", response.data);
+
             setSubmitClicked(false);
             setError(null);
             setUpdatingStatus("success");
             setTimeout(() => {
               setUpdatingStatus(null);
-              HSOverlay.close(document.getElementById("hs-restore-servicesinfo-modal"));
-            
+              HSOverlay.close(
+                document.getElementById("hs-restore-servicesinfo-modal")
+              );
             }, 3000);
+          }
         }
       }
     } catch (err) {
@@ -51,13 +73,12 @@ function RestoreServicesModal({selectedItems, socket}) {
   };
   return (
     <div>
- 
-    <div
-      id="hs-restore-servicesinfo-modal"
-      className="z-[100] hs-overlay hidden w-full h-full fixed top-0 left-0 z-60 overflow-x-hidden overflow-y-auto"
-    >
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-300 bg-opacity-0 ">
-      <div className="flex items-center justify-center min-h-screen pt-4 pb-20 ">
+      <div
+        id="hs-restore-servicesinfo-modal"
+        className="z-[100] hs-overlay hidden w-full h-full fixed top-0 left-0 z-60 overflow-x-hidden overflow-y-auto"
+      >
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-300 bg-opacity-0 ">
+          <div className="flex items-center justify-center min-h-screen pt-4 pb-20 ">
             <div className="w-10/12 lg:max-w-md p-6 bg-white rounded-lg shadow-xl ">
               <LuArchiveRestore size={40} className="mb-5 justify-start" />
               <h3 className="text-2xl font-bold mb-4">Are you sure?</h3>
@@ -83,13 +104,13 @@ function RestoreServicesModal({selectedItems, socket}) {
               </div>
             </div>
           </div>
+        </div>
       </div>
-    </div>
-    {submitClicked && <RestoreLoader updatingStatus="updating" />}
+      {submitClicked && <RestoreLoader updatingStatus="updating" />}
       {updatingStatus && (
         <RestoreLoader updatingStatus={updatingStatus} error={error} />
       )}
-  </div>
+    </div>
   );
 }
 

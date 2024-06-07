@@ -1,143 +1,86 @@
 import React from "react";
-import { FaUserCircle } from "react-icons/fa";
-import { MdRestartAlt } from "react-icons/md";
 import { useState, useEffect } from "react";
-import ReactPaginate from "react-paginate";
-import { AiOutlineEye } from "react-icons/ai";
-import axios from "axios";
 import moment from "moment";
-import API_LINK from "../../config/API";
-import { useSearchParams } from "react-router-dom";
-import Breadcrumbs from "../../components/maboutusnfo/Breadcrumbs";
-import RestoreAboutusModal from "../../components/maboutusnfo/restoreAboutusModal";
-import ViewArchivedAboutusModal from "../../components/maboutusnfo/viewArchivedAboutusModal";
-import noData from "../../assets/image/no-data.png";
+import ReactPaginate from "react-paginate";
+import axios from "axios";
+import API_LINK from "../config/API";
+import noData from "../assets/image/no-data.png";
 import { io } from "socket.io-client";
-import Socket_link from "../../config/Socket";
+import Socket_link from "../config/Socket";
 
 const socket = io(Socket_link);
-const ArchivedAboutusInfo = () => {
-  useEffect(() => {
-    document.title = "Archived About Us | Barangay E-Services Management";
-  }, []);
 
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [aboutus, setAboutus] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const id = searchParams.get("id");
+const Activitylogs = () => {
+  const [actlogs, setAtcLogs] = useState([]);
   const brgy = "MUNISIPYO";
-  const [aboutusInfo, setAboutusinfo] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
-  const [filteredAboutUs, setFilteredAboutUs] = useState([]);
+  const [filteredlogs, setFilteredLogs] = useState([]);
   const [selected, setSelected] = useState("date");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedLog, setSelectedLog] = useState(null);
 
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/aboutus/?brgy=${brgy}&archived=true`
-      );
+      const response = await axios.get(`${API_LINK}/act_logs/?brgy=${brgy}`);
       if (response.status === 200) {
-        setAboutus(response.data.result);
-        setFilteredAboutUs(response.data.result.slice(0, 10));
+        setAtcLogs(response.data.result);
+        setFilteredLogs(response.data.result.slice(0, 15));
         setPageCount(response.data.pageCount);
-      } else setAboutus([]);
+        console.log(response.data.result);
+      } else setAtcLogs([]);
     };
 
     fetch();
   }, []);
-  const Aboutus = aboutus.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   useEffect(() => {
-    const filteredData = aboutus.filter((item) =>
-      item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredData = actlogs.filter(
+      (item) =>
+        item.firstname &&
+        item.firstname.toLowerCase().includes(searchQuery.toLowerCase())
+||
+        item.lastname &&
+        item.lastname.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredAboutUs(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [aboutus, searchQuery, currentPage]);
+    const startIndex = currentPage * 15;
+    const endIndex = startIndex + 15;
+    setFilteredLogs(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 15));
+  }, [actlogs, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
 
+  const tableHeader = ["user", "account type", "ip", "date", "action details"];
+
   useEffect(() => {
-    const handleAboutRestore = (obj) => {
-      setAboutusinfo(obj);
-      setAboutus((prev) => prev.filter((item) => item._id !== obj._id));
-      setFilteredAboutUs((prev) => prev.filter((item) => item._id !== obj._id));
-    };
+    document.title = "Activity Logs| Barangay E-Services Management";
+  }, []);
 
-    socket.on("receive-restore-muni", handleAboutRestore);
-
-    return () => {
-      socket.off("receive-restore-muni", handleAboutRestore);
-    };
-  }, [socket, setAboutusinfo, setAboutus]);
-  const checkboxHandler = (e) => {
-    let isSelected = e.target.checked;
-    let value = e.target.value;
-
-    if (isSelected) {
-      setSelectedItems([...selectedItems, value]);
-    } else {
-      setSelectedItems((prevData) => {
-        return prevData.filter((id) => {
-          return id !== value;
-        });
-      });
-    }
-  };
-
-  const checkAllHandler = () => {
-    const announcementsToCheck = Aboutus.length > 0 ? Aboutus : aboutus;
-
-    if (announcementsToCheck.length === selectedItems.length) {
-      setSelectedItems([]);
-    } else {
-      const postIds = announcementsToCheck.map((item) => {
-        return item._id;
-      });
-
-      setSelectedItems(postIds);
-    }
-  };
-
-  const dateFormat = (date) => {
-    const eventdate = date === undefined ? "" : date.substr(0, 10);
-    return eventdate;
-  };
   const TimeFormat = (date) => {
     if (!date) return "";
 
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
-  const handleView = (item) => {
-    setAboutusinfo(item);
-  };
-
   const handleResetFilter = () => {
     setSearchQuery("");
-    setAboutus();
+    setAtcLogs();
   };
 
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
-        const newArr = aboutus.filter((item) => {
+        const newArr = actlogs.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
 
           return (
@@ -153,7 +96,7 @@ const ArchivedAboutusInfo = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        return aboutus.filter((item) => {
+        return actlogs.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
 
           return (
@@ -164,7 +107,7 @@ const ArchivedAboutusInfo = () => {
           );
         });
       case "month":
-        return aboutus.filter((item) => {
+        return actlogs.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
 
           return (
@@ -173,7 +116,7 @@ const ArchivedAboutusInfo = () => {
           );
         });
       case "year":
-        return aboutus.filter((item) => {
+        return actlogs.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
           return createdAt.getFullYear() === selectedDate.getFullYear();
         });
@@ -188,50 +131,66 @@ const ArchivedAboutusInfo = () => {
     const date = new Date(e.target.value);
     date.setHours(0, 0, 0, 0);
     setSpecifiedDate(date);
-    setFilteredAboutUs(filters(selected, date));
+    setFilteredLogs(filters(selected, date));
   };
 
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredAboutUs(filters(selected, date));
+    setFilteredLogs(filters(selected, date));
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredAboutUs(filters(selected, date));
+    setFilteredLogs(filters(selected, date));
   };
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredAboutUs(aboutus);
+      setFilteredLogs(actlogs);
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
 
-      setFilteredAboutUs(filters(selected, date));
+      setFilteredLogs(filters(selected, date));
     }
   };
 
-  const tableHeader = [
-    "banner",
-    "title",
-    "details",
-    "creation date",
-    "actions",
-  ];
+  const handleRowClick = (log) => {
+    setSelectedLog(log);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+  useEffect(() => {
+    // Add event listener for Escape key
+    const handleEscapeKey = (event) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKey);
+
+    // Clean up event listener on component unmount
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, []);
+
   return (
-    <div className="mx-4 mt-8">
-      <div>
-        <Breadcrumbs id={id} />
-        <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+    <div className="mx-4 mt-4">
+      <div className="flex flex-col ">
+        <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
+          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              ARCHIVED ABOUT US
+              ACTIVITY LOGS
             </h1>
           </div>
         </div>
@@ -331,7 +290,7 @@ const ArchivedAboutusInfo = () => {
                 </div>
               </ul>
             </div>
-            <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
+            <div className="sm:flex-col md:flex-row flex sm:w-full md:w-4/12">
               <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#295141] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
@@ -363,40 +322,17 @@ const ArchivedAboutusInfo = () => {
                   onChange={handleSearchChange}
                 />
               </div>
-              <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
-                <div className="hs-tooltip inline-block w-full">
-                  <button
-                    data-hs-overlay="#hs-restore-aboutus-modal"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-[#295141]  font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
-                  >
-                    <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
-                    <span
-                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                      role="tooltip"
-                    >
-                      Restore Selected Information
-                    </span>
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_340px)]">
-          <table className="relative table-auto w-full">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
+          <table
+            className="relative table-auto w-full text-left  rounded border-slate-200"
+            cellspacing="0"
+          >
             <thead className="bg-[#295141] sticky top-0">
-              <tr className="">
-                <th scope="col" className="px-6 py-4">
-                  <div className="flex justify-center items-center">
-                    <input
-                      type="checkbox"
-                      name=""
-                      onClick={checkAllHandler}
-                      id=""
-                    />
-                  </div>
-                </th>
+              <tr>
                 {tableHeader.map((item, idx) => (
                   <th
                     scope="col"
@@ -408,8 +344,8 @@ const ArchivedAboutusInfo = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="odd:bg-slate-100">
-              {filteredAboutUs.length === 0 ? (
+            <tbody>
+              {filteredlogs.length === 0 ? (
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
@@ -424,72 +360,37 @@ const ArchivedAboutusInfo = () => {
                   </td>
                 </tr>
               ) : (
-                filteredAboutUs.map((item, index) => (
-                  <tr key={index} className="odd:bg-slate-100 text-center">
-                    <td className="px-6 py-3">
+                filteredlogs.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="odd:bg-slate-100 text-center cursor-pointer transition duration-300 ease-in-out hover:shadow-lg hover:shadow-blue-500/50"
+                    onClick={() => handleRowClick(item)}
+                  >
+                    <td className="h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
                       <div className="flex justify-center items-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item._id)}
-                          value={item._id}
-                          onChange={checkboxHandler}
-                          id=""
-                        />
+                        {item.firstname} {item.lastname}
                       </div>
                     </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                        <div className="px-2 sm:px-6 py-2">
-                          {item.banner.link ? (
-                            <div className="lg:w-32 lg:h-20 w-16 h-24 aspect-w-4 aspect-h-3 overflow-hidden mx-auto border border-4 border-[#013D74]">
-                              <img
-                                src={item.banner.link}
-                                alt="picture"
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ) : (
-                            <FaUserCircle className="lg:w-20 lg:h-32 w-16 h-24 object-cover border border-4 border-[#013D74] rounded-full text-gray-500 mx-auto" />
-                          )}
-                        </div>
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
+                    <td className="h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
                       <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-2 ">
-                          {item.title}
-                        </span>
+                        {item.type}
+                      </div>
+                    </td>    
+                    <td className="h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
+                      <div className="flex justify-center items-center">
+                        {item.ip}
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
                       <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black  line-clamp-2 ">
-                          {item.details}
-                        </span>
+                        {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                        {TimeFormat(item.createdAt) || ""}
                       </div>
                     </td>
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
-                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
-                          {TimeFormat(item.createdAt) || ""}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center space-x-1 sm:space-x-none">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-modal-viewaboutus"
-                          onClick={() => handleView({ ...item })}
-                          className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineEye
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
+                    <td className="xxl:w-2/12 h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
+                      <div className="flex  items-center truncate line-clamp-1">
+                        <strong>{item.action}</strong>:
+                        {item.details.slice(0, 25)}...
                       </div>
                     </td>
                   </tr>
@@ -504,42 +405,82 @@ const ArchivedAboutusInfo = () => {
           </span>
           <ReactPaginate
             breakLabel="..."
-            nextLabel={
-              pageCount > currentPage + 1 ? (
-                <span className="text-white">&gt;&gt;</span>
-              ) : (
-                <span className="text-gray-300 cursor-not-allowed">
-                  &gt;&gt;
-                </span>
-              )
-            }
+            nextLabel=">>"
             onPageChange={handlePageChange}
             pageRangeDisplayed={3}
             pageCount={pageCount}
-            previousLabel={
-              currentPage > 0 ? (
-                <span className="text-white"> &lt;&lt;</span>
-              ) : (
-                <span className="text-gray-300 cursor-not-allowed">
-                  &lt;&lt;
-                </span>
-              )
-            }
+            previousLabel="<<"
             className="flex space-x-3 text-white font-bold"
             activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
+            disabledLinkClassName="text-gray-400"
             renderOnZeroPageCount={null}
           />
         </div>
-        {/* <ViewArchivedAdmin user={user} setUser={setUser}/> */}
-        <RestoreAboutusModal selectedItems={selectedItems} socket={socket}  id={id}/>
-        <ViewArchivedAboutusModal
-          aboutusInfo={aboutusInfo}
-          setAboutusinfo={setAboutusinfo}
-        />
+
+        {/* Modal for viewing log details */}
+        {showModal && (
+   <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50" onClick={closeModal}>
+   <div className="bg-white rounded-lg shadow-2xl p-6 w-11/12 md:w-2/3 max-w-lg" onClick={(e) => e.stopPropagation()}>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">Log Details</h2>
+        <button
+          className="text-gray-500 hover:text-gray-700 focus:outline-none focus:shadow-outline"
+          onClick={closeModal}
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+      <div className="overflow-y-auto max-h-96">
+        <dl className="flex flex-col gap-4">
+          <div className="flex justify-between ">
+            <dt className="font-medium text-gray-700">User:</dt>
+            <dd className="text-gray-600">{selectedLog?.firstname} {selectedLog?.lastname}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="font-medium text-gray-700">Account Type:</dt>
+            <dd className="text-gray-600">{selectedLog?.type}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="font-medium text-gray-700">IP Address:</dt>
+            <dd className="text-gray-600">{selectedLog?.ip}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="font-medium text-gray-700">Date & Time:</dt>
+            <dd className="text-gray-600">
+              {moment(selectedLog?.createdAt).format(
+                "MMMM DD, YYYY hh:mm A"
+              )}
+            </dd>
+          </div>
+          <div className=" border-t-2">  {/* <dt className="font-medium text-gray-700">Action & Details:</dt> */}
+          <dd
+            className="whitespace-pre-wrap text-gray-600"
+            dangerouslySetInnerHTML={{
+              __html: `<strong>${selectedLog?.action}:</strong> ${selectedLog?.details}`,
+            }}
+          /></div>
+        
+        </dl>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
 };
 
-export default ArchivedAboutusInfo;
+export default Activitylogs;

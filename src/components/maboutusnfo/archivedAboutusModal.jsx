@@ -5,7 +5,7 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import ArchiveLoader from "./loaders/ArchiveLoader";
 import { IoArchiveOutline } from "react-icons/io5";
-function ArchiveAboutusModal({ selectedItems, socket }) {
+function ArchiveAboutusModal({ selectedItems, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -30,8 +30,24 @@ function ArchiveAboutusModal({ selectedItems, socket }) {
           `${API_LINK}/aboutus/archived/${selectedItems[i]}/true`
         );
         if (response.status === 200) {
+          const getIP = async () => {
+            const response = await fetch('https://api64.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+          };
+  
+          const ip = await getIP(); // Retrieve IP address
+  
+          const logsData = {
+            action: "Archived",
+            details: `An article (${selectedItems[i]})`,
+            ip: ip
+          };
+  
+          const logsResult = await axios.post(`${API_LINK}/act_logs/add_logs/?id=${id}`, logsData);
+          if (logsResult.status === 200) {
           socket.emit("send-archive-muni", response.data);
-         
+        
             setSubmitClicked(false);
             setError(null);
             setUpdatingStatus("success");
@@ -40,7 +56,7 @@ function ArchiveAboutusModal({ selectedItems, socket }) {
               HSOverlay.close(document.getElementById("hs-archive-aboutus-modal"));
 
             }, 3000);
-
+          }
         }
       }
     } catch (err) {

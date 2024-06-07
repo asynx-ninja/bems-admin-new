@@ -592,13 +592,14 @@ const MHomepageInfo = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddAboutusModal brgy={brgy} socket={socket} />
-        <ArchiveAboutusModal selectedItems={selectedItems} socket={socket} />
+        <AddAboutusModal brgy={brgy} socket={socket} id={id} />
+        <ArchiveAboutusModal selectedItems={selectedItems} socket={socket} id={id}/>
         <ManageAboutusModal
           socket={socket}
           brgy={brgy}
           aboutusInfo={aboutusInfo}
           setAboutusinfo={setAboutusinfo}
+          id={id}
         />
       </div>
     </div>

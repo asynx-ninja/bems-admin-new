@@ -5,7 +5,7 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import StatusLoader from "./loaders/ArchiveLoader";
 import { IoArchiveOutline } from "react-icons/io5";
-function ArchiveInquiryModal({ selectedItems }) {
+function ArchiveInquiryModal({ selectedItems, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -29,6 +29,27 @@ function ArchiveInquiryModal({ selectedItems }) {
           `${API_LINK}/inquiries/archived/${selectedItems[i]}/true`
         );
         if (response.status === 200) {
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Archived",
+            details: `An inquiry info (${selectedItems[i]})`,
+            ip: ip,
+          };
+  
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+          socket.emit("send-archive-muni", response.data);
           setTimeout(() => {
             setSubmitClicked(false);
             setError(null);
@@ -38,9 +59,9 @@ function ArchiveInquiryModal({ selectedItems }) {
               HSOverlay.close(
                 document.getElementById("hs-modal-archiveInquiry")
               );
-              window.location.reload();
             }, 3000);
-          }, 3000);
+          }, 1000);
+        }
         }
       }
     } catch (err) {

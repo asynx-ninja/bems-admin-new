@@ -8,7 +8,7 @@ import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import moment from "moment";
 
-function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
+function CreateAnnouncementModal({ brgy, setUpdate, socket, id }) {
   const [announcement, setAnnouncement] = useState({
     title: "",
     details: "",
@@ -112,7 +112,7 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
       };
 
       formData.append("announcement", JSON.stringify(obj));
-     
+
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
@@ -159,13 +159,34 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
             },
           });
           if (result.status === 200) {
-            clearForm();
-            setSubmitClicked(false);
-            setCreationStatus("success");
-            setTimeout(() => {
-              setCreationStatus(null);
-              HSOverlay.close(document.getElementById("hs-modal-add"));
-            }, 3000);
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+
+            const ip = await getIP(); // Retrieve IP address
+            const logsData = {
+              action: "Created",
+              details: "A new events entitled" + announcement.title,
+              ip: ip,
+            };
+    
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
+              clearForm();
+              setSubmitClicked(false);
+              setCreationStatus("success");
+              setTimeout(() => {
+                setCreationStatus(null);
+                HSOverlay.close(document.getElementById("hs-modal-add"));
+              }, 3000);
+            }
           }
         }
       }
@@ -439,18 +460,17 @@ function CreateAnnouncementModal({ brgy, setUpdate, socket }) {
                   onClick={handleSubmit}
                   disabled={onSend}
                 >
-                   {onSend ? (
-                        <div
-                          class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
-                          role="status"
-                          aria-label="loading"
-                        >
-                          <span class="sr-only">Loading...</span>
-                        </div>
-                      ) : (
-                        "CREATE"
-                      )}
-                  
+                  {onSend ? (
+                    <div
+                      class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                      role="status"
+                      aria-label="loading"
+                    >
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  ) : (
+                    "CREATE"
+                  )}
                 </button>
                 <button
                   type="button"

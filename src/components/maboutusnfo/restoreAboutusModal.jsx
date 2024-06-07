@@ -5,7 +5,7 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import { LuArchiveRestore } from "react-icons/lu";
 import RestoreLoader from "./loaders/RestoreLoader";
-function RestoreAboutusModal({selectedItems, socket}) {
+function RestoreAboutusModal({selectedItems, socket, id}) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -31,8 +31,24 @@ function RestoreAboutusModal({selectedItems, socket}) {
         );
 
         if (response.status === 200) {
+          const getIP = async () => {
+            const response = await fetch('https://api64.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+          };
+  
+          const ip = await getIP(); // Retrieve IP address
+  
+          const logsData = {
+            action: "Restored",
+            details: `An article (${selectedItems[i]})`,
+            ip: ip
+          };
+  
+          const logsResult = await axios.post(`${API_LINK}/act_logs/add_logs/?id=${id}`, logsData);
+          if (logsResult.status === 200) {
           socket.emit("send-restore-muni", response.data);
-        
+       
             setSubmitClicked(false);
             setError(null);
             setUpdatingStatus("success");
@@ -41,7 +57,7 @@ function RestoreAboutusModal({selectedItems, socket}) {
               HSOverlay.close(document.getElementById("hs-restore-aboutus-modal"));
 
             }, 3000);
-
+          }
         }
       }
     } catch (err) {

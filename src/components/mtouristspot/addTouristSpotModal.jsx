@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
 import AddLoader from "./loaders/AddLoader";
-function AddTouristSpot({ brgy, section, socket }) {
+function AddTouristSpot({ brgy, section, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -51,46 +51,68 @@ function AddTouristSpot({ brgy, section, socket }) {
         return; // Prevent further execution of handleSubmit
       }
       setSubmitClicked(true);
-      setError(null)
+      setError(null);
 
       const response = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-    if (response.status === 200){
-      let formData = new FormData();
+      if (response.status === 200) {
+        let formData = new FormData();
 
-      images.forEach((image) => {
-        if (image instanceof File) {
-          formData.append("files", image);
-        } else {
-          formData.append("saved", JSON.stringify(image));
-        }
-      });
-
-      formData.append("touristspot", JSON.stringify(touristSpot));
-
-      const result = await axios.post(`${API_LINK}/tourist_spot/?folder_id=${response.data[0].tourist_spot}`, formData);
-
-      if (result.status === 200) {
-        socket.emit("send-tourist-spot", result.data);
-        settouristSpot({
-          section: "",
-          name: "",
-          details: "",
-          brgy: "",
+        images.forEach((image) => {
+          if (image instanceof File) {
+            formData.append("files", image);
+          } else {
+            formData.append("saved", JSON.stringify(image));
+          }
         });
-        setImages([]);
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          setCreationStatus(null);
-          HSOverlay.close(
-            document.getElementById("hs-modal-addtouristspot")
+
+        formData.append("touristspot", JSON.stringify(touristSpot));
+
+        const result = await axios.post(
+          `${API_LINK}/tourist_spot/?folder_id=${response.data[0].tourist_spot}`,
+          formData
+        );
+
+        if (result.status === 200) {
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Created",
+            details: "A new tourist spot named" + touristSpot.name,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
           );
-        }, 3000);
+          if (logsResult.status === 200) {
+            socket.emit("send-tourist-spot", result.data);
+            settouristSpot({
+              section: "",
+              name: "",
+              details: "",
+              brgy: "",
+            });
+            setImages([]);
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            setTimeout(() => {
+              setCreationStatus(null);
+              HSOverlay.close(
+                document.getElementById("hs-modal-addtouristspot")
+              );
+            }, 3000);
+          }
+        }
       }
-    }
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
@@ -238,7 +260,6 @@ function AddTouristSpot({ brgy, section, socket }) {
                 error={error}
                 isEmpty={images.length === 0}
               />
-              
             </div>
 
             {/* Buttons */}

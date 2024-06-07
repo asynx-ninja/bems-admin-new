@@ -590,13 +590,14 @@ const MServicesInfo = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddServicesInfoModal brgy={brgy} socket={socket} />
-        <ArchiveServicesInfoModal selectedItems={selectedItems} socket={socket}/>
+        <AddServicesInfoModal brgy={brgy} socket={socket}  id={id}/>
+        <ArchiveServicesInfoModal selectedItems={selectedItems} socket={socket}  id={id}/>
         <ManageServiceInfoModal
           brgy={brgy}
           servicesinfos={servicesinfos}
           setServicesInfos={setServicesInfos}
           socket={socket}
+          id={id}
         />
       </div>
     </div>

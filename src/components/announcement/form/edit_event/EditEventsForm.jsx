@@ -8,7 +8,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditEventsForm = ({ announcement_id, brgy, eventsForm, socket }) => {
+const EditEventsForm = ({ announcement_id, brgy, eventsForm, socket, id }) => {
   const information = GetBrgy(brgy);
 
   const [details, setDetails] = useState([]);
@@ -75,6 +75,26 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm, socket }) => {
           );
 
           if (response.status === 200) {
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+            const ip = await getIP(); // Retrieve IP address
+
+            const logsData = {
+              action: "Updated",
+              details: `An events forms for events (${announcement_id}) entitled ` + eventsForm.title,
+              ip: ip,
+            };
+    
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
             socket.emit("send-edit-event-form", response.data);
             setSubmitClicked(false);
             setUpdatingStatus("success");
@@ -87,6 +107,7 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm, socket }) => {
               document.querySelector('select[name="form"]').value = "";
               HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
             }, 3000);
+          }
           }
 
         } else if (activeFormResponse.data[0].version !== detail.version) {
@@ -109,6 +130,26 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm, socket }) => {
         );
 
         if (response.status === 200) {
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Updated",
+            details: `An events forms for events (${announcement_id})`,
+            ip: ip,
+          };
+  
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
           socket.emit("send-edit-event-form", response.data);
           setSubmitClicked(false);
           setUpdatingStatus("success");
@@ -122,6 +163,7 @@ const EditEventsForm = ({ announcement_id, brgy, eventsForm, socket }) => {
             document.querySelector('select[name="form"]').value = "";
             HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
           }, 3000);
+        }
         }
       }
 

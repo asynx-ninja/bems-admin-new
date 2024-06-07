@@ -11,6 +11,7 @@ function ManageAnnouncementModal({
   setAnnouncement,
   brgy,
   socket,
+  id
 }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
@@ -194,6 +195,26 @@ function ManageAnnouncementModal({
           },
         });
         if (response.status === 200) {
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
+;
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Updated",
+            details: "An events entitled" + announcement.title,
+            ip: ip,
+          };
+  
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
           setEdit(!edit);
           socket.emit("send-update-event", response.data);
           socket.emit("send-staff-notif", response.data);
@@ -208,6 +229,7 @@ function ManageAnnouncementModal({
               document.getElementById("hs-modal-editAnnouncement")
             );
           }, 3000);
+        }
         }
       }
      

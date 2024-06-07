@@ -46,6 +46,7 @@ import MArchivedServices from "../pages/ArchivedServices";
 import Tooltip from "../pages/login/Tooltip";
 import EditResident from "../components/barangaytabs/brgyResidents/EditResident/ediResident"
 import AddResident from "../components/barangaytabs/brgyResidents/AddResident/AddResidents"
+import Activitylogs from "../pages/Activity_logs"
 const pages = [
   {
     path: "/",
@@ -105,6 +106,12 @@ const pages = [
   {
     path: "/archivedinquiries",
     element: <Navbar comp={<ArchivedInquiries/>} />,
+  },
+
+  //Activity logs
+  {
+    path: "/logs",
+    element: <Navbar comp={<Activitylogs />} />,
   },
 
 //  MUNICIPAL INFO  

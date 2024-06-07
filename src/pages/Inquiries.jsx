@@ -165,12 +165,19 @@ const Inquiries = () => {
         )
       );
     };
+    const handleInqArchive = (obj) => {
+      setInquiry(obj);
+      setAllInquiries((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
+    };
 
     socket.on("receive-reply-muni-inquiry", handleReMuniInq);
     socket.on("receive-muni-inquiry", handleMuniInq);
+    socket.on("receive-archive-muni", handleInqArchive);
     return () => {
       socket.off("receive-reply-muni-inquiry", handleReMuniInq);
       socket.off("receive-muni-inquiry", handleMuniInq);
+      socket.off("receive-archive-muni", handleInqArchive);
     };
   }, [socket, setInquiry, setAllInquiries]);
 
@@ -712,7 +719,7 @@ const Inquiries = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <ArchiveModal selectedItems={selectedItems} />
+        <ArchiveModal selectedItems={selectedItems} id={id}/>
         <ViewInquiriesModal
           inquiry={inquiry}
           inquiries={inquiries}
@@ -720,8 +727,9 @@ const Inquiries = () => {
           brgy={brgy}
           socket={socket}
           inqContainerRef={inqContainerRef}
+          id={id}
         />
-        <Status status={status} setStatus={setStatus} />
+        {/* <Status status={status} setStatus={setStatus}  id={id}/> */}
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ function CreateAnnouncementModal() {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
-
+  const id = searchParams.get("id");
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
 
@@ -52,7 +52,6 @@ function CreateAnnouncementModal() {
     }));
   };
 
- 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -108,21 +107,40 @@ function CreateAnnouncementModal() {
         );
 
         if (result.status === 200) {
-          setBarangay({
-            brgy: "",
-            story: "",
-            mission: "",
-            vision: "",
-          });
-          setLogo();
-          setBanner();
-        
-          setBanner(null);
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Created",
+            details: `A new barangay named ` + barangay.brgy,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            setBarangay({
+              brgy: "",
+              story: "",
+              mission: "",
+              vision: "",
+            });
+            setLogo();
+            setBanner();
+
+            setBanner(null);
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }
         }
       }
     } catch (err) {

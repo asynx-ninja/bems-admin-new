@@ -977,6 +977,7 @@ const EventsRegistrations = () => {
           application={application}
           officials={officials}
           brgys={brgys}
+          id={id}
         />
       ) : null}
       <ReplyRegistrationModal
@@ -986,8 +987,9 @@ const EventsRegistrations = () => {
         socket={socket}
         chatContainerRef={chatContainerRef}
         applications={applications}
+        id={id}
       />
-      <ArchiveRegistrationModal selectedItems={selectedItems} socket={socket} />
+      <ArchiveRegistrationModal selectedItems={selectedItems} socket={socket}  id={id}/>
     </div>
   );
 };

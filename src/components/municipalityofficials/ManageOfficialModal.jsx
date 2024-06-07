@@ -9,6 +9,7 @@ function ManageOfficialModal({
   setSelectedOfficial,
   brgy,
   socket,
+  id,
 }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -99,18 +100,38 @@ function ManageOfficialModal({
         );
 
         if (result.status === 200) {
-          socket.emit("send-upt-muni-official", result.data);
-          setTimeout(() => {
-            setEdit(!edit);
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Updated",
+            details: "A municipality official named " + selectedOfficial.firstName + " " + selectedOfficial.lastName,
+            ip: ip,
+          };
+  
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-upt-muni-official", result.data);
             setTimeout(() => {
-              setUpdatingStatus(null);
-              HSOverlay.close(
-                document.getElementById("hs-edit-official-modal")
-              );
-            }, 3000);
-          }, 1000);
+              setEdit(!edit);
+              setSubmitClicked(false);
+              setUpdatingStatus("success");
+              setTimeout(() => {
+                setUpdatingStatus(null);
+                HSOverlay.close(
+                  document.getElementById("hs-edit-official-modal")
+                );
+              }, 3000);
+            }, 1000);
+          }
         }
       }
     } catch (err) {

@@ -5,7 +5,7 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
-function AddAboutus({ brgy, socket }) {
+function AddAboutus({ brgy, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -60,7 +60,6 @@ function AddAboutus({ brgy, socket }) {
 
       // Create form data
       if (response.status === 200) {
-
         const formData = new FormData();
         formData.append("file", banner);
         formData.append(
@@ -71,10 +70,28 @@ function AddAboutus({ brgy, socket }) {
             details: aboutus.details,
           })
         );
-
         // Submit form data
         const result = await axios.post(`${API_LINK}/aboutus/?folder_id=${response.data[0].about_us}`, formData);
         if (result.status === 200) {
+          const getIP = async () => {
+            const response = await fetch('https://api64.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+          };
+          
+          const ip = await getIP(); // Retrieve IP address
+          
+          const formData = new FormData();
+          formData.append(
+            "actlogs",
+            JSON.stringify({
+              action: "Created",
+              details: "A new article entitled " + aboutus.title,
+              ip: ip
+            })
+          );
+          const logs = await axios.post(`${API_LINK}/act_logs/?id=${id}`, formData);
+          if (logs.status === 200) {
           socket.emit("send-muni-about", result.data);
           // Reset form fields
           setAboutus({
@@ -82,6 +99,8 @@ function AddAboutus({ brgy, socket }) {
             title: "",
             details: "",
           });
+        
+          console.log(logs.result);
           setBanner(null);
           setSubmitClicked(false);
           setCreationStatus("success");
@@ -91,6 +110,7 @@ function AddAboutus({ brgy, socket }) {
               document.getElementById("hs-modal-addaboutus")
             );
           }, 3000);
+        }
         }
       }
 

@@ -14,7 +14,9 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../assets/image/no-data.png";
-
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+const socket = io(Socket_link);
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,6 +64,18 @@ const Inquiries = () => {
   
     fetchInquiries();
   }, [id, to, statusFilter, update]);
+  useEffect(() => {
+   
+    const handleInqArchive = (obj) => {
+      setInquiry(obj);
+      setAllInquiries((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
+    };
+    socket.on("receive-restore-muni", handleInqArchive);
+    return () => {
+      socket.off("receive-restore-muni", handleInqArchive);
+    };
+  }, [socket, setInquiry, setAllInquiries]);
 
   useEffect(() => {
     const filteredData = inquiries.filter((item) =>
@@ -635,7 +649,7 @@ const Inquiries = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <RestoreModal selectedItems={selectedItems} />
+        <RestoreModal selectedItems={selectedItems}  id={id}/>
         <ViewArchivedModal inquiry={inquiry} setInquiry={setInquiry} />
       </div>
     </div>

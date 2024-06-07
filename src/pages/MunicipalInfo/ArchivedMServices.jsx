@@ -539,7 +539,7 @@ const ArchivedServicesInfo = () => {
           />
         </div>
         {/* <ViewArchivedAdmin user={user} setUser={setUser}/> */}
-        <RestoreServicesInfoModal selectedItems={selectedItems} socket={socket}/>
+        <RestoreServicesInfoModal selectedItems={selectedItems} socket={socket}  id={id}/>
         <ViewArchivedServicesInfo servicesinfos={servicesinfos}/>
       </div>
     </div>

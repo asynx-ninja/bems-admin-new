@@ -4,7 +4,14 @@ import API_LINK from "../../../config/API";
 import { useState } from "react";
 import StatusLoader from "./loaders/StatusLoader";
 import GetBrgy from "../../GETBrgy/getbrgy";
-function ServiceStatus({ status, setStatus, selectedService, brgy, socket }) {
+function ServiceStatus({
+  status,
+  setStatus,
+  selectedService,
+  brgy,
+  socket,
+  id,
+}) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -17,7 +24,7 @@ function ServiceStatus({ status, setStatus, selectedService, brgy, socket }) {
         return "Barangay";
     }
   };
- 
+
   const handleSave = async (e) => {
     try {
       e.preventDefault();
@@ -47,24 +54,43 @@ function ServiceStatus({ status, setStatus, selectedService, brgy, socket }) {
         logo: selectedService.collections.logo,
       };
 
-  
-
       const result = await axios.post(`${API_LINK}/notification/`, notify, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-        
+
       if (response.status === 200) {
-        socket.emit("send-updated-service", response.data);
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
+        const getIP = async () => {
+          const response = await fetch("https://api64.ipify.org?format=json");
+          const data = await response.json();
+          return data.ip;
+        };
+
+        const ip = await getIP(); // Retrieve IP address
+        const logsData = {
+          action: "Updated",
+          details: `An events status info (${selectedItems[i]})`,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-updated-service", response.data);
           setTimeout(() => {
-            setUpdatingStatus(null);
-            HSOverlay.close(document.getElementById("hs-modal-serviceStatus"));
-          }, 3000);
-        }, 1000);
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              setUpdatingStatus(null);
+              HSOverlay.close(
+                document.getElementById("hs-modal-serviceStatus")
+              );
+            }, 3000);
+          }, 1000);
+        }
       }
     } catch (err) {
       console.log(err);
@@ -92,9 +118,12 @@ function ServiceStatus({ status, setStatus, selectedService, brgy, socket }) {
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-xl">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
               {/* Header */}
-              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#396288] to-[#013D74] overflow-hidden rounded-t-2xl"   style={{
-              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+              <div
+                className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#396288] to-[#013D74] overflow-hidden rounded-t-2xl"
+                style={{
+                  background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                }}
+              >
                 <h3
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}

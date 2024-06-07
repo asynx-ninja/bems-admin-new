@@ -5,7 +5,7 @@ import API_LINK from "../../config/API";
 import { useState } from "react";
 import RestoreLoader from "./loaders/RestoreLoader";
 import { LuArchiveRestore } from "react-icons/lu";
-function RestoreAnnouncementModal({ selectedItems, socket }) {
+function RestoreAnnouncementModal({ selectedItems, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -28,6 +28,26 @@ function RestoreAnnouncementModal({ selectedItems, socket }) {
           `${API_LINK}/announcement/archived/${selectedItems[i]}/false`
         );
         if (response.status === 200) {
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Restored",
+            details: `An events info (${selectedItems[i]})`,
+            ip: ip,
+          };
+  
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
           socket.emit("send-restore-muni", response.data);
           setSubmitClicked(false);
           setError(null);
@@ -36,6 +56,7 @@ function RestoreAnnouncementModal({ selectedItems, socket }) {
             setUpdatingStatus(null);
             HSOverlay.close(document.getElementById("hs-modal-restore"));
           }, 3000);
+        }
         }
       }
     } catch (err) {

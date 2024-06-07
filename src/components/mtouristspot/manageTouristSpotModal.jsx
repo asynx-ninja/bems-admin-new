@@ -10,6 +10,7 @@ function ManageTouristSpotModal({
   touristspotInfo,
   settouristspotInfo,
   socket,
+  id,
 }) {
   const [images, setImages] = useState([]);
   const [edit, setEdit] = useState(false);
@@ -80,14 +81,36 @@ function ManageTouristSpotModal({
         );
 
         if (result.status === 200) {
-          socket.emit("send-upt-tourist-spot", result.data);
-          setEdit(!edit);
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            setUpdatingStatus(null);
-            HSOverlay.close(document.getElementById("hs-modal-managetourist"));
-          }, 3000);
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Updated",
+            details: "A tourist spot info named " + touristspotInfo.name,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-upt-tourist-spot", result.data);
+            setEdit(!edit);
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              setUpdatingStatus(null);
+              HSOverlay.close(
+                document.getElementById("hs-modal-managetourist")
+              );
+            }, 3000);
+          }
         }
       }
     } catch (err) {

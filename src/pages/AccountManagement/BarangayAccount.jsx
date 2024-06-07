@@ -373,27 +373,34 @@ const BarangayAccount = () => {
                       </div>
                     </td>
                     <td className="px-6 py-3">
-                      {item.isApproved === "Registered" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                            REGISTERED
+                    {item.isApproved === "Fully Verified" && (
+                        <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            FULLY VERIFIED
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Denied" && (
-                        <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                            DENIED
+                      {item.isApproved === "For Review" && (
+                        <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Pending" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm lg:text-xs xl:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                            PENDING
+                      {item.isApproved === "Partially Verified" && (
+                        <div className="flex w-full items-center justify-center bg-custom-green-button3 xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            PARTIALLY VERIFIED
                           </span>
                         </div>
                       )}
+                      {item.isApproved === "Rejected" && (
+                        <div className="flex w-full items-center justify-center bg-custom-red-button xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            REJECTED
+                          </span>
+                        </div>
+                      )}          
                     </td>
                     <td className="px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
@@ -408,7 +415,7 @@ const BarangayAccount = () => {
                             style={{ color: "#ffffff" }}
                           />
                         </button>
-                        <button
+                        {/* <button
                           type="button"
                           data-hs-overlay="#hs-modal-statusAdmin"
                           className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
@@ -420,7 +427,7 @@ const BarangayAccount = () => {
                           }
                         >
                           <FiEdit size={24} style={{ color: "#ffffff" }} />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -447,12 +454,12 @@ const BarangayAccount = () => {
           />
         </div>
       </div>
-      <ArchiveAccAdmin selectedItems={selectedItems} socket={socket} />
+      <ArchiveAccAdmin selectedItems={selectedItems} socket={socket}  id={id}/>
       {/* <StatusAccAdmin /> */}
 
-      <AddAdminModal occupation={occupation} type={type} socket={socket} />
-      <ManageAdminModal user={user} setUser={setUser} socket={socket} />
-      <StatusAccAdmin status={status} setStatus={setStatus} socket={socket} />
+      <AddAdminModal occupation={occupation} type={type} socket={socket}  id={id}/>
+      <ManageAdminModal user={user} setUser={setUser} socket={socket}  id={id}/>
+      <StatusAccAdmin status={status} setStatus={setStatus} socket={socket}  id={id}/>
     </div>
   );
 };

@@ -5,7 +5,13 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import EditLoader from "./loaders/EditLoader";
-function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos, socket }) {
+function ManageServicesInfo({
+  brgy,
+  servicesinfos,
+  setServicesInfos,
+  socket,
+  id,
+}) {
   const [icon, setIcon] = useState();
   const [edit, setEdit] = useState(false);
   const editIconRef = useRef(null);
@@ -67,18 +73,36 @@ function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos, socket }) {
           formData
         );
         if (result.status === 200) {
-          // Handle successful update
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
 
-          socket.emit("send-upt-offered-serv", result.data);
-          setSubmitClicked(false);
-          setEdit(!edit);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            setUpdatingStatus(null);
-            HSOverlay.close(
-              document.getElementById("hs-modal-manageserviceinfo")
-            );
-          }, 3000);
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Updated",
+            details: "A offered service info named " + servicesinfos.name,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-upt-offered-serv", result.data);
+            setSubmitClicked(false);
+            setEdit(!edit);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              setUpdatingStatus(null);
+              HSOverlay.close(
+                document.getElementById("hs-modal-manageserviceinfo")
+              );
+            }, 3000);
+          }
         }
       }
     } catch (err) {
@@ -92,7 +116,7 @@ function ManageServicesInfo({ brgy, servicesinfos, setServicesInfos, socket }) {
   const handleOnEdit = () => {
     setEdit(!edit);
   };
-  
+
   const resetForm = () => {
     setError(null);
     setSubmitClicked(false);

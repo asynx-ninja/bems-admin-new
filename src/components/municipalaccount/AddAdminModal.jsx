@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import API_LINK from "../../config/API";
 import { LiaRandomSolid } from "react-icons/lia";
 import AddLoader from "./loaders/AddLoader";
-function AddAdminModal({ brgy, occupation, socket }) {
+function AddAdminModal({ brgy, occupation, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -29,7 +29,7 @@ function AddAdminModal({ brgy, occupation, socket }) {
     username: "",
     password: "",
     isArchived: false,
-    isApproved: "Registered",
+    isApproved: "Fully Verified",
     city: "Rodriguez, Rizal",
     brgy: brgy,
   });
@@ -59,7 +59,7 @@ function AddAdminModal({ brgy, occupation, socket }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
- 
+
       if (
         !user.firstName.trim() ||
         !user.lastName.trim() ||
@@ -109,38 +109,58 @@ function AddAdminModal({ brgy, occupation, socket }) {
       const result = await axios.post(`${API_LINK}/municipal_admin/`, obj);
 
       if (result.status === 200) {
-        socket.emit("send-muni-admin", result.data);
-        setUser({
-          user_id: "",
-          firstName: "",
-          middleName: "",
-          lastName: "",
-          suffix: "",
-          religion: "",
-          email: "",
-          birthday: "",
-          age: "",
-          contact: "",
-          sex: "",
-          address: "",
-          occupation: "",
-          civil_status: "",
-          type: "",
-          isVoter: "",
-          isHead: "",
-          username: "",
-          password: "",
-          isArchived: "",
-          isApproved: "",
-          city: "Rodriguez, Rizal",
-          brgy: brgy,
-        });
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          setCreationStatus(null);
-          HSOverlay.close(document.getElementById("hs-modal-addAdmin"));
-        }, 3000);
+        const getIP = async () => {
+          const response = await fetch("https://api64.ipify.org?format=json");
+          const data = await response.json();
+          return data.ip;
+        };
+
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Created",
+          details: "A new municipality admin named " + user.firstName + " " + user.lastName,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-muni-admin", result.data);
+          setUser({
+            user_id: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            suffix: "",
+            religion: "",
+            email: "",
+            birthday: "",
+            age: "",
+            contact: "",
+            sex: "",
+            address: "",
+            occupation: "",
+            civil_status: "",
+            type: "",
+            isVoter: "",
+            isHead: "",
+            username: "",
+            password: "",
+            isArchived: "",
+            isApproved: "",
+            city: "Rodriguez, Rizal",
+            brgy: brgy,
+          });
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            setCreationStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-addAdmin"));
+          }, 3000);
+        }
       }
     } catch (err) {
       console.log(err);
@@ -571,7 +591,7 @@ function AddAdminModal({ brgy, occupation, socket }) {
                                 onChange={handleChange}
                                 className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               >
-                                 <option>-- Select User Type --</option>
+                                <option>-- Select User Type --</option>
                                 <option value="Admin">Admin</option>
                                 <option value="Head Admin">Head Admin</option>
                               </select>

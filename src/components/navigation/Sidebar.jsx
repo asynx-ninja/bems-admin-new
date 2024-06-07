@@ -669,7 +669,28 @@ const Sidebar = () => {
                     </li>
                   </>
                 )}
-
+               <li>
+                  <Link
+                    to={`/logs/?id=${id}`}
+                    // onClick={() => {
+                    //   window.innerWidth >= 320 && window.innerWidth <= 1023
+                    //     ? document
+                    //         .getQuerySelector(
+                    //           "[data-hs-overlay-backdrop-template]"
+                    //         )
+                    //         .remove()
+                    //     : null;
+                    // }}
+                    className={`${
+                      currentPath === "/logs/"
+                        ? "bg-gradient-to-r from-[#295141] to-[#408D51] text-[#EFC586]"
+                        : null
+                    } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#295141] to-[#408D51]`}
+                  >
+                    <MdOutlineMiscellaneousServices size={15} />
+                    Activity Logs
+                  </Link>
+                </li>
                 <li>
                   <Link
                     to={`/settings/?id=${id}`}

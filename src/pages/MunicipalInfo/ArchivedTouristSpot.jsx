@@ -537,7 +537,7 @@ useEffect(() => {
           />
         </div>
         {/* <ViewArchivedAdmin user={user} setUser={setUser}/> */}
-        <RestoreTouristSpotModal selectedItems={selectedItems} socket={socket}/>
+        <RestoreTouristSpotModal selectedItems={selectedItems} socket={socket}  id={id}/>
         <ViewArchivedTouristSpot touristspotInfo={touristspotInfo}/>
       </div>
     </div>

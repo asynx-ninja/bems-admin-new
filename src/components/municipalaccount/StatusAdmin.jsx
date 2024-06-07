@@ -3,7 +3,7 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { useState } from "react";
 import Status from "./loaders/Status";
-function StatusAdmin({ status, setStatus, socket }) {
+function StatusAdmin({ status, setStatus, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);

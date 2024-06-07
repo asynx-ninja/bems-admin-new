@@ -6,7 +6,7 @@ import { AiOutlineEye } from "react-icons/ai";
 import { FaArchive } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import ViewArchivedServiceModal from "../../components/barangaytabs/brgyServices/ViewArchivedServiceModal";
-import StatusResident from "../../components/barangaytabs/brgyServices/StatusService";
+import StatusService from "../../components/barangaytabs/brgyServices/StatusService";
 import API_LINK from "../../config/API";
 import noData from "../../assets/image/no-data.png";
 import GetBrgy from "../../components/GETBrgy/getbrgy";
@@ -464,13 +464,14 @@ function Services() {
         brgy={brgy}
       />
 
-      <StatusResident
+      <StatusService
         status={status}
         setStatus={setStatus}
         selectedService={selectedService}
         setSelectedService={setSelectedService}
         brgy={brgy}
         socket={socket}
+        id={id}
       />
     </div>
   );

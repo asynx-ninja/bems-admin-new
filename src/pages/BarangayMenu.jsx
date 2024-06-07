@@ -73,7 +73,7 @@ function BarangayMenu() {
         ))}
       </div>
 
-      <AddBarangay />
+      <AddBarangay  id={id}/>
     </div>
   );
 }
