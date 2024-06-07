@@ -498,7 +498,7 @@ const Information = () => {
                     />
                   </div>
                 </div>
-                <div className=" flex justify-center px-4 gap-4 py-6 text-white">
+                {/* <div className=" flex justify-center px-4 gap-4 py-6 text-white">
                   {isEditingMode ? (
                     <>
                       <button
@@ -522,7 +522,7 @@ const Information = () => {
                       EDIT
                     </button>
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

@@ -1,11 +1,12 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import { ChromePicker } from "react-color";
 import AddLoader from "./loaders/AddLoader";
+
 function CreateAnnouncementModal() {
   const [barangay, setBarangay] = useState({
     brgy: "",
@@ -21,6 +22,7 @@ function CreateAnnouncementModal() {
 
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
