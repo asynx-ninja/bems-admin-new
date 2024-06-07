@@ -291,6 +291,7 @@ const Settings = () => {
             );
           }
         } else if (response.status === 200) {
+          
           setSubmitClicked(true);
           setError(null);
          

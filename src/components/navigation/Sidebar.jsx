@@ -20,7 +20,7 @@ import axios from "axios";
 import defaultPFP from "../../assets/sample-image/default-pfp.png";
 import { BsInfoCircleFill } from "react-icons/bs";
 import { FaCity } from "react-icons/fa";
-
+import { MdLocalActivity } from "react-icons/md";
 const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [userData, setUserData] = useState({});
@@ -687,7 +687,7 @@ const Sidebar = () => {
                         : null
                     } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#295141] to-[#408D51]`}
                   >
-                    <MdOutlineMiscellaneousServices size={15} />
+                    <MdLocalActivity size={15} />
                     Activity Logs
                   </Link>
                 </li>
