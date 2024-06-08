@@ -425,7 +425,7 @@ import Services from "./BarangayTabs/BrgyServices";
 import Reports from "./BarangayTabs/Reports";
 import { useSearchParams } from "react-router-dom";
 import GetBrgy from "../components/GETBrgy/getbrgy";
-
+import ActivityLogs from "./BarangayTabs/BrgyActivityLogs"
 function BarangayDetails() {
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = localStorage.getItem("activeTab");
@@ -489,12 +489,24 @@ function BarangayDetails() {
           >
             Reports
           </button>
+          <button
+            type="button"
+            className={`uppercase font-bold py-2 px-4 rounded ${
+              activeTab === 4
+                ? "bg-gradient-to-r from-[#295141] to-[#408D51] text-white"
+                : "text-black hover:bg-gray-200"
+            }`}
+            onClick={() => handleTabChange(4)}
+          >
+            Activity Logs
+          </button>
         </nav>
       </div>
       <div className="mt-3 py-4 px-4">
         {activeTab === 1 && <Information brgy={brgy} />}
         {activeTab === 2 && <Services brgy={brgy} />}
         {activeTab === 3 && <Reports brgy={brgy} />}
+        {activeTab === 4 && <ActivityLogs brgy={brgy} />}
       </div>
     </div>
   );

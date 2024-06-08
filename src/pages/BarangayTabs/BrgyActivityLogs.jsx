@@ -3,19 +3,18 @@ import { useState, useEffect } from "react";
 import moment from "moment";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
-import API_LINK from "../config/API";
-import noData from "../assets/image/no-data.png";
-import { io } from "socket.io-client";
-import Socket_link from "../config/Socket";
-
-const socket = io(Socket_link);
+import API_LINK from "../../config/API";
+import noData from "../../assets/image/no-data.png";
+import { useSearchParams,Link } from "react-router-dom";
+import GetBrgy from "../../components/GETBrgy/getbrgy";
 
 const Activitylogs = () => {
   const [actlogs, setAtcLogs] = useState([]);
-  const brgy = "MUNISIPYO";
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brgy = searchParams.get("brgy");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-
+  const information = GetBrgy(brgy);
   const [searchQuery, setSearchQuery] = useState("");
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredlogs, setFilteredLogs] = useState([]);
@@ -181,117 +180,130 @@ const Activitylogs = () => {
   }, []);
 
   return (
-    <div className="mx-4 mt-4">
+    <div className="">
       <div className="flex flex-col ">
         <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+          <div
+            className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]   bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141]"
+            style={{
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}
+          >
             <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              ACTIVITY LOGS
+              Activity Logs
             </h1>
           </div>
+        
         </div>
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
-            <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left] shadow-sm">
-              <button
-                id="hs-dropdown"
-                type="button"
-                className="bg-[#295141] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
-              >
-                DATE
-                <svg
-                  className={`hs-dropdown w-2.5 h-2.5 text-white`}
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+            <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
+              {/* Date Sort */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left] shadow-sm">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm bg-[#295141] "
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
-                  <path
-                    d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-              <ul
-                className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
-                aria-labelledby="hs-dropdown"
-              >
-                <a
-                  onClick={handleResetFilter}
-                  className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
-                  href="#"
+                  DATE
+                  <svg
+                    className={`hs-dropdown w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  aria-labelledby="hs-dropdown"
                 >
-                  RESET FILTERS
-                </a>
-                <hr className="border-[#4e4e4e] mt-1" />
-                <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
-                  <label className="text-black font-medium mb-1">
-                    DATE RANGE
-                  </label>
-                  <div className="flex flex-col gap-2">
-                    <select
-                      className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                      onChange={onSelect}
-                      defaultValue={selected}
-                    >
-                      <option value="date">Specific Date</option>
-                      <option value="week">Week</option>
-                      <option value="month">Month</option>
-                      <option value="year">Year</option>
-                    </select>
-                    {selected === "date" && (
-                      <input
-                        className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                        type="date"
-                        id="date"
-                        name="date"
-                        onChange={onChangeDate}
-                      />
-                    )}
-                    {selected === "week" && (
-                      <input
-                        className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                        type="week"
-                        id="week"
-                        name="week"
-                        onChange={onChangeWeek}
-                      />
-                    )}
-                    {selected === "month" && (
-                      <input
-                        className=" text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                        type="month"
-                        id="month"
-                        name="month"
-                        onChange={onChangeMonth}
-                      />
-                    )}
-                    {selected === "year" && (
-                      <input
-                        className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
-                        type="number"
-                        id="year"
-                        name="year"
-                        placeholder="YEAR"
-                        onChange={onChangeYear}
-                        min={1990}
-                        max={new Date().getFullYear() + 10}
-                      />
-                    )}
+                  <a
+                    onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    RESET FILTERS
+                  </a>
+                  <hr className="border-[#4e4e4e] mt-1" />
+                  <div className="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                    <label className="text-black font-medium mb-1">
+                      DATE RANGE
+                    </label>
+                    <div className="flex flex-col gap-2">
+                      <select
+                        className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                        onChange={onSelect}
+                        defaultValue={selected}
+                      >
+                        <option value="date">Specific Date</option>
+                        <option value="week">Week</option>
+                        <option value="month">Month</option>
+                        <option value="year">Year</option>
+                      </select>
+                      {selected === "date" && (
+                        <input
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          type="date"
+                          id="date"
+                          name="date"
+                          onChange={onChangeDate}
+                        />
+                      )}
+                      {selected === "week" && (
+                        <input
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          type="week"
+                          id="week"
+                          name="week"
+                          onChange={onChangeWeek}
+                        />
+                      )}
+                      {selected === "month" && (
+                        <input
+                          className=" text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          type="month"
+                          id="month"
+                          name="month"
+                          onChange={onChangeMonth}
+                        />
+                      )}
+                      {selected === "year" && (
+                        <input
+                          className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          type="number"
+                          id="year"
+                          name="year"
+                          placeholder="YEAR"
+                          onChange={onChangeYear}
+                          min={1990}
+                          max={new Date().getFullYear() + 10}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              </ul>
+                </ul>
+              </div>
             </div>
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-4/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className=" bg-[#295141] p-3 rounded-l-md">
+                <button
+                  className="  p-3 rounded-l-md bg-[#295141]"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -315,7 +327,7 @@ const Activitylogs = () => {
                   type="text"
                   name="hs-table-with-pagination-search"
                   id="hs-table-with-pagination-search"
-                  className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
                   placeholder="Search for items"
                   value={searchQuery}
                   onChange={handleSearchChange}
@@ -326,82 +338,11 @@ const Activitylogs = () => {
         </div>
 
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
-          {/* <table
-            className="relative table-auto w-full text-left  rounded border-slate-200"
+        <table
+            className="min-w-full divide-y relative table-auto w-full rounded border-slate-200"
             cellspacing="0"
           >
-            <thead className="bg-[#295141] sticky top-0">
-              <tr>
-                {tableHeader.map((item, idx) => (
-                  <th
-                    scope="col"
-                    key={idx}
-                    className="px-6 py-3 text-center text-xs font-bold text-white uppercase"
-                  >
-                    {item}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredlogs.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={tableHeader.length + 1}
-                    className="text-center  overflow-y-hidden h-[calc(100vh_-_400px)] xxxl:h-[calc(100vh_-_326px)]"
-                  >
-                    <img
-                      src={noData}
-                      alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
-                    />
-                    <strong className="text-[#535353]">NO DATA FOUND</strong>
-                  </td>
-                </tr>
-              ) : (
-                filteredlogs.map((item, index) => (
-                  <tr
-                    key={index}
-                    className="odd:bg-slate-100 text-center cursor-pointer transition duration-300 ease-in-out hover:shadow-lg hover:shadow-blue-500/50"
-                    onClick={() => handleRowClick(item)}
-                  >
-                    <td className="h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
-                      <div className="flex justify-center items-center">
-                        {item.firstname} {item.lastname}
-                      </div>
-                    </td>
-                    <td className="h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
-                      <div className="flex justify-center items-center">
-                        {item.type}
-                      </div>
-                    </td>    
-                    <td className="h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
-                      <div className="flex justify-center items-center">
-                        {item.ip}
-                      </div>
-                    </td>
-                    <td className="h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
-                      <div className="flex justify-center items-center">
-                        {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
-                        {TimeFormat(item.createdAt) || ""}
-                      </div>
-                    </td>
-                    <td className="xxl:w-2/12 h-12 px-6 text-sm transition duration-300 border-t  border-slate-200 stroke-slate-500 text-slate-500 ">
-                      <div className="flex  items-center truncate line-clamp-1">
-                        <strong>{item.action}</strong>:
-                        {item.details.slice(0, 25)}...
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table> */}
-          <table
-            className="divide-y relative table-auto w-full rounded border-slate-200"
-            cellspacing="0"
-          >
-            <thead className="bg-[#295141] sticky top-0">
+            <thead className="bg-[#295141] sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
               <tr>
                 {tableHeader.map((item, idx) => (
                   <th
@@ -458,10 +399,10 @@ const Activitylogs = () => {
                               : item.action === "Restored"
                               ? "gray-800"
                               : "yellow-800"
-                          } inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium mr-2`}
+                            } inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium mr-2`}
                         >
                           {item.action}
-                        </span> 
+                        </span>
                         <span className="truncate">
                           {item.details.slice(0, 100)}
                         </span>
@@ -509,7 +450,10 @@ const Activitylogs = () => {
             </tbody>
           </table>
         </div>
-        <div className="md:py-4 md:px-4 bg-[#295141] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+        <div
+          className="md:py-4 md:px-4 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3 bg-[#295141]"
+          style={{ backgroundColor: information?.theme?.primary }}
+        >
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing {currentPage + 1} out of {pageCount} pages
           </span>
@@ -522,12 +466,10 @@ const Activitylogs = () => {
             previousLabel="<<"
             className="flex space-x-3 text-white font-bold"
             activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-400"
+            disabledLinkClassName="text-gray-300"
             renderOnZeroPageCount={null}
           />
         </div>
-
-        {/* Modal for viewing log details */}
         {showModal && (
           <div
             className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50"
@@ -600,6 +542,7 @@ const Activitylogs = () => {
             </div>
           </div>
         )}
+       
       </div>
     </div>
   );

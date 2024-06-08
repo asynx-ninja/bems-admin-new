@@ -323,15 +323,17 @@ const EventsRegistrations = () => {
       setSearchApplications(filters(selected, date));
     }
   };
-
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Event Applications');
 
     const dataForExcel = searchapplications.map((item) => ({
+      "CONTROL #": item.application_id || "N/A",
+      "SERVICE NAME": item.event_name || "N/A",
       SENDER: item.form[0].lastName.value + ", " + item.form[0].firstName.value + " " + item.form[0].middleName.value,
       CONTACT: item.form[0].contact?.value || "N/A",
-      EMAIL: item.form[0].email?.value || "N/A"
+      EMAIL: item.form[0].email?.value || "N/A",
+      DATE: moment(item.createdAt).format("MMMM DD, YYYY") || "N/A",
     }));
 
     // Check for empty data BEFORE creating the worksheet
@@ -344,17 +346,21 @@ const EventsRegistrations = () => {
     const titleRow = worksheet.addRow([`LIST OF EVENT APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`]);
     // Merge cells for the title row
     worksheet.mergeCells(`A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`);
-    titleRow.getCell(1).font = { bold: true, size: 16, color: { argb: 'FFFFFFFF' } };
+    titleRow.getCell(1).font = { bold: true, size: 16};
     titleRow.getCell(1).alignment = { horizontal: 'center' };
-    titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '295141' } };
 
     // Add Header Row
     const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
     headerRow.eachCell((cell) => {
       if (cell.value) {
-        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.font = { bold: true };
         cell.alignment = { horizontal: 'center' };
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFB13C' } };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
       }
     });
 
@@ -363,7 +369,12 @@ const EventsRegistrations = () => {
       const row = worksheet.addRow(Object.values(item));
       const rowStyle = index % 2 === 0 ? 'EBF6EB' : 'F5FDF5';
       row.eachCell({ includeEmpty: true }, (cell) => {
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowStyle } };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
       });
     });
 
@@ -379,7 +390,7 @@ const EventsRegistrations = () => {
     link.href = URL.createObjectURL(blob);
     link.download = `Event-Applications-${selecteEventFilter}.xlsx`;
     link.click();
-  };
+};
 
 
   // Function to export data to PDF
