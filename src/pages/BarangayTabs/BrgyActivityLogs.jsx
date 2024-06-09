@@ -378,22 +378,22 @@ const Activitylogs = () => {
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100">
                       <div className="flex items-center">
-                        <span
+                      <span
                           className={`bg-${
                             item.action === "Created"
-                              ? "yellow-200"
+                              ? "teal-700"
                               : item.action === "Updated"
-                              ? "blue-200"
+                              ? "blue-500"
                               : item.action === "Archived"
                               ? "red-500"
                               : item.action === "Restored"
-                              ? "gray-200"
+                              ? "green-500"
                               : "yellow-200"
                           } text-${
                             item.action === "Created"
-                              ? "yellow-800"
+                              ? "teal-400"
                               : item.action === "Updated"
-                              ? "blue-800"
+                              ? "white"
                               : item.action === "Archived"
                               ? "red-800"
                               : item.action === "Restored"

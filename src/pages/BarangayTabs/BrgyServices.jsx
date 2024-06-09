@@ -393,10 +393,10 @@ function Services() {
                           </span>
                         </div>
                       )}
-                      {service.isApproved === "Pending" && (
+                      {service.isApproved === "For Review" && (
                         <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm lg:text-xs xl:text-sm font-bold text-white p-3 mx-5">
-                            PENDING
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
