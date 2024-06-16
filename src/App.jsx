@@ -9,7 +9,7 @@ import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 function App() {
   return (
     <>
-      <PrimeReactProvider value={{ unstyled: false, pt: Tailwind }}><RouterProvider router={Route} /></PrimeReactProvider>
+      {/* <PrimeReactProvider value={{ unstyled: false, pt: Tailwind }}><RouterProvider router={Route} /></PrimeReactProvider> */}
      
     </>
   )
